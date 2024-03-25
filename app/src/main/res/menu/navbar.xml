@@ -5,21 +5,25 @@
     <item
         android:id="@+id/home"
         android:icon="@drawable/baseline_home_24"
-        android:title="Home" />
+        />
     <item
         android:id="@+id/addProject"
         android:icon="@drawable/add_project_icon"
-        android:title="AddProject" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <item
         android:id="@+id/myProjects"
         android:icon="@drawable/folder_icon"
-        android:title="MyProjects" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <item
         android:id="@+id/profile"
         android:icon="@drawable/profile_icon"
-        android:title="Profile" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <item
         android:id="@+id/logout"
         android:icon="@drawable/logout_icon"
-        android:title="Logout" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </menu>

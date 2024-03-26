@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:backgroundTint="@color/background_gray"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:background="@color/white"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:paddingTop="8dp">
+    android:backgroundTint="@color/background_gray"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/title_image"
@@ -15,10 +14,10 @@
         android:layout_height="155dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/a"
+        app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/RoundCorner" />
+        android:src="@drawable/horizon_forbidden_image"/>
 
     <TextView
         android:id="@+id/tvHeading"
@@ -36,6 +35,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_margin="8dp"

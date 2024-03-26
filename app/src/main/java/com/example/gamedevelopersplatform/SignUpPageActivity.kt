@@ -9,7 +9,7 @@ import com.example.gamedevelopersplatform.databinding.ActivitySignUpPageBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class SignUpPage : AppCompatActivity() {
+class SignUpPageActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var binding: ActivitySignUpPageBinding
@@ -31,7 +31,7 @@ class SignUpPage : AppCompatActivity() {
                     if(it.isSuccessful) {
                         saveUserToFirestore(nickname, password, email)
                         Toast.makeText(this, "Account created successfully", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, InitializeNavbar::class.java)
+                        val intent = Intent(this, InitializeNavbarActivity::class.java)
                         startActivity(intent)
                         finish()
                     }

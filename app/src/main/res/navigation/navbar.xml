@@ -3,11 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navbar"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/homePageFragment">
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.gamedevelopersplatform.HomePage"
+        android:id="@+id/homePageFragment"
+        android:name="com.example.gamedevelopersplatform.HomePageFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home_page" />
+        tools:layout="@layout/fragment_home_page" >
+        <action
+            android:id="@+id/action_homeFragment_to_addProjectPage"
+            app:destination="@id/addProjectPage" />
+        <action
+            android:id="@+id/action_homeFragment_to_myProjectsPage"
+            app:destination="@id/myProjectsPage" />
+        <action
+            android:id="@+id/action_homeFragment_to_profilePage"
+            app:destination="@id/profilePage" />
+    </fragment>
+    <fragment
+        android:id="@+id/myProjectsPage"
+        android:name="com.example.gamedevelopersplatform.MyProjectsPage"
+        android:label="fragment_my_projects"
+        tools:layout="@layout/fragment_my_projects" />
+    <fragment
+        android:id="@+id/addProjectPage"
+        android:name="com.example.gamedevelopersplatform.AddProjectPage"
+        android:label="fragment_add_project_page"
+        tools:layout="@layout/fragment_add_project_page" />
+    <fragment
+        android:id="@+id/profilePage"
+        android:name="com.example.gamedevelopersplatform.ProfilePage"
+        android:label="fragment_profile_page"
+        tools:layout="@layout/fragment_profile_page" />
+    <fragment
+        android:id="@+id/projectPage"
+        android:name="com.example.gamedevelopersplatform.ProjectPage"
+        android:label="fragment_project_page"
+        tools:layout="@layout/fragment_project_page" />
 </navigation>

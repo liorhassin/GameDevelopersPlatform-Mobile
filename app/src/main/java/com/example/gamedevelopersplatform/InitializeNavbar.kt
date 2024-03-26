@@ -21,11 +21,11 @@ class InitializeNavbar : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         setContentView(binding.root)
-        replaceFragment(HomePage())
+        replaceFragment(HomePageFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.home -> replaceFragment(HomePage())
+                R.id.home -> replaceFragment(HomePageFragment())
                 R.id.profile -> replaceFragment(ProfilePage())
                 R.id.addProject -> replaceFragment(AddProjectPage())
                 R.id.myProjects -> replaceFragment(MyProjectsPage())

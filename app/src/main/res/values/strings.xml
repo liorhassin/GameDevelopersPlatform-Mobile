@@ -2,4 +2,11 @@
     <string name="app_name">GameDevelopersPlatform</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_up">Sign up</string>
+    <string name="nickname">Nickname:</string>
+    <string name="choose_nickname">choose nickname</string>
+    <string name="enter_password">enter password</string>
+    <string name="password">Password:</string>
+    <string name="enter_email">enter email</string>
+    <string name="email">Email:</string>
 </resources>

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.gamedevelopersplatform.databinding.ActivityInitializeNavbarBinding
 import com.google.firebase.auth.FirebaseAuth
 
-class InitializeNavbar : AppCompatActivity() {
+class InitializeNavbarActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInitializeNavbarBinding
 
     private  lateinit var firebaseAuth: FirebaseAuth
@@ -26,16 +26,16 @@ class InitializeNavbar : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomePageFragment())
-                R.id.profile -> replaceFragment(ProfilePage())
-                R.id.addProject -> replaceFragment(AddProjectPage())
-                R.id.myProjects -> replaceFragment(MyProjectsPage())
+                R.id.profile -> replaceFragment(ProfilePageFragment())
+                R.id.addProject -> replaceFragment(AddProjectPageFragment())
+                R.id.myProjects -> replaceFragment(MyProjectsPageFragment())
                 R.id.logout -> {
                     if(firebaseAuth.currentUser != null){
                         val builder = AlertDialog.Builder(this)
                         builder.setPositiveButton("Yes"){_,_->
                             firebaseAuth.signOut()
                             Toast.makeText(this, "Logout...", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this, SignInPage::class.java)
+                            val intent = Intent(this, SignInPageActivity::class.java)
                             startActivity(intent)
                             finish()
                         }

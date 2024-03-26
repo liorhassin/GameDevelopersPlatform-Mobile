@@ -12,8 +12,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var binding: ActivityMainBinding
 
-    //TODO - Fix crash (firebaseAuth uninitialized error)!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -25,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val user = firebaseAuth.currentUser
             if( user != null){
-                val intent = Intent(this, HomePageFragment::class.java)
+                val intent = Intent(this, InitializeNavbarActivity::class.java)
                 startActivity(intent)
                 finish()
             }else{
@@ -34,6 +32,5 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         },3000)
-
     }
 }

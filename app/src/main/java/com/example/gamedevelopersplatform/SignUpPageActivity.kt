@@ -1,7 +1,6 @@
 package com.example.gamedevelopersplatform
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -13,7 +12,6 @@ import com.example.gamedevelopersplatform.databinding.ActivitySignUpPageBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import org.checkerframework.checker.regex.qual.Regex
 
 class SignUpPageActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth

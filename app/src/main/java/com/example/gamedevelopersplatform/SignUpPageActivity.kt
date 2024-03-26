@@ -1,13 +1,19 @@
 package com.example.gamedevelopersplatform
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gamedevelopersplatform.databinding.ActivitySignUpPageBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import org.checkerframework.checker.regex.qual.Regex
 
 class SignUpPageActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
@@ -22,11 +28,18 @@ class SignUpPageActivity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        //TODO - Remove or edit how text watcher is being generated from helper function.
+        //Binding each input to a TextWatcher object for color changes and possible validation follow-ups.
+        binding.nicknameInput.addTextChangedListener(generateTextWatcher(binding.nicknameInput))
+        binding.passwordInput.addTextChangedListener(generateTextWatcher(binding.passwordInput))
+        binding.emailInput.addTextChangedListener(generateTextWatcher(binding.emailInput))
+
         binding.signUpButton.setOnClickListener {
             val nickname = binding.nicknameInput.text.toString()
             val password = binding.passwordInput.text.toString()
             val email = binding.emailInput.text.toString()
-            if(validation(nickname, password, email)){
+            val (validNickname, validPassword, validEmail) = validation(nickname, password, email)
+            if(validNickname && validPassword && validEmail){
                 firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
                     if(it.isSuccessful) {
                         saveUserToFirestore(nickname, password, email)
@@ -39,17 +52,34 @@ class SignUpPageActivity : AppCompatActivity() {
                 }
             }
             else{
-                //TODO - Show red error where validation failed.
+                if(!validNickname){
+                    binding.nicknameInput.setTextColor(Color.RED)
+                }
+                if(!validPassword){
+                    binding.passwordInput.setTextColor(Color.RED)
+                }
+                if(!validEmail){
+                    binding.emailInput.setTextColor(Color.RED)
+                }
             }
         }
 
     }
 
-    fun validation(nickname:String, password:String, email:String): Boolean{
-        return true
+    private fun validation(nickname:String, password:String, email:String): Triple<Boolean, Boolean, Boolean>{
+        //Nickname must be of at least length 2 and can only contain english alphabet/numbers/one white space between words.
+        val nicknameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_ ]{2,}\$")
+
+        //Password must be of at least length 6 and contain one Capital Letter/One Normal Letter/One Number/One Special Character.
+        val passwordRegex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{6,}\$")
+
+        //Email must follow commonly accepted standards such as having a @ and contains supported characters before and after.
+        val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
+
+        return Triple(nicknameRegex.matches(nickname), passwordRegex.matches(password), emailRegex.matches(email))
     }
 
-    fun saveUserToFirestore(nickname:String, password:String, email:String){
+    private fun saveUserToFirestore(nickname:String, password:String, email:String){
         val user = hashMapOf(
             "Nickname" to nickname,
             "Password" to password,
@@ -67,6 +97,24 @@ class SignUpPageActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /***
+     * Helper function to generate TextWatcher for textInput afterTextChanged effect.(Back to White)
+     */
+    private fun generateTextWatcher(textInput: TextInputEditText): TextWatcher {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Not required for this implementation
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Not required for this implementation
+            }
+            override fun afterTextChanged(p0: Editable?) {
+                textInput.setTextColor(Color.WHITE)
+            }
+        }
+        return textWatcher
     }
 
     //TODO - Add room (local cache)

@@ -27,8 +27,8 @@ class InitializeNavbarActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomePageFragment())
                 R.id.profile -> replaceFragment(ProfilePageFragment())
-                R.id.addProject -> replaceFragment(AddProjectPageFragment())
-                R.id.myProjects -> replaceFragment(MyProjectsPageFragment())
+                R.id.addProject -> replaceFragment(AddGamePageFragment())
+                R.id.myProjects -> replaceFragment(MyGamesPageFragment())
                 R.id.logout -> {
                     if(firebaseAuth.currentUser != null){
                         val builder = AlertDialog.Builder(this)

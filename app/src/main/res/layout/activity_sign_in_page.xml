@@ -9,7 +9,7 @@
     tools:context=".SignInPageActivity">
 
     <TextView
-        android:id="@+id/signInTitle"
+        android:id="@+id/gamePriceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -30,7 +30,7 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signInTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/gamePriceTitle" />
 
     <TextView
         android:id="@+id/signInPassword"
@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.772"
         app:layout_constraintStart_toEndOf="@+id/signInEmail"
-        app:layout_constraintTop_toBottomOf="@+id/signInTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/gamePriceTitle" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/signInPasswordInput"

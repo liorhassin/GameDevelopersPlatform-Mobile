@@ -22,14 +22,14 @@
     </fragment>
     <fragment
         android:id="@+id/myProjectsPage"
-        android:name="com.example.gamedevelopersplatform.MyProjectsPageFragment"
+        android:name="com.example.gamedevelopersplatform.MyGamesPageFragment"
         android:label="fragment_my_projects"
-        tools:layout="@layout/fragment_my_projects" />
+        tools:layout="@layout/fragment_my_games" />
     <fragment
         android:id="@+id/addProjectPage"
-        android:name="com.example.gamedevelopersplatform.AddProjectPageFragment"
+        android:name="com.example.gamedevelopersplatform.AddGamePageFragment"
         android:label="fragment_add_project_page"
-        tools:layout="@layout/fragment_add_project_page" />
+        tools:layout="@layout/fragment_add_game_page" />
     <fragment
         android:id="@+id/profilePage"
         android:name="com.example.gamedevelopersplatform.ProfilePageFragment"
@@ -37,7 +37,7 @@
         tools:layout="@layout/fragment_profile_page" />
     <fragment
         android:id="@+id/projectPage"
-        android:name="com.example.gamedevelopersplatform.ProjectPageFragment"
+        android:name="com.example.gamedevelopersplatform.GamePageFragment"
         android:label="fragment_project_page"
-        tools:layout="@layout/fragment_project_page" />
+        tools:layout="@layout/fragment_game_page" />
 </navigation>

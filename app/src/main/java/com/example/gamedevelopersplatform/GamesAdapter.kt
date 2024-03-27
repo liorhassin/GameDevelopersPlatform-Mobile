@@ -7,10 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 
-class ProjectsAdapter(private val projectsList: ArrayList<ProjectData>) :
-    RecyclerView.Adapter<ProjectsAdapter.MyViewHolder>() {
+class GamesAdapter(private val projectsList: ArrayList<GameData>) :
+    RecyclerView.Adapter<GamesAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.project_list_item,
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.game_list_item,
         parent, false)
         return MyViewHolder(itemView)
     }
@@ -26,7 +26,7 @@ class ProjectsAdapter(private val projectsList: ArrayList<ProjectData>) :
     }
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val projectImage: ShapeableImageView = itemView.findViewById(R.id.project_image)
+        val projectImage: ShapeableImageView = itemView.findViewById(R.id.game_image)
         val projectName: TextView = itemView.findViewById(R.id.project_name)
     }
 }

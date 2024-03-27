@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class HomePageFragment : Fragment() {
@@ -15,16 +16,45 @@ class HomePageFragment : Fragment() {
 
     //TODO - Compare code with Idan's code to see if its onCreate or onCreateView.
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //TODO - Change from statically defined array to array drawn from database.
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_home_page, container, false)
         imageId = arrayOf(
-
+            R.drawable.destiny_2_image,
+            R.drawable.baldurs_gate_3_image,
+            R.drawable.elden_ring_image,
+            R.drawable.counter_strike_2_image,
+            R.drawable.helldivers_2_image,
+            R.drawable.horizon_forbidden_west_image,
+            R.drawable.the_elder_scrolls_online_image,
+            R.drawable.warframe_image
         )
+
+        nameId = arrayOf(
+            "Destiny 2",
+            "Baldur's Gate 3",
+            "Elden Ring",
+            "Counter Strike 2",
+            "Helldivers 2",
+            "Horizon Forbidden West",
+            "The Elder Scrolls Online",
+            "Warframe"
+        )
+
+        newRecyclerView = view.findViewById(R.id.recyclerView)
+        newRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        newRecyclerView.setHasFixedSize(true)
+
+        newProjectsList = arrayListOf<ProjectData>()
+        getUserData()
+        return view
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_home_page, container, false)
+    private fun getUserData(){
+        for(i in imageId.indices){
+            val project = ProjectData(imageId[i],nameId[i])
+            newProjectsList.add(project)
+        }
+        newRecyclerView.adapter = ProjectsAdapter(newProjectsList)
     }
 }

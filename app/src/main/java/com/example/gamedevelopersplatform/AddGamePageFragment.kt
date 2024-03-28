@@ -38,7 +38,7 @@ class AddGamePageFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(requireContext(), {_, year:Int, monthOfYear:Int, dayOfYear:Int ->
             val selectedDate = Calendar.getInstance()
             selectedDate.set(year, monthOfYear, dayOfYear)
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
             val formattedDate = dateFormat.format(selectedDate.time)
             releaseDateText.text = formattedDate
         },

@@ -7,6 +7,19 @@
     android:background="@color/background_gray"
     tools:context=".HomePageFragment">
 
+    <TextView
+        android:id="@+id/addGamePageTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Add Game"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/addGamePageGameImage"
         android:layout_width="match_parent"
@@ -30,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="44dp"
-        android:text="Price:"
+        android:text="Price(In Dollars):"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/addGamePagePriceInput"
@@ -57,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="21/03/2024"
+        android:text="mm/dd/yyyy"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +110,7 @@
         android:layout_marginTop="16dp"
         android:text="Pick a Date"
         android:textSize="20sp"
+        android:backgroundTint="@color/blue_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.942"
         app:layout_constraintStart_toStartOf="parent"
@@ -110,6 +124,7 @@
         android:layout_marginEnd="16dp"
         android:hint="Enter Game Price"
         android:textColorHint="@color/hint_color"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGamePageGameImage" />
 
@@ -117,12 +132,14 @@
         android:id="@+id/addGamePageGameNameInput"
         android:layout_width="377dp"
         android:layout_height="76dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:hint="Enter Game Name"
         android:textColorHint="@color/hint_color"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/addGamePageTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

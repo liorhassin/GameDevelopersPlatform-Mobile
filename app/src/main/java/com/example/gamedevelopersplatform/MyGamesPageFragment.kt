@@ -35,7 +35,7 @@ class MyGamesPageFragment : Fragment() {
             "Warframe"
         )
 
-        newRecyclerView = view.findViewById(R.id.recyclerView)
+        newRecyclerView = view.findViewById(R.id.myGamesPageRecyclerView)
         newRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         newRecyclerView.setHasFixedSize(true)
 

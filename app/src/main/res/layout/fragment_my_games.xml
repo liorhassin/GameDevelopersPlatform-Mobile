@@ -8,28 +8,28 @@
     tools:context=".HomePageFragment">
 
     <TextView
-        android:id="@+id/homePageProjectsTitle"
+        android:id="@+id/myGamesPageTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="My Games"
         android:textColor="@color/white"
         android:textSize="48sp"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintBottom_toTopOf="@+id/myGamesPageRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/myGamesPageRecyclerView"
         android:layout_width="408dp"
         android:layout_height="649dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homePageProjectsTitle"
+        app:layout_constraintTop_toBottomOf="@+id/myGamesPageTitle"
         tools:listitem="@layout/game_list_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

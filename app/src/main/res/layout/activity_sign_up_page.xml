@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/signUpTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -33,7 +33,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/nickname"
+        android:id="@+id/signUpNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -41,13 +41,13 @@
         android:text="@string/nickname"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/nicknameInput"
+        app:layout_constraintEnd_toStartOf="@+id/signUpNicknameInput"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpTitle" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/nicknameInput"
+        android:id="@+id/signUpNicknameInput"
         android:layout_width="236dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -57,11 +57,11 @@
         android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/nickname"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintStart_toEndOf="@+id/signUpNickname"
+        app:layout_constraintTop_toBottomOf="@+id/signUpTitle" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/passwordInput"
+        android:id="@+id/signUpPasswordInput"
         android:layout_width="236dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -71,11 +71,11 @@
         android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/password"
-        app:layout_constraintTop_toBottomOf="@+id/nicknameInput" />
+        app:layout_constraintStart_toEndOf="@+id/signUpPassword"
+        app:layout_constraintTop_toBottomOf="@+id/signUpNicknameInput" />
 
     <TextView
-        android:id="@+id/password"
+        android:id="@+id/signUpPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -83,13 +83,13 @@
         android:text="@string/password"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/passwordInput"
+        app:layout_constraintEnd_toStartOf="@+id/signUpPasswordInput"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nickname" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpNickname" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/emailInput"
+        android:id="@+id/signUpEmailInput"
         android:layout_width="236dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -98,20 +98,20 @@
         android:textColor="@color/white"
         android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInput" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpPasswordInput" />
 
     <TextView
-        android:id="@+id/email"
+        android:id="@+id/signUpEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:text="@string/email"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/emailInput"
+        app:layout_constraintEnd_toStartOf="@+id/signUpEmailInput"
         app:layout_constraintHorizontal_bias="0.116"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintTop_toBottomOf="@+id/signUpPassword"
         android:textColor="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

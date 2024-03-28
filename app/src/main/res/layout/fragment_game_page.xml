@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/game_image"
+        android:id="@+id/gamePageGameImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -37,7 +37,7 @@
         app:shapeAppearanceOverlay="@style/RoundCorner" />
 
     <TextView
-        android:id="@+id/gamePriceTitle"
+        android:id="@+id/gamePagePriceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -46,10 +46,10 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_image" />
+        app:layout_constraintTop_toBottomOf="@+id/gamePageGameImage" />
 
     <TextView
-        android:id="@+id/gamePriceText"
+        android:id="@+id/gamePagePriceText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="112dp"
@@ -59,11 +59,11 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.884"
-        app:layout_constraintStart_toEndOf="@+id/gamePriceTitle"
-        app:layout_constraintTop_toBottomOf="@+id/game_image" />
+        app:layout_constraintStart_toEndOf="@+id/gamePagePriceTitle"
+        app:layout_constraintTop_toBottomOf="@+id/gamePageGameImage" />
 
     <TextView
-        android:id="@+id/releaseDateTitle"
+        android:id="@+id/gamePageReleaseDateTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -72,10 +72,10 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gamePriceTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/gamePagePriceTitle" />
 
     <TextView
-        android:id="@+id/releaseDateText"
+        android:id="@+id/gamePageReleaseDateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -84,11 +84,11 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.87"
-        app:layout_constraintStart_toEndOf="@+id/releaseDateTitle"
-        app:layout_constraintTop_toBottomOf="@+id/gamePriceText" />
+        app:layout_constraintStart_toEndOf="@+id/gamePageReleaseDateTitle"
+        app:layout_constraintTop_toBottomOf="@+id/gamePagePriceText" />
 
     <Button
-        android:id="@+id/projectPageEditButton"
+        android:id="@+id/gamePageEditbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -96,18 +96,18 @@
         android:text="Edit"
         android:backgroundTint="@color/green_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/projectPageDeleteButton"
+        app:layout_constraintEnd_toStartOf="@+id/gamePageDeleteButton"
         app:layout_constraintHorizontal_bias="0.069"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/projectPageDeleteButton"
+        android:id="@+id/gamePageDeleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:textSize="20sp"
-        android:text="Cancel"
+        android:text="Delete"
         android:backgroundTint="@color/red_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

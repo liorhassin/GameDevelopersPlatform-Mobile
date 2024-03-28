@@ -27,15 +27,14 @@ class SignUpPageActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         //TODO - Remove or edit how text watcher is being generated from helper function.
-        //Binding each input to a TextWatcher object for color changes and possible validation follow-ups.
-        binding.nicknameInput.addTextChangedListener(generateTextWatcher(binding.nicknameInput))
-        binding.passwordInput.addTextChangedListener(generateTextWatcher(binding.passwordInput))
-        binding.emailInput.addTextChangedListener(generateTextWatcher(binding.emailInput))
+        binding.signUpNicknameInput.addTextChangedListener(generateTextWatcher(binding.signUpNicknameInput))
+        binding.signUpPasswordInput.addTextChangedListener(generateTextWatcher(binding.signUpPasswordInput))
+        binding.signUpEmailInput.addTextChangedListener(generateTextWatcher(binding.signUpEmailInput))
 
         binding.signUpButton.setOnClickListener {
-            val nickname = binding.nicknameInput.text.toString()
-            val password = binding.passwordInput.text.toString()
-            val email = binding.emailInput.text.toString()
+            val nickname = binding.signUpNicknameInput.text.toString()
+            val password = binding.signUpPasswordInput.text.toString()
+            val email = binding.signUpEmailInput.text.toString()
             val (validNickname, validPassword, validEmail) = validation(nickname, password, email)
             if(validNickname && validPassword && validEmail){
                 firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
@@ -51,13 +50,13 @@ class SignUpPageActivity : AppCompatActivity() {
             }
             else{
                 if(!validNickname){
-                    binding.nicknameInput.setTextColor(Color.RED)
+                    binding.signUpNicknameInput.setTextColor(Color.RED)
                 }
                 if(!validPassword){
-                    binding.passwordInput.setTextColor(Color.RED)
+                    binding.signUpPasswordInput.setTextColor(Color.RED)
                 }
                 if(!validEmail){
-                    binding.emailInput.setTextColor(Color.RED)
+                    binding.signUpEmailInput.setTextColor(Color.RED)
                 }
             }
         }

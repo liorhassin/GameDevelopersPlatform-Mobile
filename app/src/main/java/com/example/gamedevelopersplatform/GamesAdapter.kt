@@ -26,7 +26,7 @@ class GamesAdapter(private val projectsList: ArrayList<GameData>) :
     }
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val projectImage: ShapeableImageView = itemView.findViewById(R.id.game_image)
-        val projectName: TextView = itemView.findViewById(R.id.project_name)
+        val projectImage: ShapeableImageView = itemView.findViewById(R.id.recyclerItemImage)
+        val projectName: TextView = itemView.findViewById(R.id.recyclerItemProjectName)
     }
 }

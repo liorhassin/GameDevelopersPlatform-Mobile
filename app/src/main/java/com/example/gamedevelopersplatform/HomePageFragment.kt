@@ -41,7 +41,7 @@ class HomePageFragment : Fragment() {
             "Warframe"
         )
 
-        newRecyclerView = view.findViewById(R.id.recyclerView)
+        newRecyclerView = view.findViewById(R.id.homePageRecyclerView)
         newRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         newRecyclerView.setHasFixedSize(true)
 

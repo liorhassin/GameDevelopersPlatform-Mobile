@@ -9,35 +9,5 @@
         android:id="@+id/homePageFragment"
         android:name="com.example.gamedevelopersplatform.HomePageFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home_page" >
-        <action
-            android:id="@+id/action_homeFragment_to_addProjectPage"
-            app:destination="@id/addProjectPage" />
-        <action
-            android:id="@+id/action_homeFragment_to_myProjectsPage"
-            app:destination="@id/myProjectsPage" />
-        <action
-            android:id="@+id/action_homeFragment_to_profilePage"
-            app:destination="@id/profilePage" />
-    </fragment>
-    <fragment
-        android:id="@+id/myProjectsPage"
-        android:name="com.example.gamedevelopersplatform.MyGamesPageFragment"
-        android:label="fragment_my_projects"
-        tools:layout="@layout/fragment_my_games" />
-    <fragment
-        android:id="@+id/addProjectPage"
-        android:name="com.example.gamedevelopersplatform.AddGamePageFragment"
-        android:label="fragment_add_project_page"
-        tools:layout="@layout/fragment_add_game_page" />
-    <fragment
-        android:id="@+id/profilePage"
-        android:name="com.example.gamedevelopersplatform.ProfilePageFragment"
-        android:label="fragment_profile_page"
-        tools:layout="@layout/fragment_profile_page" />
-    <fragment
-        android:id="@+id/projectPage"
-        android:name="com.example.gamedevelopersplatform.GamePageFragment"
-        android:label="fragment_project_page"
-        tools:layout="@layout/fragment_game_page" />
+        tools:layout="@layout/fragment_home_page" />
 </navigation>

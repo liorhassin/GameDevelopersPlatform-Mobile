@@ -6,5 +6,6 @@
     <color name="hint_color">#5A5959</color>
     <color name="green_button">#24612A</color>
     <color name="red_button">#521915</color>
+    <color name="blue_button">#0b1336</color>
     <color name="underline">#D8D6D6</color>
 </resources>

@@ -1,14 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_gray"
     tools:context=".ProfilePageFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profilePagePreviewLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="profile page" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/profilePagePreviewNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Lior"
+            android:textColor="@color/white"
+            android:textSize="48sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilePagePreviewCircleImage"
+            android:layout_width="192dp"
+            android:layout_height="192dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/horizon_forbidden_west_image"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewNickname" />
+
+        <TextView
+            android:id="@+id/profilePagePreviewEmailTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Email:"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/profilePagePreviewEmailText"
+            app:layout_constraintHorizontal_bias="0.181"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewCircleImage" />
+
+
+        <TextView
+            android:id="@+id/profilePagePreviewEmailText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:text="Liorhassin3@gmail.com"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewCircleImage" />
+
+        <TextView
+            android:id="@+id/profilePagePreviewBirthdateTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Birth Date:"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/profilePagePreviewBirthdateText"
+            app:layout_constraintHorizontal_bias="0.165"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewEmailTitle" />
+
+        <TextView
+            android:id="@+id/profilePagePreviewBirthdateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="06/22/1997"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewEmailText" />
+
+        <Button
+            android:id="@+id/profilePagePreviewEditProfileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Edit Profile"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewBirthdateTitle" />
+
+        <TextView
+            android:id="@+id/profilePagePreviewGamesCountTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Games In Account"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewEditProfileButton" />
+
+        <TextView
+            android:id="@+id/profilePagePreviewGamesCountText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="9"
+            android:textColor="@color/white"
+            android:textSize="46sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewGamesCountTitle" />
+
+        <Button
+            android:id="@+id/profilePagePreviewMyGamesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Go To My Games"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewGamesCountText"
+            app:layout_constraintVertical_bias="0" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

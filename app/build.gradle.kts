@@ -75,8 +75,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.common.java8)
 
     implementation(platform(libs.firebase.bom))
-    //noinspection UseTomlInstead
     implementation("com.google.firebase:firebase-storage")
 
     implementation (libs.picasso)
+
+    implementation(libs.circleimageview)
 }

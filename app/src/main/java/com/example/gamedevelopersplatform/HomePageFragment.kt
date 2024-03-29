@@ -45,7 +45,7 @@ class HomePageFragment : Fragment() {
         newRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         newRecyclerView.setHasFixedSize(true)
 
-        newGamesList = arrayListOf<GameData>()
+        newGamesList = arrayListOf()
         getUsersData()
         return view
     }

@@ -11,8 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePagePreviewLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/profilePagePreviewNickname"
@@ -59,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="16dp"
             android:text="Liorhassin3@gmail.com"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -145,7 +144,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePageEditLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/profilePageEditNickname"
@@ -246,14 +246,14 @@
             android:backgroundTint="@color/green_button"
             android:text="Save"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button2"
+            app:layout_constraintEnd_toStartOf="@+id/profilePageEditCancelButton"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditPickADateButton"
             app:layout_constraintVertical_bias="1.0" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/profilePageEditCancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"

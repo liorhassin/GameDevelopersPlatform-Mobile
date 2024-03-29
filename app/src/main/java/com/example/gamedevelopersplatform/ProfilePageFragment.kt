@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import org.w3c.dom.Text
 import java.util.Calendar
 
 class ProfilePageFragment : Fragment() {

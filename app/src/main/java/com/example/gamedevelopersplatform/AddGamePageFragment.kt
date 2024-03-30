@@ -37,7 +37,6 @@ class AddGamePageFragment : Fragment() {
         storageRef = FirebaseStorage.getInstance().reference
         selectedImageView = view.findViewById(R.id.addGamePageGameImage)
 
-        //TODO - Add support to upload an image from device.
         //TODO - Complete Basic Loop.
         //Expected Loop for create button(saving a new game):
         //Upload image to Storage.

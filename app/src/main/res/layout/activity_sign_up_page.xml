@@ -12,11 +12,11 @@
         android:id="@+id/signUpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="92dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/sign_up"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -41,8 +41,6 @@
         android:text="@string/nickname"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/signUpNicknameInput"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpTitle" />
 
@@ -79,14 +77,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:text="@string/password"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/signUpPasswordInput"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpNickname" />
+
+    <TextView
+        android:id="@+id/signUpEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/email"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpPassword" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/signUpEmailInput"
@@ -98,20 +106,46 @@
         android:textColor="@color/white"
         android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.906"
+        app:layout_constraintStart_toEndOf="@+id/signUpEmail"
         app:layout_constraintTop_toBottomOf="@+id/signUpPasswordInput" />
 
     <TextView
-        android:id="@+id/signUpEmail"
+        android:id="@+id/signUpBirthdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:text="@string/email"
+        android:text="Birth Date:"
+        android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/signUpEmailInput"
-        app:layout_constraintHorizontal_bias="0.116"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpPassword"
-        android:textColor="@color/white" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpEmail" />
+
+    <TextView
+        android:id="@+id/signUpBirthdateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:text="mm/dd/yyyy"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
+        app:layout_constraintStart_toEndOf="@+id/signUpBirthdate"
+        app:layout_constraintTop_toBottomOf="@+id/signUpEmailInput" />
+
+    <Button
+        android:id="@+id/signUpPickADateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Pick a Date"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.918"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpBirthdateText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

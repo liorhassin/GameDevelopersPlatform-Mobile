@@ -29,7 +29,6 @@
         android:layout_marginEnd="16dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/horizon_forbidden_west_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,24 +37,10 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/addGamePagePriceTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="44dp"
-        android:text="Price(In Dollars):"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/addGamePagePriceInput"
-        app:layout_constraintHorizontal_bias="0.005"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addGamePageGameImage" />
-
-    <TextView
         android:id="@+id/addGamePageReleaseDateTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="28dp"
         android:text="Release Date:"
         android:textColor="@color/white"
         android:textSize="24sp"
@@ -76,35 +61,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGamePagePriceInput" />
 
+
     <Button
-        android:id="@+id/addGamePageEditButton"
+        android:id="@+id/addGamePageCreateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/green_button"
-        android:text="Create"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addGamePageDeleteButton"
-        app:layout_constraintHorizontal_bias="0.091"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/addGamePageDeleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/red_button"
-        android:text="Cancel"
+        android:text="Add"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addGameShowDatePickerButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addGamePageShowDatePickerButton"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/addGameShowDatePickerButton"
+        android:id="@+id/addGamePageShowDatePickerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -120,13 +93,27 @@
         android:id="@+id/addGamePagePriceInput"
         android:layout_width="150dp"
         android:layout_height="48dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:hint="Enter Game Price"
-        android:textColorHint="@color/hint_color"
         android:textColor="@color/white"
+        android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addGamePageGameImage" />
+        app:layout_constraintTop_toBottomOf="@+id/addGamePageChooseImageButton" />
+
+    <TextView
+        android:id="@+id/addGamePagePriceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Price(In Dollars):"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/addGamePagePriceInput"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addGamePageChooseImageButton" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/addGamePageGameNameInput"
@@ -137,9 +124,22 @@
         android:hint="Enter Game Name"
         android:textColorHint="@color/hint_color"
         android:textSize="36sp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGamePageTitle" />
+
+    <Button
+        android:id="@+id/addGamePageChooseImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Choose Image"
+        android:backgroundTint="@color/blue_button"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addGamePageGameImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

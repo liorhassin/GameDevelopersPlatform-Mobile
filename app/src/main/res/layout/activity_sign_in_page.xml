@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:text="Password:"
         android:textColor="@color/white"
         android:textSize="24sp"
@@ -54,7 +54,7 @@
         android:textColor="@color/white"
         android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.772"
+        app:layout_constraintHorizontal_bias="0.807"
         app:layout_constraintStart_toEndOf="@+id/signInEmail"
         app:layout_constraintTop_toBottomOf="@+id/signInTitle" />
 
@@ -62,7 +62,7 @@
         android:id="@+id/signInPasswordInput"
         android:layout_width="236dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:hint="Enter Password"
         android:textColor="@color/white"
@@ -77,20 +77,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="228dp"
+        android:layout_marginBottom="24dp"
         android:text="Not registered yet?"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signInbutton"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/signInbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="48dp"
         android:text="Sign in"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,14 +100,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="-12dp"
-        android:layout_marginTop="220dp"
+        android:layout_marginBottom="16dp"
         android:text="Register"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.469"
-        app:layout_constraintStart_toEndOf="@+id/notRegisteredText"
-        app:layout_constraintTop_toBottomOf="@+id/signInbutton"
-        app:layout_constraintVertical_bias="0.047" />
+        app:layout_constraintHorizontal_bias="0.802"
+        app:layout_constraintStart_toEndOf="@+id/notRegisteredText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

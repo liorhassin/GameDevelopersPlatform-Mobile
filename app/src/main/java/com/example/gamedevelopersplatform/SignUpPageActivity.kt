@@ -12,6 +12,7 @@ import com.example.gamedevelopersplatform.databinding.ActivitySignUpPageBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Calendar
 
 class SignUpPageActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
@@ -26,20 +27,27 @@ class SignUpPageActivity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-        //TODO - Remove or edit how text watcher is being generated from helper function.
         binding.signUpNicknameInput.addTextChangedListener(generateTextWatcher(binding.signUpNicknameInput))
         binding.signUpPasswordInput.addTextChangedListener(generateTextWatcher(binding.signUpPasswordInput))
         binding.signUpEmailInput.addTextChangedListener(generateTextWatcher(binding.signUpEmailInput))
+
+        binding.signUpPickADateButton.setOnClickListener {
+            GameDevelopersAppUtil.showDatePicker(this@SignUpPageActivity, Calendar.getInstance()){formattedDate ->
+                binding.signUpBirthdateText.text = formattedDate
+            }
+        }
 
         binding.signUpButton.setOnClickListener {
             val nickname = binding.signUpNicknameInput.text.toString()
             val password = binding.signUpPasswordInput.text.toString()
             val email = binding.signUpEmailInput.text.toString()
+            val birthDate = binding.signUpBirthdateText.text.toString()
+
             val (validNickname, validPassword, validEmail) = validation(nickname, password, email)
             if(validNickname && validPassword && validEmail){
                 firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
                     if(it.isSuccessful) {
-                        saveUserToFirestore(nickname, password, email)
+                        saveUserToFirestore(nickname, email, birthDate)
                         Toast.makeText(this, "Account created successfully", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, InitializeNavbarActivity::class.java)
                         startActivity(intent)
@@ -76,16 +84,17 @@ class SignUpPageActivity : AppCompatActivity() {
         return Triple(nicknameRegex.matches(nickname), passwordRegex.matches(password), emailRegex.matches(email))
     }
 
-    private fun saveUserToFirestore(nickname:String, password:String, email:String){
+    private fun saveUserToFirestore(nickname:String, email:String, birthDate:String){
         val user = hashMapOf(
-            "Nickname" to nickname,
-            "Password" to password,
-            "Email" to email
+            "nickname" to nickname,
+            "email" to email,
+            "birthDate" to birthDate
         )
         val currentUser = firebaseAuth.currentUser
         if(currentUser!=null){
             val userId = currentUser.uid
-            firestore.collection("Users").document(userId).set(user).addOnCompleteListener {
+            Log.d("success","$userId , After creation!")
+            firestore.collection("users").document(userId).set(user).addOnCompleteListener {
                 if(it.isSuccessful){
                     Log.d("success", "User was saved successfully to Firestore")
                 }
@@ -96,6 +105,7 @@ class SignUpPageActivity : AppCompatActivity() {
         }
     }
 
+    //TODO - Move function to util object
     /***
      * Helper function to generate TextWatcher for textInput afterTextChanged effect.(Back to White)
      */

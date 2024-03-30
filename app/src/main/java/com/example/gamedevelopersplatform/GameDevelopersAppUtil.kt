@@ -1,8 +1,11 @@
 package com.example.gamedevelopersplatform
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import android.widget.TextView
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -20,5 +23,10 @@ object GameDevelopersAppUtil {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
         datePickerDialog.show()
+    }
+    fun openGallery(galleryLauncher: ActivityResultLauncher<Intent>) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"))
     }
 }

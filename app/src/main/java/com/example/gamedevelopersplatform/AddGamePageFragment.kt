@@ -3,7 +3,6 @@ package com.example.gamedevelopersplatform
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -17,25 +16,27 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.Calendar
 
 class AddGamePageFragment : Fragment() {
-    //TODO - If parameters are not used in another function other than onCreateView, Change location.
+    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
-    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
+
     private lateinit var selectedImageUri: Uri
     private lateinit var selectedImageView: ImageView
-
     private lateinit var releaseDateTextView: TextView
     private lateinit var priceTextInput: TextInputEditText
     private lateinit var gameNameTextInput: TextInputEditText
     private lateinit var chooseImageButton:Button
     private lateinit var showDatePickerButton: Button
     private lateinit var addGameButton: Button
+
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,6 +50,7 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun initializeParameters(view: View){
+        firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         storageRef = FirebaseStorage.getInstance().reference
 
@@ -88,31 +90,53 @@ class AddGamePageFragment : Fragment() {
                 releaseDateTextView.text = formattedDate
             }
         }
-
-        //TODO - Loop should be here, use helper functions when refactoring the code.
         addGameButton.setOnClickListener {
             val price = priceTextInput.text.toString()
             val name = gameNameTextInput.text.toString()
-            val uploadedGamePicture = selectedImageView.drawable
+            val releaseDate = releaseDateTextView.text.toString()
+            val uid = firebaseAuth.currentUser?.uid.toString()
 
-            val (validPrice, validName, validPicture) = gameValidation(price,name, uploadedGamePicture)
+            val (validPrice, validName, validPicture) = gameValidation(price,name, selectedImageUri)
             if(validPrice && validName && validPicture){
-                //TODO - Complete saving loop to DB.
+                saveImageAndGameData(name, price, releaseDate, uid)
             }
             else{
-                if(!validPrice){
-                    priceTextInput.setTextColor(Color.RED)
-                    priceTextInput.setHintTextColor(Color.RED)
-                }
-                if(!validName){
-                    gameNameTextInput.setTextColor(Color.RED)
-                    gameNameTextInput.setHintTextColor(Color.RED)
-                }
-                if(!validPicture){
-                    chooseImageButton.setTextColor(Color.RED)
-                }
+                markMissingInputsColor(validPrice, validName, validPicture)
             }
         }
+    }
+
+    private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
+        GameDevelopersAppUtil.uploadImageAndGetUrl(requireContext().contentResolver,
+            storageRef, selectedImageUri, { imageUrl ->
+                val gameData = hashMapOf(
+                    "image" to imageUrl,
+                    "name" to name,
+                    "price" to price,
+                    "releaseDate" to releaseDate,
+                    "userId" to uid
+                )
+                GameDevelopersAppUtil.saveGameDataAndGetGameId(firestore, gameData,
+                    { gameId ->
+                        //TODO - Add saving game ID to user
+                    }
+                ) { exception ->
+                    Log.e("UploadGame", "Failed to upload game data: $exception")
+                }
+            },
+            { exception ->
+                Log.e("UploadImage", "Failed to upload image: $exception")
+            }
+        )
+    }
+
+    private fun markMissingInputsColor(validPrice: Boolean, validName: Boolean, validPicture: Boolean){
+        if(!validPrice)
+            GameDevelopersAppUtil.setTextAndHintTextColor(priceTextInput,Color.RED)
+        if(!validName)
+            GameDevelopersAppUtil.setTextAndHintTextColor(gameNameTextInput, Color.RED)
+        if(!validPicture)
+            GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.RED)
     }
 
     private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
@@ -131,11 +155,11 @@ class AddGamePageFragment : Fragment() {
         }
     }
 
-    private fun gameValidation(price:String, name:String, picture: Drawable?): Triple<Boolean,Boolean,Boolean>{
-        //Price must start with '$' sign and be between 0-300(allowing 2 numbers after decimal point.
-        val priceRegex = Regex("^\\\$?(?:[1-2]?\\d{1,2}|300)(?:\\.\\d{1,2})?\$")
+    private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{
+        //Price must be between 0-300(allowing 2 numbers after decimal point.
+        val priceRegex = Regex("^(?:\\d{1,2}|1\\d{2}|300)(?:\\.\\d{1,2})?\$")
         //Name must be of length 2 and support Alphabet/Numbers/One white space.
-        val nameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_ ]{2,}\$")
-        return Triple(priceRegex.matches(price), nameRegex.matches(name), picture!=null)
+        val nameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_' ]{2,}\$")
+        return Triple(priceRegex.matches(price), nameRegex.matches(name), pictureUri!=null)
     }
 }

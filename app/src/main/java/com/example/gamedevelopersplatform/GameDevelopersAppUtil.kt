@@ -10,18 +10,14 @@ import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.FragmentActivity
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
+//TODO - Split Util into ImageUtil, GeneralUtil, Maybe more..
 object GameDevelopersAppUtil {
     fun showDatePicker(context: Context, calendar: Calendar, callback:(String) -> Unit){
         val datePickerDialog = DatePickerDialog(context, {_, year:Int, monthOfYear:Int, dayOfYear:Int ->
@@ -66,11 +62,11 @@ object GameDevelopersAppUtil {
         galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"))
     }
 
-    fun uploadImageAndGetUrl(contentResolver: ContentResolver, storageRef: StorageReference, imageUri: Uri,
+    fun uploadImageAndGetUrl(contentResolver: ContentResolver, storageRef: StorageReference, path:String, imageUri: Uri,
         onSuccess: (imageUrl: String) -> Unit, onFailure: (exception: Exception) -> Unit) {
 
         val imageName = getImageNameFromUri(contentResolver, imageUri)
-        val imageReference = storageRef.child("GamesImages/${imageName}")
+        val imageReference = storageRef.child(path + imageName)
         val uploadTask = imageReference.putFile(imageUri)
 
         uploadTask.addOnSuccessListener {
@@ -83,19 +79,6 @@ object GameDevelopersAppUtil {
         }.addOnFailureListener { exception ->
             onFailure(exception)
         }
-    }
-
-    fun saveGameDataAndGetGameId(
-        firestore: FirebaseFirestore, gameData: HashMap<String, String>,
-        onSuccess: (gameId: String) -> Unit, onFailure: (exception: Exception) -> Unit) {
-
-        firestore.collection("games").add(gameData)
-            .addOnSuccessListener { documentReference ->
-                val gameId = documentReference.id
-                onSuccess(gameId)
-            }.addOnFailureListener { exception ->
-                onFailure(exception)
-            }
     }
 
     fun getImageNameFromUri(contentResolver: ContentResolver, uri: Uri): String {

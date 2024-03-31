@@ -15,6 +15,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/sign_up"
         android:textSize="20sp"
+        android:backgroundTint="@color/green_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -37,26 +38,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="24dp"
         android:text="@string/nickname"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpPageChooseImageButton" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/signUpNicknameInput"
         android:layout_width="236dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="148dp"
+        android:layout_marginTop="16dp"
         android:hint="@string/choose_nickname"
         android:textColor="@color/white"
         android:textColorHint="@color/hint_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toEndOf="@+id/signUpNickname"
-        app:layout_constraintTop_toBottomOf="@+id/signUpTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpPageChooseImageButton" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/signUpPasswordInput"
@@ -143,9 +144,34 @@
         android:layout_marginTop="8dp"
         android:text="Pick a Date"
         android:textSize="16sp"
+        android:backgroundTint="@color/blue_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.918"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpBirthdateText" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/signUpPageCircleImagePreview"
+        android:layout_width="192dp"
+        android:layout_height="192dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/place_holder_image"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpTitle" />
+
+    <Button
+        android:id="@+id/signUpPageChooseImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Choose Image"
+        android:backgroundTint="@color/blue_button"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpPageCircleImagePreview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

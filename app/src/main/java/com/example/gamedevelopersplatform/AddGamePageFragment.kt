@@ -23,11 +23,13 @@ import com.google.firebase.storage.StorageReference
 import java.util.Calendar
 
 class AddGamePageFragment : Fragment() {
+    private val GAMES_IMAGES_PATH = "GamesImages/"
+
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
 
-    private lateinit var selectedImageUri: Uri
+    private var selectedImageUri: Uri? = null
     private lateinit var selectedImageView: ImageView
     private lateinit var releaseDateTextView: TextView
     private lateinit var priceTextInput: TextInputEditText
@@ -108,7 +110,7 @@ class AddGamePageFragment : Fragment() {
 
     private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
         GameDevelopersAppUtil.uploadImageAndGetUrl(requireContext().contentResolver,
-            storageRef, selectedImageUri, { imageUrl ->
+            storageRef, GAMES_IMAGES_PATH, selectedImageUri!!, { imageUrl ->
                 val gameData = hashMapOf(
                     "image" to imageUrl,
                     "name" to name,
@@ -116,7 +118,8 @@ class AddGamePageFragment : Fragment() {
                     "releaseDate" to releaseDate,
                     "userId" to uid
                 )
-                GameDevelopersAppUtil.saveGameDataAndGetGameId(firestore, gameData,
+                //TODO - change to use private function saveGameDataAndGetGameId
+                saveGameDataAndGetGameId(gameData,
                     { gameId ->
                         //TODO - Add saving game ID to user
                     }
@@ -153,6 +156,17 @@ class AddGamePageFragment : Fragment() {
             selectedImageUri = uri
             selectedImageView.setImageURI(uri)
         }
+    }
+
+    private fun saveGameDataAndGetGameId(gameData: HashMap<String, String>,
+        onSuccess: (gameId: String) -> Unit, onFailure: (exception: Exception) -> Unit) {
+        firestore.collection("games").add(gameData)
+            .addOnSuccessListener { documentReference ->
+                val gameId = documentReference.id
+                onSuccess(gameId)
+            }.addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
 
     private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{

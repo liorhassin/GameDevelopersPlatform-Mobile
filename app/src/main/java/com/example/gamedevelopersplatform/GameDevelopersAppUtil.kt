@@ -4,6 +4,11 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,14 +31,27 @@ object GameDevelopersAppUtil {
         datePickerDialog.show()
     }
 
-    //TODO - Fix this method to check if it can be moved to util package(DEBUG+LOG).
-    fun generateGalleryLauncher(activity: FragmentActivity, callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
-        return activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result:ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                callback(data)
+    fun <T> setTextAndHintTextColor(view: T,color:Int) where T : TextView{
+        if (view.text != null) view.setTextColor(color)
+        if(view.hint != null) view.setHintTextColor(color)
+    }
+
+    fun <T> handleTextChange(view: T,successFunction: () -> Unit) where T : TextView {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Not required for this implementation
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Not required for this implementation
+            }
+            override fun afterTextChanged(p0: Editable?) {
+                if(view.text != null && view.currentTextColor != Color.WHITE)
+                    successFunction()
+                if(view.hint != null && view.currentHintTextColor != Color.WHITE)
+                    successFunction()
             }
         }
+        view.addTextChangedListener(textWatcher)
     }
 
     fun openGallery(galleryLauncher: ActivityResultLauncher<Intent>) {

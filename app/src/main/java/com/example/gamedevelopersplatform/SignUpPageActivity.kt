@@ -27,6 +27,7 @@ class SignUpPageActivity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        //TODO - Change to generic function in util object.
         binding.signUpNicknameInput.addTextChangedListener(generateTextWatcher(binding.signUpNicknameInput))
         binding.signUpPasswordInput.addTextChangedListener(generateTextWatcher(binding.signUpPasswordInput))
         binding.signUpEmailInput.addTextChangedListener(generateTextWatcher(binding.signUpEmailInput))

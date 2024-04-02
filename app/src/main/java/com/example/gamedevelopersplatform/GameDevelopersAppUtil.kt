@@ -65,7 +65,7 @@ object GameDevelopersAppUtil {
     fun uploadImageAndGetUrl(contentResolver: ContentResolver, storageRef: StorageReference, path:String, imageUri: Uri,
         onSuccess: (imageUrl: String) -> Unit, onFailure: (exception: Exception) -> Unit) {
 
-        val imageName = getImageNameFromUri(contentResolver, imageUri)
+        val imageName = UUID.randomUUID().toString()
         val imageReference = storageRef.child(path + imageName)
         val uploadTask = imageReference.putFile(imageUri)
 

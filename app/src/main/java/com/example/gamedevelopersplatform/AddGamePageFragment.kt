@@ -17,7 +17,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.Calendar
@@ -118,10 +120,16 @@ class AddGamePageFragment : Fragment() {
                     "releaseDate" to releaseDate,
                     "userId" to uid
                 )
-                //TODO - change to use private function saveGameDataAndGetGameId
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
-                        //TODO - Add saving game ID to user
+                        saveGameId(gameId, uid, {
+                            //TODO - Decide if myGames is the current location to move or change to newGamePage.
+                            //TODO - fix functions spaghetti to make it easier to read, Less brackets.
+                            //TODO - add a loader to notify the user a new game is being added to his account.
+                            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment())
+                        },{exception ->
+                            Log.e("SavingGameId", "Failed to save gameId to userGames array: $exception")
+                        })
                     }
                 ) { exception ->
                     Log.e("UploadGame", "Failed to upload game data: $exception")
@@ -131,6 +139,22 @@ class AddGamePageFragment : Fragment() {
                 Log.e("UploadImage", "Failed to upload image: $exception")
             }
         )
+    }
+
+    //TODO - Make generic function to save/update data in util object(profile/game).
+    private fun saveGameId(gameId: String, uid: String,
+        onSuccess: () -> Unit, onFailure: (exception: Exception) -> Unit) {
+        val firestoreUserDocument = firestore.collection("users").document(uid)
+
+        firestoreUserDocument.update("userGames", FieldValue.arrayUnion(gameId))
+            .addOnSuccessListener {
+                Log.d("test", "Game ID added successfully")
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                Log.w("test", "Error adding game ID", exception)
+                onFailure(exception)
+            }
     }
 
     private fun markMissingInputsColor(validPrice: Boolean, validName: Boolean, validPicture: Boolean){

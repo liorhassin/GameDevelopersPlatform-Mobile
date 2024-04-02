@@ -11,6 +11,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -92,6 +95,12 @@ object GameDevelopersAppUtil {
             }
         }
         return UUID.randomUUID().toString() // fallback to UUID if name retrieval fails
+    }
+
+    fun changeFragmentFromFragment(transaction: FragmentActivity, currentLayoutId: Int, newFragment: Fragment){
+        val fragmentTransaction = transaction.supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(currentLayoutId, newFragment)
+        fragmentTransaction.commit()
     }
 
 }

@@ -23,9 +23,7 @@ class ProfilePageFragment : Fragment() {
 
         val myGamesButton = view.findViewById<Button>(R.id.profilePagePreviewMyGamesButton)
         myGamesButton.setOnClickListener{
-            val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.profilePagePreviewLayout, MyGamesPageFragment())
-            transaction.commit()
+            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.profilePagePreviewLayout, MyGamesPageFragment())
         }
 
         val editProfileButton = view.findViewById<Button>(R.id.profilePagePreviewEditProfileButton)

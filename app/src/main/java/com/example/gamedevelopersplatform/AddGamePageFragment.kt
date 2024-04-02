@@ -122,7 +122,14 @@ class AddGamePageFragment : Fragment() {
                 )
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
-                        saveGameId(gameId, uid)
+                        saveGameId(gameId, uid, {
+                            //TODO - Decide if myGames is the current location to move or change to newGamePage.
+                            //TODO - fix functions spaghetti to make it easier to read, Less brackets.
+                            //TODO - add a loader to notify the user a new game is being added to his account.
+                            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment())
+                        },{exception ->
+                            Log.e("SavingGameId", "Failed to save gameId to userGames array: $exception")
+                        })
                     }
                 ) { exception ->
                     Log.e("UploadGame", "Failed to upload game data: $exception")
@@ -135,15 +142,18 @@ class AddGamePageFragment : Fragment() {
     }
 
     //TODO - Make generic function to save/update data in util object(profile/game).
-    private fun saveGameId(gameId: String, uid: String) {
+    private fun saveGameId(gameId: String, uid: String,
+        onSuccess: () -> Unit, onFailure: (exception: Exception) -> Unit) {
         val firestoreUserDocument = firestore.collection("users").document(uid)
 
         firestoreUserDocument.update("userGames", FieldValue.arrayUnion(gameId))
             .addOnSuccessListener {
                 Log.d("test", "Game ID added successfully")
+                onSuccess()
             }
-            .addOnFailureListener { e ->
-                Log.w("test", "Error adding game ID", e)
+            .addOnFailureListener { exception ->
+                Log.w("test", "Error adding game ID", exception)
+                onFailure(exception)
             }
     }
 

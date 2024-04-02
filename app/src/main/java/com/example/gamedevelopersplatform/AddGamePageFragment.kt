@@ -17,7 +17,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.Calendar
@@ -118,10 +120,9 @@ class AddGamePageFragment : Fragment() {
                     "releaseDate" to releaseDate,
                     "userId" to uid
                 )
-                //TODO - change to use private function saveGameDataAndGetGameId
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
-                        //TODO - Add saving game ID to user
+                        saveGameId(gameId, uid)
                     }
                 ) { exception ->
                     Log.e("UploadGame", "Failed to upload game data: $exception")
@@ -131,6 +132,19 @@ class AddGamePageFragment : Fragment() {
                 Log.e("UploadImage", "Failed to upload image: $exception")
             }
         )
+    }
+
+    //TODO - Make generic function to save/update data in util object(profile/game).
+    private fun saveGameId(gameId: String, uid: String) {
+        val firestoreUserDocument = firestore.collection("users").document(uid)
+
+        firestoreUserDocument.update("userGames", FieldValue.arrayUnion(gameId))
+            .addOnSuccessListener {
+                Log.d("test", "Game ID added successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.w("test", "Error adding game ID", e)
+            }
     }
 
     private fun markMissingInputsColor(validPrice: Boolean, validName: Boolean, validPicture: Boolean){

@@ -126,7 +126,8 @@ class AddGamePageFragment : Fragment() {
                             //TODO - Decide if myGames is the current location to move or change to newGamePage.
                             //TODO - fix functions spaghetti to make it easier to read, Less brackets.
                             //TODO - add a loader to notify the user a new game is being added to his account.
-                            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment())
+                            //TODO - Work with completable futures more instead of just callbacks.
+                            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment.newInstance(uid))
                         },{exception ->
                             Log.e("SavingGameId", "Failed to save gameId to userGames array: $exception")
                         })
@@ -148,11 +149,11 @@ class AddGamePageFragment : Fragment() {
 
         firestoreUserDocument.update("userGames", FieldValue.arrayUnion(gameId))
             .addOnSuccessListener {
-                Log.d("test", "Game ID added successfully")
+                Log.d("saveGameId", "Game ID added successfully")
                 onSuccess()
             }
             .addOnFailureListener { exception ->
-                Log.w("test", "Error adding game ID", exception)
+                Log.w("saveGameId", "Error adding game ID", exception)
                 onFailure(exception)
             }
     }

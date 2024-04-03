@@ -8,12 +8,21 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 
+//TODO - Refactor profile page code, split to methods and outsource parameters.
 class ProfilePageFragment : Fragment() {
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var connectedUserId: String
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile_page, container, false)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        connectedUserId = firebaseAuth.currentUser?.uid.toString()
 
         val previewLayout: ConstraintLayout = view.findViewById(R.id.profilePagePreviewLayout)
         val editLayout: ConstraintLayout = view.findViewById(R.id.profilePageEditLayout)
@@ -23,7 +32,8 @@ class ProfilePageFragment : Fragment() {
 
         val myGamesButton = view.findViewById<Button>(R.id.profilePagePreviewMyGamesButton)
         myGamesButton.setOnClickListener{
-            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.profilePagePreviewLayout, MyGamesPageFragment())
+            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
+                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(connectedUserId))
         }
 
         val editProfileButton = view.findViewById<Button>(R.id.profilePagePreviewEditProfileButton)

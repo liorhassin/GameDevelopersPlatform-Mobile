@@ -7,23 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class MyGamesPageFragment : Fragment() {
-    data class Game(val image: String, val name: String, val price: String, val releaseDate: String)
+    //data class Game(val image: String, val name: String, val price: String, val releaseDate: String)
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var storageRef: StorageReference
 
     private lateinit var newRecyclerView: RecyclerView
-    private lateinit var newGamesList: ArrayList<GameData>
-    private lateinit var imageId : Array<Int>
-    private lateinit var nameId : Array<String>
 
     private lateinit var connectedUserId: String
     private lateinit var userGamesList: ArrayList<GameData>
@@ -42,10 +41,11 @@ class MyGamesPageFragment : Fragment() {
         container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_my_games, container, false)
 
-        initializeParameters()
-        fetchUserGamesIdFromDB(USER_ID_DATA_TO_FETCH, { gamesId ->
-            fetchUserGamesFromDB(gamesId, { gamesList ->
-                populateRecyclerView(gamesList)
+        initializeParameters(view)
+
+        fetchUserGamesIdFromDB(userPageId, { gamesId ->
+            fetchUserGamesFromDB(gamesId, {
+                populateRecyclerView()
             },{ exception ->
                 Log.e("fetchUserGamesFromDB", "Failed to fetch user games: $exception")
             })
@@ -78,7 +78,7 @@ class MyGamesPageFragment : Fragment() {
         return view
     }
 
-    private fun initializeParameters() {
+    private fun initializeParameters(view: View) {
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         storageRef = FirebaseStorage.getInstance().reference
@@ -86,6 +86,10 @@ class MyGamesPageFragment : Fragment() {
         connectedUserId = firebaseAuth.currentUser?.uid.toString()
         userGamesList = arrayListOf<GameData>()
         userPageId = arguments?.getString(USER_ID_DATA_TO_FETCH).toString()
+
+        newRecyclerView = view.findViewById(R.id.myGamesPageRecyclerView)
+        newRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        newRecyclerView.setHasFixedSize(true)
 
     }
 
@@ -97,7 +101,6 @@ class MyGamesPageFragment : Fragment() {
             if(document.exists()){
                 val userGamesId = document.get("userGames") as? List<String>
                 if(userGamesId!=null) {
-                    Log.e("fetchedGames", userGamesId.toString())
                     onSuccess(userGamesId)
                 }
             }
@@ -107,22 +110,29 @@ class MyGamesPageFragment : Fragment() {
         }
     }
 
-    private fun fetchUserGamesFromDB(gamesId: List<String>, onSuccess: (List<Game>) -> Unit, onFailure: (exception: Exception) -> Unit){
-
-    }
-
-    private fun populateRecyclerView(userGames: List<Game>){
-//        for(game in userGames){
-//            val gameData = GameData()
-//        }
-    }
-
-    private fun getUserData(){
-        for(i in imageId.indices){
-            //TODO - GameData should contain gameImage, gameName, gamePrice, gameReleaseDate, gameDeveloperId, gameDeveloperName
-            val project = GameData(imageId[i],nameId[i])
-            newGamesList.add(project)
+    //TODO - Fix loop to be inside the document.get() block to reduce populateRecycler calls.
+    private fun fetchUserGamesFromDB(gamesId: List<String>, onSuccess: () -> Unit, onFailure: (exception: Exception) -> Unit){
+        for(gameId in gamesId){
+            val gameDocument = firestore.collection("games").document(gameId)
+            gameDocument.get().addOnSuccessListener { document ->
+                if(document.exists()){
+                    val gameData = document.toObject<GameData>()
+                    if(gameData!=null) {
+                        userGamesList.add(gameData)
+                    }
+                }
+            }.addOnFailureListener { exception ->
+                Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
+                onFailure(exception)
+            }.addOnCompleteListener { it ->
+                if(it.isSuccessful)
+                    onSuccess()
+            }
         }
-        newRecyclerView.adapter = GamesAdapter(newGamesList)
+    }
+
+    private fun populateRecyclerView(){
+        Log.d("games", userGamesList.toString())
+        newRecyclerView.adapter = GamesAdapter(userGamesList)
     }
 }

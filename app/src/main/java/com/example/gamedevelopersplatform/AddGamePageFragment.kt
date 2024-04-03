@@ -118,7 +118,7 @@ class AddGamePageFragment : Fragment() {
                     "name" to name,
                     "price" to price,
                     "releaseDate" to releaseDate,
-                    "userId" to uid
+                    "developerId" to uid
                 )
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
@@ -142,7 +142,6 @@ class AddGamePageFragment : Fragment() {
         )
     }
 
-    //TODO - Make generic function to save/update data in util object(profile/game).
     private fun saveGameId(gameId: String, uid: String,
         onSuccess: () -> Unit, onFailure: (exception: Exception) -> Unit) {
         val firestoreUserDocument = firestore.collection("users").document(uid)

@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
+import com.squareup.picasso.Picasso
 
-class GamesAdapter(private val projectsList: ArrayList<GameData>) :
+class GamesAdapter(private val gamesList: ArrayList<GameData>) :
     RecyclerView.Adapter<GamesAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.game_list_item,
@@ -16,17 +17,17 @@ class GamesAdapter(private val projectsList: ArrayList<GameData>) :
     }
 
     override fun getItemCount(): Int {
-        return projectsList.size
+        return gamesList.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val currentItem = projectsList[position]
-        holder.projectImage.setImageResource(currentItem.projectImage)
-        holder.projectName.text = currentItem.projectName
+        val currentItem = gamesList[position]
+        Picasso.get().load(currentItem.image).placeholder(R.drawable.place_holder_image).into(holder.image)
+        holder.name.text = currentItem.name
     }
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val projectImage: ShapeableImageView = itemView.findViewById(R.id.recyclerItemImage)
-        val projectName: TextView = itemView.findViewById(R.id.recyclerItemProjectName)
+        val image: ShapeableImageView = itemView.findViewById(R.id.recyclerItemImage)
+        val name: TextView = itemView.findViewById(R.id.recyclerItemGameName)
     }
 }

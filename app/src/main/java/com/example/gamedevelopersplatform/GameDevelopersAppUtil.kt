@@ -105,20 +105,4 @@ object GameDevelopersAppUtil {
         fragmentTransaction.commit()
     }
 
-    fun fetchUserGamesIdFromDB(firestore: FirebaseFirestore, userId: String, onSuccess:(List<String>) -> Unit,
-        onFailure:(exception:Exception) -> Unit){
-        val firestoreUserDocument = firestore.collection("users").document(userId)
-        firestoreUserDocument.get().addOnSuccessListener { document ->
-            if(document.exists()){
-                val userGamesId = document.get("userGames") as? List<String>
-                if(userGamesId!=null) {
-                    onSuccess(userGamesId)
-                }
-            }
-        }.addOnFailureListener { exception ->
-            Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
-            onFailure(exception)
-        }
-    }
-
 }

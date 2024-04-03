@@ -43,7 +43,7 @@ class MyGamesPageFragment : Fragment() {
 
         initializeParameters(view)
 
-        GameDevelopersAppUtil.fetchUserGamesIdFromDB(firestore, userPageId, { gamesId ->
+        fetchUserGamesIdFromDB(userPageId, { gamesId ->
             fetchUserGamesFromDB(gamesId, {
                 populateRecyclerView()
             },{ exception ->
@@ -71,22 +71,21 @@ class MyGamesPageFragment : Fragment() {
 
     }
 
-//    //TODO - Make this function generic for util object, will be used for later features in app.
-//    private fun fetchUserGamesIdFromDB(userId: String, onSuccess:(List<String>) -> Unit,
-//        onFailure:(exception:Exception) -> Unit){
-//        val firestoreUserDocument = firestore.collection("users").document(userId)
-//        firestoreUserDocument.get().addOnSuccessListener { document ->
-//            if(document.exists()){
-//                val userGamesId = document.get("userGames") as? List<String>
-//                if(userGamesId!=null) {
-//                    onSuccess(userGamesId)
-//                }
-//            }
-//        }.addOnFailureListener { exception ->
-//            Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
-//            onFailure(exception)
-//        }
-//    }
+    private fun fetchUserGamesIdFromDB(userId: String, onSuccess:(List<String>) -> Unit,
+        onFailure:(exception:Exception) -> Unit){
+        val firestoreUserDocument = firestore.collection("users").document(userId)
+        firestoreUserDocument.get().addOnSuccessListener { document ->
+            if(document.exists()){
+                val userGamesId = document.get("userGames") as? List<String>
+                if(userGamesId!=null) {
+                    onSuccess(userGamesId)
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
+            onFailure(exception)
+        }
+    }
 
     private fun fetchUserGamesFromDB(gamesId: List<String>, onSuccess: () -> Unit, onFailure: (exception: Exception) -> Unit){
         var tasksCompleted = 0

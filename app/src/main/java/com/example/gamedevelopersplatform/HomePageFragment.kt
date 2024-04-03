@@ -46,15 +46,6 @@ class HomePageFragment : Fragment() {
         newRecyclerView.setHasFixedSize(true)
 
         newGamesList = arrayListOf()
-        //getUsersData()
         return view
     }
-
-//    private fun getUsersData(){
-//        for(i in imageId.indices){
-//            val project = GameData(imageId[i],nameId[i])
-//            newGamesList.add(project)
-//        }
-//        newRecyclerView.adapter = GamesAdapter(newGamesList)
-//    }
 }

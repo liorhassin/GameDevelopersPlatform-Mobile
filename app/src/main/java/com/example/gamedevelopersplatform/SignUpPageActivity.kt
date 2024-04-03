@@ -115,8 +115,8 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun saveImageAndUserData(nickname: String, email: String, birthDate: String){
-        GameDevelopersAppUtil.uploadImageAndGetUrl(contentResolver,
-            storageRef, USERS_PROFILE_IMAGES_PATH, selectedImageUri!!,{ imageUrl ->
+        GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef, USERS_PROFILE_IMAGES_PATH,
+            selectedImageUri!!,{ imageUrl ->
                 val userData = hashMapOf(
                     "nickname" to nickname,
                     "email" to email,

@@ -9,11 +9,13 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -65,7 +67,7 @@ object GameDevelopersAppUtil {
         galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"))
     }
 
-    fun uploadImageAndGetUrl(contentResolver: ContentResolver, storageRef: StorageReference, path:String, imageUri: Uri,
+    fun uploadImageAndGetUrl(storageRef: StorageReference, path:String, imageUri: Uri,
         onSuccess: (imageUrl: String) -> Unit, onFailure: (exception: Exception) -> Unit) {
 
         val imageName = UUID.randomUUID().toString()
@@ -101,6 +103,22 @@ object GameDevelopersAppUtil {
         val fragmentTransaction = transaction.supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(currentLayoutId, newFragment)
         fragmentTransaction.commit()
+    }
+
+    fun fetchUserGamesIdFromDB(firestore: FirebaseFirestore, userId: String, onSuccess:(List<String>) -> Unit,
+        onFailure:(exception:Exception) -> Unit){
+        val firestoreUserDocument = firestore.collection("users").document(userId)
+        firestoreUserDocument.get().addOnSuccessListener { document ->
+            if(document.exists()){
+                val userGamesId = document.get("userGames") as? List<String>
+                if(userGamesId!=null) {
+                    onSuccess(userGamesId)
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
+            onFailure(exception)
+        }
     }
 
 }

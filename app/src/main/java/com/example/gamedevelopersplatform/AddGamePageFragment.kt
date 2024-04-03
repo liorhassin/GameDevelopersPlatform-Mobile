@@ -111,8 +111,8 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
-        GameDevelopersAppUtil.uploadImageAndGetUrl(requireContext().contentResolver,
-            storageRef, GAMES_IMAGES_PATH, selectedImageUri!!, { imageUrl ->
+        GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef, GAMES_IMAGES_PATH,
+            selectedImageUri!!, { imageUrl ->
                 val gameData = hashMapOf(
                     "image" to imageUrl,
                     "name" to name,

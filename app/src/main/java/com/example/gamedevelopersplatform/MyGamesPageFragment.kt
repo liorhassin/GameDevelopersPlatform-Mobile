@@ -53,28 +53,6 @@ class MyGamesPageFragment : Fragment() {
             Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
         })
 
-//        imageId = arrayOf(
-//            R.drawable.destiny_2_image,
-//            R.drawable.baldurs_gate_3_image,
-//            R.drawable.counter_strike_2_image,
-//            R.drawable.helldivers_2_image,
-//            R.drawable.warframe_image
-//        )
-//
-//        nameId = arrayOf(
-//            "Destiny 2",
-//            "Baldur's Gate 3",
-//            "Counter Strike 2",
-//            "Helldivers 2",
-//            "Warframe"
-//        )
-//
-//        newRecyclerView = view.findViewById(R.id.myGamesPageRecyclerView)
-//        newRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-//        newRecyclerView.setHasFixedSize(true)
-//
-//        newGamesList = arrayListOf<GameData>()
-//        getUserData()
         return view
     }
 
@@ -84,7 +62,7 @@ class MyGamesPageFragment : Fragment() {
         storageRef = FirebaseStorage.getInstance().reference
 
         connectedUserId = firebaseAuth.currentUser?.uid.toString()
-        userGamesList = arrayListOf<GameData>()
+        userGamesList = arrayListOf()
         userPageId = arguments?.getString(USER_ID_DATA_TO_FETCH).toString()
 
         newRecyclerView = view.findViewById(R.id.myGamesPageRecyclerView)
@@ -93,7 +71,6 @@ class MyGamesPageFragment : Fragment() {
 
     }
 
-    //TODO - Make this function generic for util object, will be used for later features in app.
     private fun fetchUserGamesIdFromDB(userId: String, onSuccess:(List<String>) -> Unit,
         onFailure:(exception:Exception) -> Unit){
         val firestoreUserDocument = firestore.collection("users").document(userId)
@@ -110,29 +87,25 @@ class MyGamesPageFragment : Fragment() {
         }
     }
 
-    //TODO - Fix loop to be inside the document.get() block to reduce populateRecycler calls.
     private fun fetchUserGamesFromDB(gamesId: List<String>, onSuccess: () -> Unit, onFailure: (exception: Exception) -> Unit){
+        var tasksCompleted = 0
+        val gameDocument = firestore.collection("games")
         for(gameId in gamesId){
-            val gameDocument = firestore.collection("games").document(gameId)
-            gameDocument.get().addOnSuccessListener { document ->
+            gameDocument.document(gameId).get().addOnSuccessListener { document ->
                 if(document.exists()){
-                    val gameData = document.toObject<GameData>()
-                    if(gameData!=null) {
-                        userGamesList.add(gameData)
-                    }
+                    val currentGameData = document.toObject<GameData>()
+                    userGamesList.add(currentGameData!!)
                 }
-            }.addOnFailureListener { exception ->
-                Log.e("fetchUserGamesFromDB", "fetchUserGamesFromDB failed: $exception")
+            }.addOnFailureListener {exception->
                 onFailure(exception)
-            }.addOnCompleteListener { it ->
-                if(it.isSuccessful)
-                    onSuccess()
+            }.addOnCompleteListener {
+                tasksCompleted++
+                if(tasksCompleted == gamesId.size) onSuccess()
             }
         }
     }
 
     private fun populateRecyclerView(){
-        Log.d("games", userGamesList.toString())
         newRecyclerView.adapter = GamesAdapter(userGamesList)
     }
 }

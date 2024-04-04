@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -42,10 +43,12 @@ class ProfilePageFragment : Fragment() {
     private lateinit var previewBirthdate: TextView
     private lateinit var previewGamesCount: TextView
 
-    private lateinit var editNickname: TextView
+    private lateinit var editNickname: TextInputEditText
     private lateinit var editImage: CircleImageView
     private lateinit var editEmail: TextView
     private lateinit var editBirthdate: TextView
+    private lateinit var editPassword: TextInputEditText
+    private lateinit var editConfirmPassword: TextInputEditText
 
 
     //TODO - Add all text fields and inputs references.
@@ -85,8 +88,10 @@ class ProfilePageFragment : Fragment() {
 
         editNickname = view.findViewById(R.id.profilePageEditNicknameInput)
         editImage = view.findViewById(R.id.profilePageEditCircleImage)
-        editEmail = view.findViewById(R.id.profilePageEditEmailTextInput)
+        editEmail = view.findViewById(R.id.profilePageEditEmailText)
         editBirthdate = view.findViewById(R.id.profilePageEditBirthdateText)
+        editPassword = view.findViewById(R.id.profilePageEditPasswordInput)
+        editConfirmPassword = view.findViewById(R.id.profilePageEditConfirmPasswordInput)
     }
 
     private fun setButtonsOnClickEvent(){
@@ -137,7 +142,7 @@ class ProfilePageFragment : Fragment() {
         previewBirthdate.text = userData.birthDate
         previewGamesCount.text = userData.userGames.size.toString()
 
-        editNickname.text = userData.nickname
+        editNickname.setText(userData.nickname)
         Picasso.get().load(userData.profileImage).placeholder(R.drawable.place_holder_image)
             .into(editImage)
         editEmail.text = userData.email

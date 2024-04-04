@@ -16,7 +16,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class MyGamesPageFragment : Fragment() {
-    //data class Game(val image: String, val name: String, val price: String, val releaseDate: String)
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var firebaseAuth: FirebaseAuth

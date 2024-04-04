@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
@@ -86,6 +87,7 @@ object GameDevelopersAppUtil {
         }
     }
 
+    //TODO - Remove if when reaching final refactoring stage this function is not being used.
     fun getImageNameFromUri(contentResolver: ContentResolver, uri: Uri): String {
         val cursor = contentResolver.query(uri, null, null, null, null)
         cursor?.use {
@@ -103,6 +105,10 @@ object GameDevelopersAppUtil {
         val fragmentTransaction = transaction.supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(currentLayoutId, newFragment)
         fragmentTransaction.commit()
+    }
+
+    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>){
+        recyclerView.adapter = GamesAdapter(gamesList)
     }
 
 }

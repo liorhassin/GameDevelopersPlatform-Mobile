@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ class MyGamesPageFragment : Fragment() {
     private lateinit var storageRef: StorageReference
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var titleText: TextView
 
     private lateinit var connectedUserId: String
     private lateinit var userGamesList: ArrayList<GameData>
@@ -39,6 +41,7 @@ class MyGamesPageFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_my_games, container, false)
+
 
         initializeParameters(view)
 
@@ -67,6 +70,11 @@ class MyGamesPageFragment : Fragment() {
         recyclerView = view.findViewById(R.id.myGamesPageRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
+
+        //TODO - Check if works after implementing Game Page.
+        titleText = view.findViewById(R.id.myGamesPageTitle)
+        if(connectedUserId == USER_ID_DATA_TO_FETCH) titleText.text = "My Games"
+        else "Other User"
 
     }
 

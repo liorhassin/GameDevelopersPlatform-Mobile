@@ -85,8 +85,8 @@ class ProfilePageFragment : Fragment() {
 
         editNickname = view.findViewById(R.id.profilePageEditNicknameInput)
         editImage = view.findViewById(R.id.profilePageEditCircleImage)
-        editEmail = view.findViewById(R.id.profilePageEditEmailInput)
-        editBirthdate = view.findViewById(R.id.profilePageEditBirthdateInput)
+        editEmail = view.findViewById(R.id.profilePageEditEmailTextInput)
+        editBirthdate = view.findViewById(R.id.profilePageEditBirthdateText)
     }
 
     private fun setButtonsOnClickEvent(){

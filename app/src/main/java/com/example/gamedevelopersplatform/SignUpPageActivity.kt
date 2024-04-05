@@ -18,7 +18,7 @@ import com.google.firebase.storage.StorageReference
 import java.util.Calendar
 
 class SignUpPageActivity : AppCompatActivity() {
-    data class QuadrupleBooleans(val first: Boolean, val second: Boolean, val third: Boolean, val fourth: Boolean)
+
     private val USERS_PROFILE_IMAGES_PATH = "UsersProfileImages/"
 
     private lateinit var binding: ActivitySignUpPageBinding
@@ -142,8 +142,8 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun userValidation(nickname:String, password:String, email:String, pictureUri:Uri?)
-    : QuadrupleBooleans{
-        return QuadrupleBooleans(
+    : GameDevelopersAppUtil.QuadrupleBooleans{
+        return GameDevelopersAppUtil.QuadrupleBooleans(
             GameDevelopersAppUtil.nicknameValidation(nickname),
             GameDevelopersAppUtil.passwordValidation(password),
             GameDevelopersAppUtil.emailValidation(email),

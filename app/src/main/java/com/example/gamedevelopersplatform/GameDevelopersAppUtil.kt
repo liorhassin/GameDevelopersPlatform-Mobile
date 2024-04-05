@@ -25,6 +25,8 @@ import java.util.UUID
 
 //TODO - Split Util into ImageUtil, GeneralUtil, Maybe more..
 object GameDevelopersAppUtil {
+    data class QuadrupleBooleans(val first: Boolean, val second: Boolean, val third: Boolean, val fourth: Boolean)
+
     fun showDatePicker(context: Context, calendar: Calendar, callback:(String) -> Unit){
         val datePickerDialog = DatePickerDialog(context, {_, year:Int, monthOfYear:Int, dayOfYear:Int ->
             val selectedDate = Calendar.getInstance()
@@ -100,6 +102,7 @@ object GameDevelopersAppUtil {
         }
         return UUID.randomUUID().toString() // fallback to UUID if name retrieval fails
     }
+
 
     fun changeFragmentFromFragment(transaction: FragmentActivity, currentLayoutId: Int, newFragment: Fragment){
         val fragmentTransaction = transaction.supportFragmentManager.beginTransaction()

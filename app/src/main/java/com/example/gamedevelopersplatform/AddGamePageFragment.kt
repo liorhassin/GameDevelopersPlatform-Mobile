@@ -123,10 +123,6 @@ class AddGamePageFragment : Fragment() {
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
                         saveGameId(gameId, uid, {
-                            //TODO - Decide if myGames is the current location to move or change to newGamePage.
-                            //TODO - fix functions spaghetti to make it easier to read, Less brackets.
-                            //TODO - add a loader to notify the user a new game is being added to his account.
-                            //TODO - Work with completable futures more instead of just callbacks.
                             GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment.newInstance(uid))
                         },{exception ->
                             Log.e("SavingGameId", "Failed to save gameId to userGames array: $exception")

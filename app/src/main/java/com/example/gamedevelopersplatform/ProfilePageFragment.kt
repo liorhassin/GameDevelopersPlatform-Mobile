@@ -1,6 +1,10 @@
 package com.example.gamedevelopersplatform
 
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.LauncherActivityInfo
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
@@ -24,12 +30,17 @@ import java.util.Calendar
 
 //TODO - Refactor profile page code, split to methods and outsource parameters.
 class ProfilePageFragment : Fragment() {
+    //TODO - Refactor to util object
+    private val USERS_PROFILE_IMAGES_PATH = "UsersProfileImages/"
+
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
 
     private lateinit var connectedUserId: String
     private lateinit var userData: UserData
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
+    private var selectedImageUri: Uri? = null
 
     private lateinit var previewLayout: ConstraintLayout
     private lateinit var editLayout: ConstraintLayout
@@ -39,6 +50,7 @@ class ProfilePageFragment : Fragment() {
     private lateinit var cancelEditButton: Button
     private lateinit var saveEditButton: Button
     private lateinit var showDatePickerButton: Button
+    private lateinit var chooseImageButton: Button
 
     private lateinit var previewNickname: TextView
     private lateinit var previewImage: CircleImageView
@@ -77,12 +89,17 @@ class ProfilePageFragment : Fragment() {
 
         previewLayout = view.findViewById(R.id.profilePagePreviewLayout)
         editLayout = view.findViewById(R.id.profilePageEditLayout)
+        galleryLauncher = generateGalleryLauncher {
+                data -> handleSelectedImage(data)
+            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
+        }
 
         myGamesButton = view.findViewById<Button>(R.id.profilePagePreviewMyGamesButton)
         editProfileButton = view.findViewById<Button>(R.id.profilePagePreviewEditProfileButton)
         cancelEditButton = view.findViewById<Button>(R.id.profilePageEditCancelButton)
         saveEditButton = view.findViewById<Button>(R.id.profilePageEditSaveButton)
         showDatePickerButton = view.findViewById<Button>(R.id.profilePageEditPickADateButton)
+        chooseImageButton = view.findViewById<Button>(R.id.profilePageEditChooseImageButton)
 
         previewNickname = view.findViewById(R.id.profilePagePreviewNickname)
         previewImage = view.findViewById(R.id.profilePagePreviewCircleImage)
@@ -125,6 +142,11 @@ class ProfilePageFragment : Fragment() {
         saveEditButton.setOnClickListener {
             saveUserDataChange()
         }
+
+        chooseImageButton.setOnClickListener {
+            GameDevelopersAppUtil.openGallery(galleryLauncher)
+        }
+
     }
 
     private fun addTextWatchers(){
@@ -160,21 +182,26 @@ class ProfilePageFragment : Fragment() {
         previewGamesCount.text = userData.userGames.size.toString()
 
         editNickname.setText(userData.nickname)
-        Picasso.get().load(userData.profileImage).placeholder(R.drawable.place_holder_image)
-            .into(editImage)
-
         editEmail.text = userData.email
         editBirthdate.text = userData.birthDate
     }
 
     private fun saveUserDataChange(){
+        //TODO - each update function returns a task, after all tasks are completed move to profile page preview.
+        val userId = firebaseAuth.currentUser?.uid.toString()
+        val oldNickname = userData.nickname
         val newNickname = editNickname.text.toString()
         val oldPassword = editOldPassword.text.toString()
         val newPassword = editNewPassword.text.toString()
+        val oldBirthdate = userData.birthDate
         val newBirthdate = editBirthdate.text.toString()
 
-        val (nicknameValidation, passwordValidation, birthdateValidation) =
-            saveUserInputsValidation(newNickname, newPassword, newBirthdate)
+        var newImage = ""
+        if(selectedImageUri != null)
+            newImage = GameDevelopersAppUtil.getImageNameFromUri(this.requireActivity().contentResolver, selectedImageUri!!)
+
+        val (nicknameValidation, passwordValidation, birthdateValidation, imageValidation) =
+            saveUserInputsValidation(newNickname, newPassword, newBirthdate, newImage)
 
         if(oldPassword.isNotEmpty()){
             reAuthenticate(oldPassword) {
@@ -190,14 +217,26 @@ class ProfilePageFragment : Fragment() {
             }
         }
 
-        if(nicknameValidation || birthdateValidation) {
-            updateUserData(newNickname, newBirthdate) {
-                editNickname.setText(newNickname)
-            }
+        if(imageValidation){
+            GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef,
+                USERS_PROFILE_IMAGES_PATH,
+                selectedImageUri!!, {imageUrl->
+                    updateUserImage(imageUrl, userId)
+                },{
+                    Toast.makeText(this.context,
+                        "Failed to upload new Image",
+                        Toast.LENGTH_SHORT).show()
+                })
         }
 
-        if(!nicknameValidation)
+        if(nicknameValidation)
+            updateUserNickname(oldNickname, newNickname, userId)
+        else
             GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.RED)
+
+        if(birthdateValidation)
+            updateUserBirthdate(oldBirthdate, newBirthdate, userId)
+
         if(!passwordValidation)
             GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)
     }
@@ -212,36 +251,80 @@ class ProfilePageFragment : Fragment() {
                 onSuccess()
             }.addOnFailureListener {exception ->
                 Toast.makeText(this.context,
-                    "Re-Authentication failed, exception: $exception",
+                    "Re-Authentication failed, exception: ${exception.message}",
                     Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun updateUserData(newNickname: String, newBirthdate: String, onSuccess: () -> Unit){
-        val oldNickname = userData.nickname
-        val oldBirthdate = userData.birthDate
-        val userId = firebaseAuth.currentUser?.uid.toString()
-
+    //TODO - delete previous image
+    private fun updateUserImage(newImage: String, userId: String){
         val userUpdates = hashMapOf<String, String>()
-
-        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
-        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
+        if(newImage!="") userUpdates["profileImage"] = newImage
 
         if(userUpdates.isNotEmpty()){
             firestore.collection("users").document(userId)
-                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+                .update(userUpdates as Map<String, String>).addOnFailureListener { exception ->
                     Toast.makeText(this.context,
-                        "User data updated successfully",
-                        Toast.LENGTH_SHORT).show()
-                    onSuccess()
-                }.addOnFailureListener { exception ->
-                    Toast.makeText(this.context,
-                        "Failed to update user data, exception: $exception",
+                        "Failed to update profile image, exception: $exception",
                         Toast.LENGTH_SHORT).show()
                 }
         }
     }
+
+    private fun updateUserNickname(oldNickname: String, newNickname: String, userId: String){
+        val userUpdates = hashMapOf<String, String>()
+        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
+
+        if(userUpdates.isNotEmpty()){
+            firestore.collection("users").document(userId)
+                .update(userUpdates as Map<String, String>).addOnFailureListener { exception ->
+                    Toast.makeText(this.context,
+                        "Failed to update nickname, exception: $exception",
+                        Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun updateUserBirthdate(oldBirthdate: String, newBirthdate: String, userId: String){
+        val userUpdates = hashMapOf<String, String>()
+        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
+
+        if(userUpdates.isNotEmpty()){
+            firestore.collection("users").document(userId)
+                .update(userUpdates as Map<String, String>).addOnFailureListener { exception ->
+                    Toast.makeText(this.context,
+                        "Failed to update birthdate, exception: $exception",
+                        Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+//    private fun updateUserData(newNickname: String, newBirthdate: String, newImage:String, onSuccess: () -> Unit){
+//        val oldNickname = userData.nickname
+//        val oldBirthdate = userData.birthDate
+//        val userId = firebaseAuth.currentUser?.uid.toString()
+//
+//        val userUpdates = hashMapOf<String, String>()
+//
+//        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
+//        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
+//        if(newImage!="") userUpdates["profileImage"] = newImage
+//
+//        if(userUpdates.isNotEmpty()){
+//            firestore.collection("users").document(userId)
+//                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+//                    Toast.makeText(this.context,
+//                        "User data updated successfully",
+//                        Toast.LENGTH_SHORT).show()
+//                    onSuccess()
+//                }.addOnFailureListener { exception ->
+//                    Toast.makeText(this.context,
+//                        "Failed to update user data, exception: $exception",
+//                        Toast.LENGTH_SHORT).show()
+//                }
+//        }
+//    }
 
     private fun updateUserPassword(newPassword: String, onSuccess: () -> Unit){
         firebaseAuth.currentUser?.updatePassword(newPassword)?.addOnSuccessListener {
@@ -256,11 +339,30 @@ class ProfilePageFragment : Fragment() {
         }
     }
 
-    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String): Triple<Boolean, Boolean, Boolean>{
-        return Triple(
+    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String, newImage: String): GameDevelopersAppUtil.QuadrupleBooleans{
+        return GameDevelopersAppUtil.QuadrupleBooleans(
             (GameDevelopersAppUtil.nicknameValidation(newNickname) || newNickname.isEmpty()),
             (GameDevelopersAppUtil.passwordValidation(newPassword)) || newPassword.isEmpty(),
-            newBirthdate.isNotEmpty())
+            newBirthdate.isNotEmpty(),
+            newImage != "")
+    }
+
+    //TODO - Make this function generic in util
+    private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                callback(data)
+            }
+        }
+    }
+
+    //TODO - Make this function generic in util
+    private fun handleSelectedImage(data: Intent?) {
+        data?.data?.let { uri ->
+            selectedImageUri = uri
+            editImage.setImageURI(uri)
+        }
     }
 
 }

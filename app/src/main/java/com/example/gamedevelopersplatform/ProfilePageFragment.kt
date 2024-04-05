@@ -1,5 +1,6 @@
 package com.example.gamedevelopersplatform
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -47,8 +50,8 @@ class ProfilePageFragment : Fragment() {
     private lateinit var editImage: CircleImageView
     private lateinit var editEmail: TextView
     private lateinit var editBirthdate: TextView
-    private lateinit var editPassword: TextInputEditText
-    private lateinit var editConfirmPassword: TextInputEditText
+    private lateinit var editOldPassword: TextInputEditText
+    private lateinit var editNewPassword: TextInputEditText
 
 
     //TODO - Add all text fields and inputs references.
@@ -58,6 +61,7 @@ class ProfilePageFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_profile_page, container, false)
 
         initializeParameters(view)
+        addTextWatchers()
         setButtonsOnClickEvent()
         fetchUserData { updateProfilePageData() }
 
@@ -90,8 +94,8 @@ class ProfilePageFragment : Fragment() {
         editImage = view.findViewById(R.id.profilePageEditCircleImage)
         editEmail = view.findViewById(R.id.profilePageEditEmailText)
         editBirthdate = view.findViewById(R.id.profilePageEditBirthdateText)
-        editPassword = view.findViewById(R.id.profilePageEditPasswordInput)
-        editConfirmPassword = view.findViewById(R.id.profilePageEditConfirmPasswordInput)
+        editOldPassword = view.findViewById(R.id.profilePageEditOldPasswordInput)
+        editNewPassword = view.findViewById(R.id.profilePageEditNewPasswordInput)
     }
 
     private fun setButtonsOnClickEvent(){
@@ -119,8 +123,19 @@ class ProfilePageFragment : Fragment() {
         }
 
         saveEditButton.setOnClickListener {
-            //TODO - Complete save loop with helper function.
             saveUserDataChange()
+        }
+    }
+
+    private fun addTextWatchers(){
+        GameDevelopersAppUtil.handleTextChange(editNickname) {
+            GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.WHITE)
+        }
+        GameDevelopersAppUtil.handleTextChange(editOldPassword) {
+            GameDevelopersAppUtil.setTextAndHintTextColor(editOldPassword, Color.WHITE)
+        }
+        GameDevelopersAppUtil.handleTextChange(editNewPassword) {
+            GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.WHITE)
         }
     }
 
@@ -136,8 +151,10 @@ class ProfilePageFragment : Fragment() {
 
     private fun updateProfilePageData(){
         previewNickname.text = userData.nickname
+
         Picasso.get().load(userData.profileImage).placeholder(R.drawable.place_holder_image)
             .into(previewImage)
+
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate
         previewGamesCount.text = userData.userGames.size.toString()
@@ -145,19 +162,105 @@ class ProfilePageFragment : Fragment() {
         editNickname.setText(userData.nickname)
         Picasso.get().load(userData.profileImage).placeholder(R.drawable.place_holder_image)
             .into(editImage)
+
         editEmail.text = userData.email
         editBirthdate.text = userData.birthDate
     }
 
     private fun saveUserDataChange(){
-        //1) Validations - Check if all inputs are correct, Empty inputs are ignored(details remained unchanged)
-        //2) Update DB - Send update to firebase after all validations have passed, Change only inserted Inputs.
-        //3) Update if DB saving worked or failed.
-        //4) Move User - Send user back to his profile page with all the details updated, No need to call back from DB.
+        val newNickname = editNickname.text.toString()
+        val oldPassword = editOldPassword.text.toString()
+        val newPassword = editNewPassword.text.toString()
+        val newBirthdate = editBirthdate.text.toString()
+
+        val (nicknameValidation, passwordValidation, birthdateValidation) =
+            saveUserInputsValidation(newNickname, newPassword, newBirthdate)
+
+        if(oldPassword.isNotEmpty()){
+            reAuthenticate(oldPassword) {
+                if(passwordValidation && newPassword.isNotEmpty()) {
+                    updateUserPassword(newPassword) {
+                        editOldPassword.setText("")
+                        editNewPassword.setText("")
+                    }
+                }
+                else{
+                    GameDevelopersAppUtil.setTextAndHintTextColor(editOldPassword, Color.RED)
+                }
+            }
+        }
+
+        if(nicknameValidation || birthdateValidation) {
+            updateUserData(newNickname, newBirthdate) {
+                editNickname.setText(newNickname)
+            }
+        }
+
+        if(!nicknameValidation)
+            GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.RED)
+        if(!passwordValidation)
+            GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)
     }
 
-    private fun saveUserInputsValidation(){
+    private fun reAuthenticate(currentPassword: String, onSuccess: () -> Unit){
+        val user = firebaseAuth.currentUser
+        val email = user?.email
 
+        if(email != null && currentPassword.isNotEmpty()){
+            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+            user.reauthenticate(credential).addOnSuccessListener {
+                onSuccess()
+            }.addOnFailureListener {exception ->
+                Toast.makeText(this.context,
+                    "Re-Authentication failed, exception: $exception",
+                    Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateUserData(newNickname: String, newBirthdate: String, onSuccess: () -> Unit){
+        val oldNickname = userData.nickname
+        val oldBirthdate = userData.birthDate
+        val userId = firebaseAuth.currentUser?.uid.toString()
+
+        val userUpdates = hashMapOf<String, String>()
+
+        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
+        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
+
+        if(userUpdates.isNotEmpty()){
+            firestore.collection("users").document(userId)
+                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+                    Toast.makeText(this.context,
+                        "User data updated successfully",
+                        Toast.LENGTH_SHORT).show()
+                    onSuccess()
+                }.addOnFailureListener { exception ->
+                    Toast.makeText(this.context,
+                        "Failed to update user data, exception: $exception",
+                        Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun updateUserPassword(newPassword: String, onSuccess: () -> Unit){
+        firebaseAuth.currentUser?.updatePassword(newPassword)?.addOnSuccessListener {
+            Toast.makeText(this.context,
+                "Password was changed successfully",
+                Toast.LENGTH_SHORT).show()
+            onSuccess()
+        }?.addOnFailureListener {
+            Toast.makeText(this.context,
+                "Failed to change password",
+                Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String): Triple<Boolean, Boolean, Boolean>{
+        return Triple(
+            (GameDevelopersAppUtil.nicknameValidation(newNickname) || newNickname.isEmpty()),
+            (GameDevelopersAppUtil.passwordValidation(newPassword)) || newPassword.isEmpty(),
+            newBirthdate.isNotEmpty())
     }
 
 }

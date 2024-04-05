@@ -11,8 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePagePreviewLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/profilePagePreviewNickname"
@@ -143,7 +142,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePageEditLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/profilePageEditNicknameInput"
@@ -280,7 +280,6 @@
             android:autoSizeMaxTextSize="24sp"
             android:autoSizeMinTextSize="12sp"
             android:singleLine="true"
-            android:text="liorhassin3@gmail.com"
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -289,12 +288,12 @@
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditChooseImageButton" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/profilePageEditPasswordInput"
+            android:id="@+id/profilePageEditOldPasswordInput"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:hint="New Password"
+            android:hint="Old Password"
             android:maxWidth="240dp"
             android:minWidth="120dp"
             android:password="true"
@@ -309,12 +308,12 @@
             tools:ignore="Deprecated" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/profilePageEditConfirmPasswordInput"
+            android:id="@+id/profilePageEditNewPasswordInput"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:hint="Confirm Password"
+            android:hint="New Password"
             android:maxWidth="240dp"
             android:minWidth="120dp"
             android:password="true"
@@ -323,7 +322,7 @@
             android:textColorHint="@color/hint_color"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditPasswordInput"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditOldPasswordInput"
             tools:ignore="Deprecated" />
 
         <TextView
@@ -333,13 +332,12 @@
             android:layout_marginStart="112dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="06/22/1997"
             android:textColor="@color/white"
             android:textSize="28sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/profilePageEditBirthdateTitle"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditConfirmPasswordInput" />
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditNewPasswordInput" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

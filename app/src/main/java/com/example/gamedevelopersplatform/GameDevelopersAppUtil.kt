@@ -40,7 +40,7 @@ object GameDevelopersAppUtil {
     }
 
     fun <T> setTextAndHintTextColor(view: T,color:Int) where T : TextView{
-        if (view.text != null) view.setTextColor(color)
+        if(view.text != null) view.setTextColor(color)
         if(view.hint != null) view.setHintTextColor(color)
     }
 
@@ -109,6 +109,21 @@ object GameDevelopersAppUtil {
 
     fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>){
         recyclerView.adapter = GamesAdapter(gamesList)
+    }
+
+    fun nicknameValidation(nickname: String): Boolean {
+        val nicknameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_ ]{2,}\$")
+        return nicknameRegex.matches(nickname)
+    }
+
+    fun passwordValidation(password: String): Boolean {
+        val passwordRegex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{6,}\$")
+        return passwordRegex.matches(password)
+    }
+
+    fun emailValidation(email: String): Boolean {
+        val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
+        return emailRegex.matches(email)
     }
 
 }

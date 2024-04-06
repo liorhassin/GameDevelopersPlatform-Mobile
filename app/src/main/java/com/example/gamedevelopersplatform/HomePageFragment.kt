@@ -24,9 +24,8 @@ class HomePageFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
 
         initializeParameters(view)
-
         fetchGamesFromDB {
-            GameDevelopersAppUtil.populateRecyclerView(recyclerView, gamesList)
+            GameDevelopersAppUtil.populateRecyclerView(recyclerView, gamesList, storageRef)
         }
 
         return view

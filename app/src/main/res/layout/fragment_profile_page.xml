@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Lior"
+            android:text="Nickname"
             android:textColor="@color/white"
             android:textSize="48sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -31,12 +31,13 @@
             android:layout_width="192dp"
             android:layout_height="192dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/horizon_forbidden_west_image"
+            android:src="@drawable/place_holder_image"
             app:civ_border_color="#FF000000"
             app:civ_border_width="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewNickname" />
+
 
         <TextView
             android:id="@+id/profilePagePreviewEmailTitle"
@@ -48,10 +49,9 @@
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintEnd_toStartOf="@+id/profilePagePreviewEmailText"
-            app:layout_constraintHorizontal_bias="0.181"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewCircleImage" />
-
 
         <TextView
             android:id="@+id/profilePagePreviewEmailText"
@@ -59,7 +59,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Liorhassin3@gmail.com"
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +73,7 @@
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintEnd_toStartOf="@+id/profilePagePreviewBirthdateText"
-            app:layout_constraintHorizontal_bias="0.165"
+            app:layout_constraintHorizontal_bias="0.056"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewEmailTitle" />
 
@@ -84,7 +83,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="06/22/1997"
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -118,7 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="9"
+            android:text="0"
             android:textColor="@color/white"
             android:textSize="46sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -147,16 +145,22 @@
         android:layout_height="match_parent"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/profilePageEditNickname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profilePageEditNicknameInput"
+            android:layout_width="339dp"
+            android:layout_height="71dp"
             android:layout_marginTop="16dp"
-            android:text="Lior"
+            android:autoSizeMaxTextSize="48sp"
+            android:autoSizeMinTextSize="24sp"
+            android:gravity="center"
+            android:hint="Choose Nickname"
+            android:maxWidth="250dp"
+            android:minWidth="100dp"
+            android:singleLine="true"
             android:textColor="@color/white"
-            android:textSize="48sp"
+            android:textColorHint="@color/hint_color"
+            android:textSize="36sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -165,12 +169,13 @@
             android:layout_width="192dp"
             android:layout_height="192dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/horizon_forbidden_west_image"
+            android:src="@drawable/place_holder_image"
             app:civ_border_color="#FF000000"
             app:civ_border_width="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditNickname" />
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditNicknameInput" />
+
 
         <TextView
             android:id="@+id/profilePageEditEmailTitle"
@@ -181,89 +186,158 @@
             android:text="Email:"
             android:textColor="@color/white"
             android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/profilePageEditEmailInput"
-            app:layout_constraintHorizontal_bias="0.181"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditCircleImage" />
-
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditChooseImageButton" />
 
         <TextView
-            android:id="@+id/profilePageEditEmailInput"
+            android:id="@+id/profilePageEditPasswordTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="Liorhassin3@gmail.com"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:text="Password:"
             android:textColor="@color/white"
             android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditCircleImage" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailTitle" />
 
         <TextView
             android:id="@+id/profilePageEditBirthdateTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="114dp"
             android:text="Birth Date:"
             android:textColor="@color/white"
             android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/profilePageEditBirthdateInput"
-            app:layout_constraintHorizontal_bias="0.165"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailTitle" />
-
-        <TextView
-            android:id="@+id/profilePageEditBirthdateInput"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="06/22/1997"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailInput" />
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditPasswordTitle" />
 
         <Button
             android:id="@+id/profilePageEditPickADateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:backgroundTint="@color/blue_button"
             android:text="Pick a Date"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.938"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditBirthdateInput" />
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditBirthdateText" />
 
         <Button
             android:id="@+id/profilePageEditSaveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/green_button"
             android:text="Save"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/profilePageEditCancelButton"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditPickADateButton"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <Button
             android:id="@+id/profilePageEditCancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/red_button"
             android:text="Cancel"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditPickADateButton"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/profilePageEditChooseImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/blue_button"
+            android:text="Choose Image"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditCircleImage" />
+
+        <TextView
+            android:id="@+id/profilePageEditEmailText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:autoSizeMaxTextSize="24sp"
+            android:autoSizeMinTextSize="12sp"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/profilePageEditEmailTitle"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditChooseImageButton" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profilePageEditOldPasswordInput"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Old Password"
+            android:maxWidth="240dp"
+            android:minWidth="120dp"
+            android:password="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_color"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/profilePageEditPasswordTitle"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailText"
+            tools:ignore="Deprecated" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profilePageEditNewPasswordInput"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="New Password"
+            android:maxWidth="240dp"
+            android:minWidth="120dp"
+            android:password="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_color"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditOldPasswordInput"
+            tools:ignore="Deprecated" />
+
+        <TextView
+            android:id="@+id/profilePageEditBirthdateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="112dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/profilePageEditBirthdateTitle"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditNewPasswordInput" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

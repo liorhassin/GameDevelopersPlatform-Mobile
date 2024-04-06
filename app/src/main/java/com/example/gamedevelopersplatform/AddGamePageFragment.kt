@@ -19,14 +19,11 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.Calendar
 
 class AddGamePageFragment : Fragment() {
-    private val GAMES_IMAGES_PATH = "GamesImages/"
-
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
@@ -111,7 +108,7 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
-        GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef, GAMES_IMAGES_PATH,
+        GameDevelopersAppUtil.uploadImageAndGetName(storageRef, GameDevelopersAppUtil.GAMES_IMAGES_PATH,
             selectedImageUri!!, { imageUrl ->
                 val gameData = hashMapOf(
                     "image" to imageUrl,
@@ -123,10 +120,6 @@ class AddGamePageFragment : Fragment() {
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
                         saveGameId(gameId, uid, {
-                            //TODO - Decide if myGames is the current location to move or change to newGamePage.
-                            //TODO - fix functions spaghetti to make it easier to read, Less brackets.
-                            //TODO - add a loader to notify the user a new game is being added to his account.
-                            //TODO - Work with completable futures more instead of just callbacks.
                             GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment.newInstance(uid))
                         },{exception ->
                             Log.e("SavingGameId", "Failed to save gameId to userGames array: $exception")

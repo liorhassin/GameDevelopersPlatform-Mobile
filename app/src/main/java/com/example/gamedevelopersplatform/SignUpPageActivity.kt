@@ -16,9 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.Calendar
-//TODO - Change xml parameters to be signUpPage.. Like the rest of the xml convention.
+
 class SignUpPageActivity : AppCompatActivity() {
-    data class QuadrupleBooleans(val first: Boolean, val second: Boolean, val third: Boolean, val fourth: Boolean)
+
     private val USERS_PROFILE_IMAGES_PATH = "UsersProfileImages/"
 
     private lateinit var binding: ActivitySignUpPageBinding
@@ -115,7 +115,7 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun saveImageAndUserData(nickname: String, email: String, birthDate: String){
-        GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef, USERS_PROFILE_IMAGES_PATH,
+        GameDevelopersAppUtil.uploadImageAndGetName(storageRef, USERS_PROFILE_IMAGES_PATH,
             selectedImageUri!!,{ imageUrl ->
                 val userData = hashMapOf(
                     "nickname" to nickname,
@@ -142,19 +142,11 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun userValidation(nickname:String, password:String, email:String, pictureUri:Uri?)
-    : QuadrupleBooleans{
-
-        //Nickname must be of at least length 2 and can only contain english alphabet/numbers/one white space between words.
-        val nicknameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_ ]{2,}\$")
-        //Password must be of at least length 6 and contain one Capital Letter/One Normal Letter/One Number/One Special Character.
-        val passwordRegex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{6,}\$")
-        //Email must follow commonly accepted standards such as having a @ and contains supported characters before and after.
-        val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
-
-        return QuadrupleBooleans(
-            nicknameRegex.matches(nickname),
-            passwordRegex.matches(password),
-            emailRegex.matches(email),
+    : GameDevelopersAppUtil.QuadrupleBooleans{
+        return GameDevelopersAppUtil.QuadrupleBooleans(
+            GameDevelopersAppUtil.nicknameValidation(nickname),
+            GameDevelopersAppUtil.passwordValidation(password),
+            GameDevelopersAppUtil.emailValidation(email),
             pictureUri != null
         )
     }

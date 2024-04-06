@@ -19,14 +19,11 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.Calendar
 
 class AddGamePageFragment : Fragment() {
-    private val GAMES_IMAGES_PATH = "GamesImages/"
-
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
@@ -111,7 +108,7 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
-        GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef, GAMES_IMAGES_PATH,
+        GameDevelopersAppUtil.uploadImageAndGetName(storageRef, GameDevelopersAppUtil.GAMES_IMAGES_PATH,
             selectedImageUri!!, { imageUrl ->
                 val gameData = hashMapOf(
                     "image" to imageUrl,

@@ -2,10 +2,10 @@ package com.example.gamedevelopersplatform
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.LauncherActivityInfo
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -30,9 +29,6 @@ import java.util.Calendar
 
 //TODO - Refactor profile page code, split to methods and outsource parameters.
 class ProfilePageFragment : Fragment() {
-    //TODO - Refactor to util object
-    private val USERS_PROFILE_IMAGES_PATH = "UsersProfileImages/"
-
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
@@ -174,8 +170,7 @@ class ProfilePageFragment : Fragment() {
     private fun updateProfilePageData(){
         previewNickname.text = userData.nickname
 
-        Picasso.get().load(userData.profileImage).placeholder(R.drawable.place_holder_image)
-            .into(previewImage)
+        GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage, previewImage)
 
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate
@@ -218,10 +213,11 @@ class ProfilePageFragment : Fragment() {
         }
 
         if(imageValidation){
-            GameDevelopersAppUtil.uploadImageAndGetUrl(storageRef,
-                USERS_PROFILE_IMAGES_PATH,
-                selectedImageUri!!, {imageUrl->
-                    updateUserImage(imageUrl, userId)
+            GameDevelopersAppUtil.uploadImageAndGetName(storageRef,
+                GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH,
+                selectedImageUri!!, { imageName->
+                    Log.e("imageName", imageName)
+                    updateUserImage(imageName, userId)
                 },{
                     Toast.makeText(this.context,
                         "Failed to upload new Image",
@@ -257,18 +253,25 @@ class ProfilePageFragment : Fragment() {
         }
     }
 
-    //TODO - delete previous image
     private fun updateUserImage(newImage: String, userId: String){
         val userUpdates = hashMapOf<String, String>()
         if(newImage!="") userUpdates["profileImage"] = newImage
 
         if(userUpdates.isNotEmpty()){
-            firestore.collection("users").document(userId)
-                .update(userUpdates as Map<String, String>).addOnFailureListener { exception ->
-                    Toast.makeText(this.context,
-                        "Failed to update profile image, exception: $exception",
-                        Toast.LENGTH_SHORT).show()
-                }
+            storageRef.child(GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH + userData.profileImage).delete().addOnCompleteListener {
+                firestore.collection("users").document(userId)
+                    .update(userUpdates as Map<String, String>).addOnSuccessListener {
+                        userData.profileImage = newImage
+                    }.addOnFailureListener { exception ->
+                        Toast.makeText(this.context,
+                            "Failed to update profile image, exception: $exception",
+                            Toast.LENGTH_SHORT).show()
+                    }
+            }.addOnFailureListener { exception ->
+                Toast.makeText(this.context,
+                    "Failed to delete previous image Update failed, exception: $exception",
+                    Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -278,7 +281,9 @@ class ProfilePageFragment : Fragment() {
 
         if(userUpdates.isNotEmpty()){
             firestore.collection("users").document(userId)
-                .update(userUpdates as Map<String, String>).addOnFailureListener { exception ->
+                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+                    userData.nickname = newNickname
+                }.addOnFailureListener { exception ->
                     Toast.makeText(this.context,
                         "Failed to update nickname, exception: $exception",
                         Toast.LENGTH_SHORT).show()
@@ -292,39 +297,15 @@ class ProfilePageFragment : Fragment() {
 
         if(userUpdates.isNotEmpty()){
             firestore.collection("users").document(userId)
-                .update(userUpdates as Map<String, String>).addOnFailureListener { exception ->
+                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+                    userData.birthDate = newBirthdate
+                }.addOnFailureListener { exception ->
                     Toast.makeText(this.context,
                         "Failed to update birthdate, exception: $exception",
                         Toast.LENGTH_SHORT).show()
                 }
         }
     }
-
-//    private fun updateUserData(newNickname: String, newBirthdate: String, newImage:String, onSuccess: () -> Unit){
-//        val oldNickname = userData.nickname
-//        val oldBirthdate = userData.birthDate
-//        val userId = firebaseAuth.currentUser?.uid.toString()
-//
-//        val userUpdates = hashMapOf<String, String>()
-//
-//        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
-//        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
-//        if(newImage!="") userUpdates["profileImage"] = newImage
-//
-//        if(userUpdates.isNotEmpty()){
-//            firestore.collection("users").document(userId)
-//                .update(userUpdates as Map<String, String>).addOnSuccessListener {
-//                    Toast.makeText(this.context,
-//                        "User data updated successfully",
-//                        Toast.LENGTH_SHORT).show()
-//                    onSuccess()
-//                }.addOnFailureListener { exception ->
-//                    Toast.makeText(this.context,
-//                        "Failed to update user data, exception: $exception",
-//                        Toast.LENGTH_SHORT).show()
-//                }
-//        }
-//    }
 
     private fun updateUserPassword(newPassword: String, onSuccess: () -> Unit){
         firebaseAuth.currentUser?.updatePassword(newPassword)?.addOnSuccessListener {

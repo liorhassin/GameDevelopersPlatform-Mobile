@@ -9,15 +9,14 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -26,6 +25,8 @@ import java.util.UUID
 //TODO - Split Util into ImageUtil, GeneralUtil, Maybe more..
 object GameDevelopersAppUtil {
     data class QuadrupleBooleans(val first: Boolean, val second: Boolean, val third: Boolean, val fourth: Boolean)
+    const val USERS_PROFILE_IMAGES_PATH = "UsersProfileImages/"
+    const val GAMES_IMAGES_PATH = "GamesImages/"
 
     fun showDatePicker(context: Context, calendar: Calendar, callback:(String) -> Unit){
         val datePickerDialog = DatePickerDialog(context, {_, year:Int, monthOfYear:Int, dayOfYear:Int ->
@@ -70,7 +71,7 @@ object GameDevelopersAppUtil {
         galleryLauncher.launch(Intent.createChooser(intent, "Select Picture"))
     }
 
-    fun uploadImageAndGetUrl(storageRef: StorageReference, path:String, imageUri: Uri,
+    fun uploadImageAndGetName(storageRef: StorageReference, path:String, imageUri: Uri,
         onSuccess: (imageUrl: String) -> Unit, onFailure: (exception: Exception) -> Unit) {
 
         val imageName = UUID.randomUUID().toString()
@@ -78,18 +79,26 @@ object GameDevelopersAppUtil {
         val uploadTask = imageReference.putFile(imageUri)
 
         uploadTask.addOnSuccessListener {
-            imageReference.downloadUrl.addOnSuccessListener { uri ->
-                val imageUrl = uri.toString()
-                onSuccess(imageUrl)
-            }.addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+                onSuccess(imageName)
         }.addOnFailureListener { exception ->
             onFailure(exception)
         }
     }
 
-    //TODO - Remove if when reaching final refactoring stage this function is not being used.
+    private fun retrieveImageUrl(storageRef: StorageReference, imageName: String, onSuccess: (Uri) -> Unit){
+        val imageReference = storageRef.child(USERS_PROFILE_IMAGES_PATH + imageName)
+        imageReference.downloadUrl.addOnSuccessListener { url ->
+            onSuccess(url)
+        }
+    }
+
+    fun loadImageFromDB(storageRef: StorageReference, imageName: String, imageView: ImageView){
+        retrieveImageUrl(storageRef, imageName){ imageUrl ->
+            Picasso.get().load(imageUrl).placeholder(R.drawable.place_holder_image)
+                .into(imageView)
+        }
+    }
+
     fun getImageNameFromUri(contentResolver: ContentResolver, uri: Uri): String {
         val cursor = contentResolver.query(uri, null, null, null, null)
         cursor?.use {
@@ -110,8 +119,8 @@ object GameDevelopersAppUtil {
         fragmentTransaction.commit()
     }
 
-    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>){
-        recyclerView.adapter = GamesAdapter(gamesList)
+    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>, storageRef: StorageReference){
+        recyclerView.adapter = GamesAdapter(gamesList, storageRef)
     }
 
     fun nicknameValidation(nickname: String): Boolean {

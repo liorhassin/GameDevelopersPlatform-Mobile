@@ -11,7 +11,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePagePreviewLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/profilePagePreviewNickname"
@@ -142,21 +143,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePageEditLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/profilePageEditNicknameInput"
             android:layout_width="339dp"
-            android:layout_height="71dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:autoSizeMaxTextSize="48sp"
             android:autoSizeMinTextSize="24sp"
             android:gravity="center"
-            android:hint="Choose Nickname"
+            android:hint="Enter Nickname"
             android:maxWidth="250dp"
             android:minWidth="100dp"
-            android:singleLine="true"
             android:textColor="@color/white"
             android:textColorHint="@color/hint_color"
             android:textSize="36sp"

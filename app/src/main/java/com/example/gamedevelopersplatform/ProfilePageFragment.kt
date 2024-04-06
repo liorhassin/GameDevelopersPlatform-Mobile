@@ -23,11 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.Calendar
 
-//TODO - Refactor profile page code, split to methods and outsource parameters.
 class ProfilePageFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -60,9 +58,6 @@ class ProfilePageFragment : Fragment() {
     private lateinit var editBirthdate: TextView
     private lateinit var editOldPassword: TextInputEditText
     private lateinit var editNewPassword: TextInputEditText
-
-
-    //TODO - Add all text fields and inputs references.
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

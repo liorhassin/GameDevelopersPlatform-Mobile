@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.gamedevelopersplatform.databinding.ActivityInitializeNavbarBinding
 import com.google.firebase.auth.FirebaseAuth
 
+//TODO - Refactor
 class InitializeNavbarActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInitializeNavbarBinding
     private  lateinit var firebaseAuth: FirebaseAuth

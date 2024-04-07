@@ -9,6 +9,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
@@ -24,7 +25,9 @@ import java.util.UUID
 
 //TODO - Split Util into ImageUtil, GeneralUtil, Maybe more..
 object GameDevelopersAppUtil {
-    data class QuadrupleBooleans(val first: Boolean, val second: Boolean, val third: Boolean, val fourth: Boolean)
+    data class QuadrupleBooleans(val first: Boolean, val second: Boolean,
+                                 val third: Boolean, val fourth: Boolean)
+
     const val USERS_PROFILE_IMAGES_PATH = "UsersProfileImages/"
     const val GAMES_IMAGES_PATH = "GamesImages/"
 
@@ -85,9 +88,11 @@ object GameDevelopersAppUtil {
         }
     }
 
-    private fun retrieveImageUrl(storageRef: StorageReference, imageName: String, onSuccess: (Uri) -> Unit){
+    private fun retrieveImageUrl(storageRef: StorageReference,
+                                 imageName: String, onSuccess: (Uri) -> Unit){
         val imageReference = storageRef.child(USERS_PROFILE_IMAGES_PATH + imageName)
         imageReference.downloadUrl.addOnSuccessListener { url ->
+            Log.e("url", url.toString())
             onSuccess(url)
         }
     }
@@ -113,14 +118,16 @@ object GameDevelopersAppUtil {
     }
 
 
-    fun changeFragmentFromFragment(transaction: FragmentActivity, currentLayoutId: Int, newFragment: Fragment){
+    fun changeFragmentFromFragment(transaction: FragmentActivity,
+                                   currentLayoutId: Int, newFragment: Fragment){
         val fragmentTransaction = transaction.supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(currentLayoutId, newFragment)
         fragmentTransaction.commit()
     }
 
-    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>, storageRef: StorageReference){
-        recyclerView.adapter = GamesAdapter(gamesList, storageRef)
+    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>,
+                             storageRef: StorageReference, fragmentActivity: FragmentActivity, currentLayoutId: Int){
+        recyclerView.adapter = GamesAdapter(gamesList, storageRef, fragmentActivity, currentLayoutId)
     }
 
     fun nicknameValidation(nickname: String): Boolean {

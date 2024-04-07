@@ -47,7 +47,7 @@ class MyGamesPageFragment : Fragment() {
 
         fetchUserGamesIdFromDB(userPageId, { gamesId ->
             fetchUserGamesFromDB(gamesId, {
-                GameDevelopersAppUtil.populateRecyclerView(recyclerView, userGamesList, storageRef)
+                GameDevelopersAppUtil.populateRecyclerView(recyclerView, userGamesList, storageRef, requireActivity(), R.id.myGamesPageLayout)
             },{ exception ->
                 Log.e("fetchUserGamesFromDB", "Failed to fetch user games: $exception")
             })

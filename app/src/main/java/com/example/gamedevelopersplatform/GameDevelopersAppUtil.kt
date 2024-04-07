@@ -92,7 +92,6 @@ object GameDevelopersAppUtil {
                                  imageName: String, onSuccess: (Uri) -> Unit){
         val imageReference = storageRef.child(USERS_PROFILE_IMAGES_PATH + imageName)
         imageReference.downloadUrl.addOnSuccessListener { url ->
-            Log.e("url", url.toString())
             onSuccess(url)
         }
     }

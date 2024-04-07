@@ -124,18 +124,39 @@ object GameDevelopersAppUtil {
     }
 
     fun nicknameValidation(nickname: String): Boolean {
-        val nicknameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_ ]{2,}\$")
+        //Nickname contains Numbers,Alphabet and white spaces.
+        //Requirements: Length between 2-16.
+        val nicknameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_ ]{2,16}\$")
         return nicknameRegex.matches(nickname)
     }
 
     fun passwordValidation(password: String): Boolean {
-        val passwordRegex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{6,}\$")
+        //Password contains Numbers, Alphabet or special characters.
+        //Requirements: 1 Capital letter, 1 normal letter, 1 number and length between 6-36.
+        val passwordRegex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{6,36}\$")
         return passwordRegex.matches(password)
     }
 
     fun emailValidation(email: String): Boolean {
+        //Email contains all the standard characters allowed for email addresses.
+        //Requirements: Starts with at least one Character followed by '@',
+        //and '.' followed by at least two Characters.
         val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
         return emailRegex.matches(email)
+    }
+
+    fun gamePriceValidation(price: String): Boolean{
+        //Price contains numbers with a possible dot for decimal numbers.
+        //Requirements: Price between 0-300, with maximum of two numbers after the dot.
+        val priceRegex = Regex("^(?:\\d{1,2}|1\\d{2}|300)(?:\\.\\d{1,2})?\$")
+        return priceRegex.matches(price)
+    }
+
+    fun gameNameValidation(name: String): Boolean{
+        //Name contains Numbers, Alphabet or white space.
+        //Requirements: Length between 2-30.
+        val nameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_' ]{2,30}\$")
+        return nameRegex.matches(name)
     }
 
 }

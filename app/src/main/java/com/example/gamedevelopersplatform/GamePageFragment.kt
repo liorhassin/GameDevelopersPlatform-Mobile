@@ -12,7 +12,6 @@ import com.google.android.material.imageview.ShapeableImageView
 //TODO - IN GAME PAGE
 //initialize parameters
 //load game data to view elements
-//edit xml to preview and edit mode
 //enable switching between via code
 //only show button to switch between modes to owner of the game.
 //allow edit (name, image, release date, price)

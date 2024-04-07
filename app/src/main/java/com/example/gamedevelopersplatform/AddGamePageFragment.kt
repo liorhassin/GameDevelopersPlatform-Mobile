@@ -187,10 +187,8 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{
-        //Price must be between 0-300(allowing 2 numbers after decimal point.
-        val priceRegex = Regex("^(?:\\d{1,2}|1\\d{2}|300)(?:\\.\\d{1,2})?\$")
-        //Name must be of length 2 and support Alphabet/Numbers/One white space.
-        val nameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_' ]{2,}\$")
-        return Triple(priceRegex.matches(price), nameRegex.matches(name), pictureUri!=null)
+        return Triple(GameDevelopersAppUtil.gamePriceValidation(price),
+            GameDevelopersAppUtil.gameNameValidation(name),
+            pictureUri!=null)
     }
 }

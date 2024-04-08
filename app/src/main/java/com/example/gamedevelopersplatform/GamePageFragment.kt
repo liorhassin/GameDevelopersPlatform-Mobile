@@ -164,15 +164,17 @@ class GamePageFragment : Fragment() {
 
     private fun updateGamePageView(){
         previewNameView.text = name
-        previewPriceView.text = price
+        previewPriceView.text = "$ " + price
         previewReleaseDateView.text = releaseDate
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, image, previewImageView)
+        GameDevelopersAppUtil.loadImageFromDB(storageRef, image,
+            GameDevelopersAppUtil.GAMES_IMAGES_PATH, previewImageView)
         //TODO - FETCH -> Developer name using ID
         //gameDeveloperNamePreviewView.text =
 
         editNameInput.setText(name)
         editPriceInput.setText(price)
         editReleaseDateView.text = releaseDate
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, image, editImageView)
+        GameDevelopersAppUtil.loadImageFromDB(storageRef, image,
+            GameDevelopersAppUtil.GAMES_IMAGES_PATH, editImageView)
     }
 }

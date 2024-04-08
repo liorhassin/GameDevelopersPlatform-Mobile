@@ -26,10 +26,15 @@ class GamesAdapter(private val gamesList: ArrayList<GameData>, private val stora
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = gamesList[position]
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, currentItem.image, holder.image)
+
+        GameDevelopersAppUtil.loadImageFromDB(storageRef, currentItem.image,
+            GameDevelopersAppUtil.GAMES_IMAGES_PATH, holder.image)
+
         holder.name.text = currentItem.name
+
         holder.gamePageButton.setOnClickListener {
-            GameDevelopersAppUtil.changeFragmentFromFragment(fragmentActivity, currentLayoutId, GamePageFragment.newInstance(currentItem))
+            GameDevelopersAppUtil.changeFragmentFromFragment(fragmentActivity, currentLayoutId,
+                GamePageFragment.newInstance(currentItem))
         }
     }
 

@@ -165,7 +165,8 @@ class ProfilePageFragment : Fragment() {
     private fun updateProfilePageData(){
         previewNickname.text = userData.nickname
 
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage, previewImage)
+        GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage,
+            GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, previewImage)
 
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate

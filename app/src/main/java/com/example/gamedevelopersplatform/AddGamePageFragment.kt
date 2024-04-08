@@ -159,6 +159,7 @@ class AddGamePageFragment : Fragment() {
             GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.RED)
     }
 
+    //TODO - consider making this method generic for util object
     private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -168,6 +169,7 @@ class AddGamePageFragment : Fragment() {
         }
     }
 
+    //TODO - consider making this method generic for util object.
     private fun handleSelectedImage(data: Intent?) {
         data?.data?.let { uri ->
             selectedImageUri = uri

@@ -1,6 +1,9 @@
 package com.example.gamedevelopersplatform
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import com.google.android.material.imageview.ShapeableImageView
@@ -63,6 +68,9 @@ class GamePageFragment : Fragment() {
     private lateinit var editSaveButton: Button
     private lateinit var editCancelButton: Button
 
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
+    private lateinit var selectedImageUri: Uri
+
 
     companion object{
         fun newInstance(gameData: GameData) = GamePageFragment().apply {
@@ -82,7 +90,7 @@ class GamePageFragment : Fragment() {
         initializeParameters(view)
         addTextWatchers()
         setButtonsOnClickEvent()
-        updateGamePageView()
+        updateGamePagePreviewView()
 
         return view
     }
@@ -124,6 +132,10 @@ class GamePageFragment : Fragment() {
         editChooseImageButton = view.findViewById(R.id.gamePageEditChooseImageButton)
         editSaveButton = view.findViewById(R.id.gamePageEditSaveButton)
         editCancelButton = view.findViewById(R.id.gamePageEditCancelButton)
+
+        galleryLauncher = generateGalleryLauncher {
+                data -> handleSelectedImage(data)
+        }
     }
 
     private fun addTextWatchers(){
@@ -140,6 +152,7 @@ class GamePageFragment : Fragment() {
 
         }
         previewEditButton.setOnClickListener {
+            updateGamePageEditView()
             previewLayout.visibility = View.GONE
             editLayout.visibility = View.VISIBLE
         }
@@ -151,10 +164,11 @@ class GamePageFragment : Fragment() {
 
         }
         editChooseImageButton.setOnClickListener {
-
+            GameDevelopersAppUtil.openGallery(galleryLauncher)
         }
         editSaveButton.setOnClickListener {
-
+            //TODO - Call save method that is split into organized functions.
+            //TODO - Only after re-factoring save profile functions.
         }
         editCancelButton.setOnClickListener {
             editLayout.visibility = View.GONE
@@ -162,7 +176,7 @@ class GamePageFragment : Fragment() {
         }
     }
 
-    private fun updateGamePageView(){
+    private fun updateGamePagePreviewView(){
         previewNameView.text = name
         previewPriceView.text = "$ " + price
         previewReleaseDateView.text = releaseDate
@@ -170,11 +184,29 @@ class GamePageFragment : Fragment() {
             GameDevelopersAppUtil.GAMES_IMAGES_PATH, previewImageView)
         //TODO - FETCH -> Developer name using ID
         //gameDeveloperNamePreviewView.text =
+    }
 
+    private fun updateGamePageEditView(){
         editNameInput.setText(name)
         editPriceInput.setText(price)
         editReleaseDateView.text = releaseDate
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, image,
-            GameDevelopersAppUtil.GAMES_IMAGES_PATH, editImageView)
+    }
+
+    //TODO - consider moving function to generic util object (Used in a few places).
+    private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                callback(data)
+            }
+        }
+    }
+
+    //TODO - consider moving function to generic util object
+    private fun handleSelectedImage(data: Intent?) {
+        data?.data?.let { uri ->
+            selectedImageUri = uri
+            editImageView.setImageURI(uri)
+        }
     }
 }

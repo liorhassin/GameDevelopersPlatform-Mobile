@@ -66,7 +66,7 @@ class ProfilePageFragment : Fragment() {
         initializeParameters(view)
         addTextWatchers()
         setButtonsOnClickEvent()
-        fetchUserData { updateProfilePageData() }
+        fetchUserData { updateProfilePagePreviewView() }
 
         return view
     }
@@ -113,6 +113,7 @@ class ProfilePageFragment : Fragment() {
         }
 
         editProfileButton.setOnClickListener {
+            updateProfilePageEditView()
             previewLayout.visibility = View.GONE
             editLayout.visibility = View.VISIBLE
         }
@@ -162,16 +163,16 @@ class ProfilePageFragment : Fragment() {
         }
     }
 
-    private fun updateProfilePageData(){
+    private fun updateProfilePagePreviewView(){
         previewNickname.text = userData.nickname
-
         GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage,
             GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, previewImage)
-
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate
         previewGamesCount.text = userData.userGames.size.toString()
+    }
 
+    private fun updateProfilePageEditView(){
         editNickname.setText(userData.nickname)
         editEmail.text = userData.email
         editBirthdate.text = userData.birthDate

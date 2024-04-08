@@ -23,11 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.Calendar
 
-//TODO - Refactor profile page code, split to methods and outsource parameters.
 class ProfilePageFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -61,9 +59,6 @@ class ProfilePageFragment : Fragment() {
     private lateinit var editOldPassword: TextInputEditText
     private lateinit var editNewPassword: TextInputEditText
 
-
-    //TODO - Add all text fields and inputs references.
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile_page, container, false)
@@ -71,7 +66,7 @@ class ProfilePageFragment : Fragment() {
         initializeParameters(view)
         addTextWatchers()
         setButtonsOnClickEvent()
-        fetchUserData { updateProfilePageData() }
+        fetchUserData { updateProfilePagePreviewView() }
 
         return view
     }
@@ -118,6 +113,7 @@ class ProfilePageFragment : Fragment() {
         }
 
         editProfileButton.setOnClickListener {
+            updateProfilePageEditView()
             previewLayout.visibility = View.GONE
             editLayout.visibility = View.VISIBLE
         }
@@ -167,15 +163,16 @@ class ProfilePageFragment : Fragment() {
         }
     }
 
-    private fun updateProfilePageData(){
+    private fun updateProfilePagePreviewView(){
         previewNickname.text = userData.nickname
-
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage, previewImage)
-
+        GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage,
+            GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, previewImage)
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate
         previewGamesCount.text = userData.userGames.size.toString()
+    }
 
+    private fun updateProfilePageEditView(){
         editNickname.setText(userData.nickname)
         editEmail.text = userData.email
         editBirthdate.text = userData.birthDate

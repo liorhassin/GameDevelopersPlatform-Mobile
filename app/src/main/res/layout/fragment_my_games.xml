@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:id="@+id/myGamesPageLayout"
     tools:context=".MyGamesPageFragment">
 
     <TextView
@@ -14,7 +15,7 @@
         android:layout_marginTop="8dp"
         android:text="My Games"
         android:textColor="@color/white"
-        android:textSize="48sp"
+        android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/myGamesPageRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"

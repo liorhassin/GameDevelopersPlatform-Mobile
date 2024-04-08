@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +26,7 @@ class HomePageFragment : Fragment() {
 
         initializeParameters(view)
         fetchGamesFromDB {
-            GameDevelopersAppUtil.populateRecyclerView(recyclerView, gamesList, storageRef)
+            GameDevelopersAppUtil.populateRecyclerView(recyclerView, gamesList, storageRef, requireActivity(), R.id.homePageLayout)
         }
 
         return view
@@ -40,6 +41,10 @@ class HomePageFragment : Fragment() {
         recyclerView = view.findViewById(R.id.homePageRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
+    }
+
+    private fun setButtonsOnClickEvent(){
+
     }
 
     private fun fetchGamesFromDB(onSuccess: () -> Unit){

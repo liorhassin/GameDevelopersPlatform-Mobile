@@ -11,8 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePagePreviewLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/profilePagePreviewNickname"
@@ -21,7 +20,7 @@
             android:layout_marginTop="16dp"
             android:text="Nickname"
             android:textColor="@color/white"
-            android:textSize="48sp"
+            android:textSize="36sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
@@ -143,7 +142,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profilePageEditLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/profilePageEditNicknameInput"

@@ -39,13 +39,6 @@ class ProfilePageFragment : Fragment() {
     private lateinit var previewLayout: ConstraintLayout
     private lateinit var editLayout: ConstraintLayout
 
-    private lateinit var myGamesButton: Button
-    private lateinit var editProfileButton: Button
-    private lateinit var cancelEditButton: Button
-    private lateinit var saveEditButton: Button
-    private lateinit var showDatePickerButton: Button
-    private lateinit var chooseImageButton: Button
-
     private lateinit var previewNickname: TextView
     private lateinit var previewImage: CircleImageView
     private lateinit var previewEmail: TextView
@@ -65,7 +58,7 @@ class ProfilePageFragment : Fragment() {
 
         initializeParameters(view)
         addTextWatchers()
-        setButtonsOnClickEvent()
+        setButtonsOnClickEvent(view)
         fetchUserData { updateProfilePagePreviewView() }
 
         return view
@@ -80,17 +73,6 @@ class ProfilePageFragment : Fragment() {
 
         previewLayout = view.findViewById(R.id.profilePagePreviewLayout)
         editLayout = view.findViewById(R.id.profilePageEditLayout)
-        galleryLauncher = generateGalleryLauncher {
-                data -> handleSelectedImage(data)
-            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
-        }
-
-        myGamesButton = view.findViewById<Button>(R.id.profilePagePreviewMyGamesButton)
-        editProfileButton = view.findViewById<Button>(R.id.profilePagePreviewEditProfileButton)
-        cancelEditButton = view.findViewById<Button>(R.id.profilePageEditCancelButton)
-        saveEditButton = view.findViewById<Button>(R.id.profilePageEditSaveButton)
-        showDatePickerButton = view.findViewById<Button>(R.id.profilePageEditPickADateButton)
-        chooseImageButton = view.findViewById<Button>(R.id.profilePageEditChooseImageButton)
 
         previewNickname = view.findViewById(R.id.profilePagePreviewNickname)
         previewImage = view.findViewById(R.id.profilePagePreviewCircleImage)
@@ -106,7 +88,14 @@ class ProfilePageFragment : Fragment() {
         editNewPassword = view.findViewById(R.id.profilePageEditNewPasswordInput)
     }
 
-    private fun setButtonsOnClickEvent(){
+    private fun setButtonsOnClickEvent(view: View){
+        val myGamesButton = view.findViewById<Button>(R.id.profilePagePreviewMyGamesButton)
+        val editProfileButton = view.findViewById<Button>(R.id.profilePagePreviewEditProfileButton)
+        val cancelEditButton = view.findViewById<Button>(R.id.profilePageEditCancelButton)
+        val saveEditButton = view.findViewById<Button>(R.id.profilePageEditSaveButton)
+        val showDatePickerButton = view.findViewById<Button>(R.id.profilePageEditPickADateButton)
+        val chooseImageButton = view.findViewById<Button>(R.id.profilePageEditChooseImageButton)
+
         myGamesButton.setOnClickListener{
             GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
                 R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(connectedUserId))
@@ -117,7 +106,6 @@ class ProfilePageFragment : Fragment() {
             previewLayout.visibility = View.GONE
             editLayout.visibility = View.VISIBLE
         }
-
 
         cancelEditButton.setOnClickListener {
             editLayout.visibility = View.GONE
@@ -137,6 +125,11 @@ class ProfilePageFragment : Fragment() {
 
         chooseImageButton.setOnClickListener {
             GameDevelopersAppUtil.openGallery(galleryLauncher)
+        }
+
+        galleryLauncher = generateGalleryLauncher {
+                data -> handleSelectedImage(data)
+            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
         }
 
     }
@@ -180,7 +173,6 @@ class ProfilePageFragment : Fragment() {
 
     private fun saveUserDataChange(){
         //TODO - each update function returns a task, after all tasks are completed move to profile page preview.
-        val userId = firebaseAuth.currentUser?.uid.toString()
         val oldNickname = userData.nickname
         val newNickname = editNickname.text.toString()
         val oldPassword = editOldPassword.text.toString()
@@ -214,7 +206,7 @@ class ProfilePageFragment : Fragment() {
                 GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH,
                 selectedImageUri!!, { imageName->
                     Log.e("imageName", imageName)
-                    updateUserImage(imageName, userId)
+                    updateUserImage(imageName, connectedUserId)
                 },{
                     Toast.makeText(this.context,
                         "Failed to upload new Image",
@@ -223,12 +215,12 @@ class ProfilePageFragment : Fragment() {
         }
 
         if(nicknameValidation)
-            updateUserNickname(oldNickname, newNickname, userId)
+            updateUserNickname(oldNickname, newNickname, connectedUserId)
         else
             GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.RED)
 
         if(birthdateValidation)
-            updateUserBirthdate(oldBirthdate, newBirthdate, userId)
+            updateUserBirthdate(oldBirthdate, newBirthdate, connectedUserId)
 
         if(!passwordValidation)
             GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)

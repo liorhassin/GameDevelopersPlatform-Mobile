@@ -130,6 +130,7 @@
             android:backgroundTint="@color/green_button"
             android:text="Edit"
             android:textSize="20sp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/gamePagePreviewDeleteButton"
             app:layout_constraintHorizontal_bias="0.069"
@@ -144,6 +145,7 @@
             android:backgroundTint="@color/red_button"
             android:text="Delete"
             android:textSize="20sp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

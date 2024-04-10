@@ -21,12 +21,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.util.Calendar
 
 //TODO - IN GAME PAGE
-//initialize parameters
-//load game data to view elements
-//enable switching between via code
-//only show button to switch between modes to owner of the game.
 //allow edit (name, image, release date, price)
 //allow deletion of the project.
 
@@ -41,6 +38,7 @@ class GamePageFragment : Fragment() {
     private lateinit var price: String
     private lateinit var releaseDate: String
     private lateinit var developerId: String
+    private var developerName: String = "Unknown"
     private var isOwner = false
 
     //Preview
@@ -88,6 +86,7 @@ class GamePageFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_game_page, container, false)
 
         initializeParameters(view)
+        toggleOwnerButtons()
         addTextWatchers()
         setButtonsOnClickEvent()
         updateGamePagePreviewView()
@@ -107,7 +106,6 @@ class GamePageFragment : Fragment() {
         releaseDate = arguments?.getString("RELEASE_DATE", "").toString()
         developerId = arguments?.getString("DEVELOPER_ID", "").toString()
         isOwner = (connectedUserId == developerId)
-
 
         //Preview:
         previewLayout = view.findViewById(R.id.gamePagePreviewLayout)
@@ -161,7 +159,9 @@ class GamePageFragment : Fragment() {
         }
 
         editPickADateButton.setOnClickListener {
-
+            GameDevelopersAppUtil.showDatePicker(this.requireContext(), Calendar.getInstance()){formattedDate ->
+                editReleaseDateView.text = formattedDate
+            }
         }
         editChooseImageButton.setOnClickListener {
             GameDevelopersAppUtil.openGallery(galleryLauncher)
@@ -182,8 +182,7 @@ class GamePageFragment : Fragment() {
         previewReleaseDateView.text = releaseDate
         GameDevelopersAppUtil.loadImageFromDB(storageRef, image,
             GameDevelopersAppUtil.GAMES_IMAGES_PATH, previewImageView)
-        //TODO - FETCH -> Developer name using ID
-        //gameDeveloperNamePreviewView.text =
+        retrieveAndLoadDeveloperNickname()
     }
 
     private fun updateGamePageEditView(){
@@ -207,6 +206,24 @@ class GamePageFragment : Fragment() {
         data?.data?.let { uri ->
             selectedImageUri = uri
             editImageView.setImageURI(uri)
+        }
+    }
+    private fun toggleOwnerButtons(){
+        if(isOwner){
+            previewEditButton.visibility = View.VISIBLE
+            previewDeleteButton.visibility = View.VISIBLE
+        }else{
+            previewEditButton.visibility = View.GONE
+            previewDeleteButton.visibility = View.GONE
+        }
+    }
+
+    private fun retrieveAndLoadDeveloperNickname(){
+        firestore.collection("users").document(developerId).get().addOnSuccessListener { it->
+            if(it.exists()){
+                developerName = it.get("nickname").toString()
+            }
+            previewDeveloperNameView.text = developerName
         }
     }
 }

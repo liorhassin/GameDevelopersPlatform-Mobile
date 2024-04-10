@@ -26,6 +26,13 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Calendar
 
 class ProfilePageFragment : Fragment() {
@@ -180,6 +187,112 @@ class ProfilePageFragment : Fragment() {
         editBirthdate.text = userData.birthDate
     }
 
+    private suspend fun saveUserDataTemp(){
+        //DESIGN:
+
+        //check if old password was entered, if so try to re-authenticate using old password.
+
+        //update password deferred.
+
+        //generate hashMapOf<String,String> with all user updates
+
+        //after checking all entered inputs and generating the map, send to helper function that
+        //updates all data.
+
+        //update preview with new parameters(without drawing from DB) and move player to preview mode.
+
+        //Consider -> Tasks, Deffered, Callbacks.
+
+
+        //1) Using Tasks, Bunch all tasks together and when all completed if all succeed move user to profile page.
+        //mainUpdateFunction - receives no parameters and uses helper functions that return tasks.
+        //updatePassword(receive new and old password, if not empty re-authenticate and update password.
+        //updateDetails(receive new Nickname, new Birthdate, new Image Uri).
+        //If both tasks completed all done.
+        //Else mark wrong inputs to indicate uses where it failed.
+
+        val updateDetailsMap = hashMapOf<String,String>()
+        var passwordUpdateStatus: Deferred<Boolean>? = null
+        var detailsUpdateStatus: Deferred<Triple<Boolean, Boolean, Boolean>>? = null
+
+        val oldNickname = userData.nickname
+        val newNickname = editNickname.text.toString()
+        val oldPassword = editOldPassword.text.toString()
+        val newPassword = editNewPassword.text.toString()
+        val oldBirthdate = userData.birthDate
+        val newBirthdate = editBirthdate.text.toString()
+
+        var newImage: String = ""
+        if(selectedImageUri!=null)
+            newImage = GameDevelopersAppUtil.getImageNameFromUri(
+                this.requireActivity().contentResolver, selectedImageUri!!)
+
+        val (nicknameValidation, passwordValidation, birthdateValidation, imageValidation) =
+            requireChangeValidation(newNickname, oldNickname, newPassword, newBirthdate, oldBirthdate, newImage)
+
+        //TODO - remove all comments if working.
+
+        //async block for better optimization test:
+        runBlocking {
+            //TODO - change this to updateUserPassword(newPassword:String):Deferred<Boolean>
+            if (oldPassword.isNotEmpty()) {
+                if (passwordValidation) {
+                    val authenticationStatus = async { reAuthenticateUser(oldPassword) }
+                    if (authenticationStatus.await()) {
+                        passwordUpdateStatus = async { updateUserPassword(newPassword) }
+                    }
+                } else {
+                    GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)
+                }
+            }
+
+            if(nicknameValidation){
+                updateDetailsMap["nickname"] = newNickname
+            }
+            if(birthdateValidation){
+                updateDetailsMap["birthdate"] = newBirthdate
+            }
+            if(imageValidation){
+                updateDetailsMap["image"] = newImage
+            }
+            if(updateDetailsMap.isNotEmpty()){
+                detailsUpdateStatus = updateUserDetails(updateDetailsMap)
+            }
+
+            if(detailsUpdateStatus!!.await().first && passwordUpdateStatus!!.await())
+        }
+
+    }
+
+    //TODO - Remove this section if not used ! Attempts::
+    private suspend fun reAuthenticateUser(oldPassword: String): Boolean{
+
+        return true
+    }
+    private suspend fun updateUserPassword(newPassword: String): Boolean{
+
+        return true
+    }
+    private suspend fun updateUserDetails(updateDetailsMap:HashMap<String,String>):
+            Deferred<Triple<Boolean, Boolean, Boolean>>{
+
+        return null
+    }
+
+    private fun requireChangeValidation(
+        newNickname: String, oldNickname: String,
+        newPassword: String, newBirthdate: String,
+        oldBirthdate: String, newImage: String):GameDevelopersAppUtil.QuadrupleBooleans{
+
+        return GameDevelopersAppUtil.QuadrupleBooleans(
+            (newNickname.isNotEmpty() && GameDevelopersAppUtil.nicknameValidation(newNickname) && newNickname!=oldNickname),
+            (newPassword.isNotEmpty() && GameDevelopersAppUtil.passwordValidation(newPassword)),
+            (newBirthdate.isNotEmpty() && newBirthdate!=oldBirthdate),
+            (newImage != "")
+        )
+    }
+    //END OF REFACTOR ATTEMPT:
+
     private fun saveUserDataChange(){
         //TODO - each update function returns a task, after all tasks are completed move to profile page preview.
         val userId = firebaseAuth.currentUser?.uid.toString()
@@ -195,7 +308,7 @@ class ProfilePageFragment : Fragment() {
             newImage = GameDevelopersAppUtil.getImageNameFromUri(this.requireActivity().contentResolver, selectedImageUri!!)
 
         val (nicknameValidation, passwordValidation, birthdateValidation, imageValidation) =
-            saveUserInputsValidation(newNickname, newPassword, newBirthdate, newImage)
+            saveUserInputsValidation(newNickname, newPassword, newBirthdate, oldBirthdate, newImage)
 
         if(oldPassword.isNotEmpty()){
             reAuthenticate(oldPassword) {
@@ -319,7 +432,7 @@ class ProfilePageFragment : Fragment() {
         }
     }
 
-    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String, newImage: String): GameDevelopersAppUtil.QuadrupleBooleans{
+    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String, oldBirthdate: String, newImage: String): GameDevelopersAppUtil.QuadrupleBooleans{
         return GameDevelopersAppUtil.QuadrupleBooleans(
             (GameDevelopersAppUtil.nicknameValidation(newNickname) || newNickname.isEmpty()),
             (GameDevelopersAppUtil.passwordValidation(newPassword)) || newPassword.isEmpty(),

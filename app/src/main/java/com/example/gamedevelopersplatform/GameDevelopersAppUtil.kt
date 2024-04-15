@@ -12,12 +12,15 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.tasks.asDeferred
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -85,6 +88,18 @@ object GameDevelopersAppUtil {
                 onSuccess(imageName)
         }.addOnFailureListener { exception ->
             onFailure(exception)
+        }
+    }
+
+    //Attempt:{ Rename if works before deleting comment
+    suspend fun uploadImageAndGetNameTest(storageRef: StorageReference, path: String, imageUri: Uri): Pair<Boolean, String> {
+        val imageName = UUID.randomUUID().toString()
+        val imageReference = storageRef.child("$path$imageName")
+        return try {
+            val uploadTask = imageReference.putFile(imageUri).await()
+            Pair(uploadTask.metadata != null, imageName)
+        } catch (e: Exception) {
+            Pair(false, imageName)
         }
     }
 

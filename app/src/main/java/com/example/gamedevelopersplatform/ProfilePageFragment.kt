@@ -33,6 +33,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.asDeferred
+import kotlinx.coroutines.tasks.await
 import java.util.Calendar
 
 class ProfilePageFragment : Fragment() {
@@ -141,7 +143,7 @@ class ProfilePageFragment : Fragment() {
         }
 
         saveEditButton.setOnClickListener {
-            saveUserDataChange()
+            saveUserDataTemp()
         }
 
         chooseImageButton.setOnClickListener {
@@ -159,6 +161,9 @@ class ProfilePageFragment : Fragment() {
         }
         GameDevelopersAppUtil.handleTextChange(editNewPassword) {
             GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.WHITE)
+        }
+        GameDevelopersAppUtil.handleTextChange(chooseImageButton) {
+            GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
         }
     }
 
@@ -182,38 +187,17 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun updateProfilePageEditView(){
+        editImage.setImageResource(R.drawable.place_holder_image)
         editNickname.setText(userData.nickname)
         editEmail.text = userData.email
         editBirthdate.text = userData.birthDate
     }
 
-    private suspend fun saveUserDataTemp(){
-        //DESIGN:
-
-        //check if old password was entered, if so try to re-authenticate using old password.
-
-        //update password deferred.
-
-        //generate hashMapOf<String,String> with all user updates
-
-        //after checking all entered inputs and generating the map, send to helper function that
-        //updates all data.
-
-        //update preview with new parameters(without drawing from DB) and move player to preview mode.
-
-        //Consider -> Tasks, Deffered, Callbacks.
-
-
-        //1) Using Tasks, Bunch all tasks together and when all completed if all succeed move user to profile page.
-        //mainUpdateFunction - receives no parameters and uses helper functions that return tasks.
-        //updatePassword(receive new and old password, if not empty re-authenticate and update password.
-        //updateDetails(receive new Nickname, new Birthdate, new Image Uri).
-        //If both tasks completed all done.
-        //Else mark wrong inputs to indicate uses where it failed.
-
+    private fun saveUserDataTemp(){
         val updateDetailsMap = hashMapOf<String,String>()
         var passwordUpdateStatus: Deferred<Boolean>? = null
-        var detailsUpdateStatus: Deferred<Triple<Boolean, Boolean, Boolean>>? = null
+        var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
+        var detailsUpdateStatus: Deferred<Boolean>? = null
 
         val oldNickname = userData.nickname
         val newNickname = editNickname.text.toString()
@@ -222,7 +206,7 @@ class ProfilePageFragment : Fragment() {
         val oldBirthdate = userData.birthDate
         val newBirthdate = editBirthdate.text.toString()
 
-        var newImage: String = ""
+        var newImage = ""
         if(selectedImageUri!=null)
             newImage = GameDevelopersAppUtil.getImageNameFromUri(
                 this.requireActivity().contentResolver, selectedImageUri!!)
@@ -230,53 +214,97 @@ class ProfilePageFragment : Fragment() {
         val (nicknameValidation, passwordValidation, birthdateValidation, imageValidation) =
             requireChangeValidation(newNickname, oldNickname, newPassword, newBirthdate, oldBirthdate, newImage)
 
-        //TODO - remove all comments if working.
-
-        //async block for better optimization test:
         runBlocking {
-            //TODO - change this to updateUserPassword(newPassword:String):Deferred<Boolean>
+            //Handle password:
+            if(newPassword.isNotEmpty() && oldPassword.isEmpty()){
+                GameDevelopersAppUtil.setTextAndHintTextColor(editOldPassword, Color.RED)
+                return@runBlocking
+            }
+
             if (oldPassword.isNotEmpty()) {
                 if (passwordValidation) {
-                    val authenticationStatus = async { reAuthenticateUser(oldPassword) }
+                    //TODO - fix re authenticate call and refactor is done
+                    val authenticationStatus = async { reAuthenticate(oldPassword) }
                     if (authenticationStatus.await()) {
                         passwordUpdateStatus = async { updateUserPassword(newPassword) }
                     }
+                    else{
+                        GameDevelopersAppUtil.setTextAndHintTextColor(editOldPassword, Color.RED)
+                        return@runBlocking
+                    }
                 } else {
                     GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)
+                    return@runBlocking
                 }
             }
 
-            if(nicknameValidation){
-                updateDetailsMap["nickname"] = newNickname
-            }
-            if(birthdateValidation){
-                updateDetailsMap["birthdate"] = newBirthdate
-            }
-            if(imageValidation){
-                updateDetailsMap["image"] = newImage
-            }
-            if(updateDetailsMap.isNotEmpty()){
-                detailsUpdateStatus = updateUserDetails(updateDetailsMap)
+            //Handle image:
+            if(imageValidation) {
+                imageUpdateStatus = async { GameDevelopersAppUtil.uploadImageAndGetNameTest(
+                    storageRef, GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, selectedImageUri!!)}
+
+                imageUpdateStatus?.await()?.let { result ->
+                    if(result.first){
+                        storageRef.child(GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH + userData.profileImage).delete()
+                        updateDetailsMap["profileImage"] = result.second
+                        userData.profileImage = result.second
+                    }else{
+                        GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.RED)
+                        return@runBlocking
+                    }
+                }
             }
 
-            if(detailsUpdateStatus!!.await().first && passwordUpdateStatus!!.await())
+            //Handle rest of possible updates:
+            if(nicknameValidation) {
+                updateDetailsMap["nickname"] = newNickname
+                userData.nickname = newNickname
+            }
+            if(birthdateValidation) {
+                updateDetailsMap["birthdate"] = newBirthdate
+                userData.nickname = newBirthdate
+            }
+
+            if(updateDetailsMap.isNotEmpty())
+                detailsUpdateStatus = async { updateUserDetails(updateDetailsMap) }
+
+            val isPasswordUpdateSuccessful = passwordUpdateStatus?.await() ?: true
+            val isImageUpdateSuccessful = imageUpdateStatus?.await()?.first ?: true
+            val isDetailsUpdateSuccessful = detailsUpdateStatus?.await() ?: true
+
+            if(isDetailsUpdateSuccessful && isImageUpdateSuccessful && isPasswordUpdateSuccessful){
+                updateProfilePagePreviewView()
+                editLayout.visibility = View.GONE
+                previewLayout.visibility = View.VISIBLE
+            }
         }
 
     }
 
-    //TODO - Remove this section if not used ! Attempts::
-    private suspend fun reAuthenticateUser(oldPassword: String): Boolean{
+//    private suspend fun reAuthenticateUser(oldPassword: String): Boolean {
+//        val user = firebaseAuth.currentUser
+//        val email = user?.email ?: return false
+//
+//        return try {
+//            val credential = EmailAuthProvider.getCredential(email, oldPassword)
+//            user.reauthenticate(credential).await()
+//            true
+//        } catch (e: Exception) { false }
+//    }
 
-        return true
+    private suspend fun updateUserPassword(newPassword: String): Boolean {
+        return try {
+            firebaseAuth.currentUser?.updatePassword(newPassword)?.await()
+            true
+        } catch (e: Exception) { false }
     }
-    private suspend fun updateUserPassword(newPassword: String): Boolean{
 
-        return true
-    }
-    private suspend fun updateUserDetails(updateDetailsMap:HashMap<String,String>):
-            Deferred<Triple<Boolean, Boolean, Boolean>>{
-
-        return null
+    private suspend fun updateUserDetails(updateDetailsMap: HashMap<String, String>): Boolean {
+        return try {
+            firestore.collection("users").document(connectedUserId)
+                .update(updateDetailsMap as Map<String, Any>).await()
+            true
+        } catch (e: Exception) { false }
     }
 
     private fun requireChangeValidation(
@@ -291,154 +319,166 @@ class ProfilePageFragment : Fragment() {
             (newImage != "")
         )
     }
-    //END OF REFACTOR ATTEMPT:
+    //END OF REFACTOR ATTEMPT|
 
-    private fun saveUserDataChange(){
-        //TODO - each update function returns a task, after all tasks are completed move to profile page preview.
-        val userId = firebaseAuth.currentUser?.uid.toString()
-        val oldNickname = userData.nickname
-        val newNickname = editNickname.text.toString()
-        val oldPassword = editOldPassword.text.toString()
-        val newPassword = editNewPassword.text.toString()
-        val oldBirthdate = userData.birthDate
-        val newBirthdate = editBirthdate.text.toString()
+//    private fun saveUserDataChange(){
+//        //TODO - each update function returns a task, after all tasks are completed move to profile page preview.
+//        val userId = firebaseAuth.currentUser?.uid.toString()
+//        val oldNickname = userData.nickname
+//        val newNickname = editNickname.text.toString()
+//        val oldPassword = editOldPassword.text.toString()
+//        val newPassword = editNewPassword.text.toString()
+//        val oldBirthdate = userData.birthDate
+//        val newBirthdate = editBirthdate.text.toString()
+//
+//        var newImage = ""
+//        if(selectedImageUri != null)
+//            newImage = GameDevelopersAppUtil.getImageNameFromUri(this.requireActivity().contentResolver, selectedImageUri!!)
+//
+//        val (nicknameValidation, passwordValidation, birthdateValidation, imageValidation) =
+//            saveUserInputsValidation(newNickname, newPassword, newBirthdate, oldBirthdate, newImage)
+//
+//        if(oldPassword.isNotEmpty()){
+//            reAuthenticate(oldPassword) {
+//                if(passwordValidation && newPassword.isNotEmpty()) {
+//                    updateUserPassword(newPassword) {
+//                        editOldPassword.setText("")
+//                        editNewPassword.setText("")
+//                    }
+//                }
+//                else{
+//                    GameDevelopersAppUtil.setTextAndHintTextColor(editOldPassword, Color.RED)
+//                }
+//            }
+//        }
+//
+//        if(imageValidation){
+//            GameDevelopersAppUtil.uploadImageAndGetName(storageRef,
+//                GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH,
+//                selectedImageUri!!, { imageName->
+//                    Log.e("imageName", imageName)
+//                    updateUserImage(imageName, userId)
+//                },{
+//                    Toast.makeText(this.context,
+//                        "Failed to upload new Image",
+//                        Toast.LENGTH_SHORT).show()
+//                })
+//        }
+//
+//        if(nicknameValidation)
+//            updateUserNickname(oldNickname, newNickname, userId)
+//        else
+//            GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.RED)
+//
+//        if(birthdateValidation)
+//            updateUserBirthdate(oldBirthdate, newBirthdate, userId)
+//
+//        if(!passwordValidation)
+//            GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)
+//    }
 
-        var newImage = ""
-        if(selectedImageUri != null)
-            newImage = GameDevelopersAppUtil.getImageNameFromUri(this.requireActivity().contentResolver, selectedImageUri!!)
+//    private fun reAuthenticate(currentPassword: String, onSuccess: () -> Unit){
+//        val user = firebaseAuth.currentUser
+//        val email = user?.email
+//
+//        if(email != null && currentPassword.isNotEmpty()){
+//            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+//            user.reauthenticate(credential).addOnSuccessListener {
+//                onSuccess()
+//            }.addOnFailureListener {exception ->
+//                Toast.makeText(this.context,
+//                    "Re-Authentication failed, exception: ${exception.message}",
+//                    Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
-        val (nicknameValidation, passwordValidation, birthdateValidation, imageValidation) =
-            saveUserInputsValidation(newNickname, newPassword, newBirthdate, oldBirthdate, newImage)
-
-        if(oldPassword.isNotEmpty()){
-            reAuthenticate(oldPassword) {
-                if(passwordValidation && newPassword.isNotEmpty()) {
-                    updateUserPassword(newPassword) {
-                        editOldPassword.setText("")
-                        editNewPassword.setText("")
-                    }
-                }
-                else{
-                    GameDevelopersAppUtil.setTextAndHintTextColor(editOldPassword, Color.RED)
-                }
-            }
-        }
-
-        if(imageValidation){
-            GameDevelopersAppUtil.uploadImageAndGetName(storageRef,
-                GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH,
-                selectedImageUri!!, { imageName->
-                    Log.e("imageName", imageName)
-                    updateUserImage(imageName, userId)
-                },{
-                    Toast.makeText(this.context,
-                        "Failed to upload new Image",
-                        Toast.LENGTH_SHORT).show()
-                })
-        }
-
-        if(nicknameValidation)
-            updateUserNickname(oldNickname, newNickname, userId)
-        else
-            GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.RED)
-
-        if(birthdateValidation)
-            updateUserBirthdate(oldBirthdate, newBirthdate, userId)
-
-        if(!passwordValidation)
-            GameDevelopersAppUtil.setTextAndHintTextColor(editNewPassword, Color.RED)
-    }
-
-    private fun reAuthenticate(currentPassword: String, onSuccess: () -> Unit){
+    private suspend fun reAuthenticate(currentPassword: String): Boolean{
         val user = firebaseAuth.currentUser
         val email = user?.email
 
         if(email != null && currentPassword.isNotEmpty()){
             val credential = EmailAuthProvider.getCredential(email, currentPassword)
-            user.reauthenticate(credential).addOnSuccessListener {
-                onSuccess()
-            }.addOnFailureListener {exception ->
-                Toast.makeText(this.context,
-                    "Re-Authentication failed, exception: ${exception.message}",
-                    Toast.LENGTH_SHORT).show()
-            }
+            user.reauthenticate(credential)
+            return true
         }
+        return false
     }
 
-    private fun updateUserImage(newImage: String, userId: String){
-        val userUpdates = hashMapOf<String, String>()
-        if(newImage!="") userUpdates["profileImage"] = newImage
+//    private fun updateUserImage(newImage: String, userId: String){
+//        val userUpdates = hashMapOf<String, String>()
+//        if(newImage!="") userUpdates["profileImage"] = newImage
+//
+//        if(userUpdates.isNotEmpty()){
+//            storageRef.child(GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH + userData.profileImage).delete().addOnCompleteListener {
+//                firestore.collection("users").document(userId)
+//                    .update(userUpdates as Map<String, String>).addOnSuccessListener {
+//                        userData.profileImage = newImage
+//                    }.addOnFailureListener { exception ->
+//                        Toast.makeText(this.context,
+//                            "Failed to update profile image, exception: $exception",
+//                            Toast.LENGTH_SHORT).show()
+//                    }
+//            }.addOnFailureListener { exception ->
+//                Toast.makeText(this.context,
+//                    "Failed to delete previous image Update failed, exception: $exception",
+//                    Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
-        if(userUpdates.isNotEmpty()){
-            storageRef.child(GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH + userData.profileImage).delete().addOnCompleteListener {
-                firestore.collection("users").document(userId)
-                    .update(userUpdates as Map<String, String>).addOnSuccessListener {
-                        userData.profileImage = newImage
-                    }.addOnFailureListener { exception ->
-                        Toast.makeText(this.context,
-                            "Failed to update profile image, exception: $exception",
-                            Toast.LENGTH_SHORT).show()
-                    }
-            }.addOnFailureListener { exception ->
-                Toast.makeText(this.context,
-                    "Failed to delete previous image Update failed, exception: $exception",
-                    Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+//    private fun updateUserNickname(oldNickname: String, newNickname: String, userId: String){
+//        val userUpdates = hashMapOf<String, String>()
+//        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
+//
+//        if(userUpdates.isNotEmpty()){
+//            firestore.collection("users").document(userId)
+//                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+//                    userData.nickname = newNickname
+//                }.addOnFailureListener { exception ->
+//                    Toast.makeText(this.context,
+//                        "Failed to update nickname, exception: $exception",
+//                        Toast.LENGTH_SHORT).show()
+//                }
+//        }
+//    }
 
-    private fun updateUserNickname(oldNickname: String, newNickname: String, userId: String){
-        val userUpdates = hashMapOf<String, String>()
-        if(oldNickname != newNickname && newNickname.isNotEmpty()) userUpdates["nickname"] = newNickname
+//    private fun updateUserBirthdate(oldBirthdate: String, newBirthdate: String, userId: String){
+//        val userUpdates = hashMapOf<String, String>()
+//        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
+//
+//        if(userUpdates.isNotEmpty()){
+//            firestore.collection("users").document(userId)
+//                .update(userUpdates as Map<String, String>).addOnSuccessListener {
+//                    userData.birthDate = newBirthdate
+//                }.addOnFailureListener { exception ->
+//                    Toast.makeText(this.context,
+//                        "Failed to update birthdate, exception: $exception",
+//                        Toast.LENGTH_SHORT).show()
+//                }
+//        }
+//    }
 
-        if(userUpdates.isNotEmpty()){
-            firestore.collection("users").document(userId)
-                .update(userUpdates as Map<String, String>).addOnSuccessListener {
-                    userData.nickname = newNickname
-                }.addOnFailureListener { exception ->
-                    Toast.makeText(this.context,
-                        "Failed to update nickname, exception: $exception",
-                        Toast.LENGTH_SHORT).show()
-                }
-        }
-    }
+//    private fun updateUserPassword(newPassword: String, onSuccess: () -> Unit){
+//        firebaseAuth.currentUser?.updatePassword(newPassword)?.addOnSuccessListener {
+//            Toast.makeText(this.context,
+//                "Password was changed successfully",
+//                Toast.LENGTH_SHORT).show()
+//            onSuccess()
+//        }?.addOnFailureListener {
+//            Toast.makeText(this.context,
+//                "Failed to change password",
+//                Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
-    private fun updateUserBirthdate(oldBirthdate: String, newBirthdate: String, userId: String){
-        val userUpdates = hashMapOf<String, String>()
-        if(oldBirthdate != newBirthdate && newBirthdate.isNotEmpty()) userUpdates["birthDate"] = newBirthdate
-
-        if(userUpdates.isNotEmpty()){
-            firestore.collection("users").document(userId)
-                .update(userUpdates as Map<String, String>).addOnSuccessListener {
-                    userData.birthDate = newBirthdate
-                }.addOnFailureListener { exception ->
-                    Toast.makeText(this.context,
-                        "Failed to update birthdate, exception: $exception",
-                        Toast.LENGTH_SHORT).show()
-                }
-        }
-    }
-
-    private fun updateUserPassword(newPassword: String, onSuccess: () -> Unit){
-        firebaseAuth.currentUser?.updatePassword(newPassword)?.addOnSuccessListener {
-            Toast.makeText(this.context,
-                "Password was changed successfully",
-                Toast.LENGTH_SHORT).show()
-            onSuccess()
-        }?.addOnFailureListener {
-            Toast.makeText(this.context,
-                "Failed to change password",
-                Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String, oldBirthdate: String, newImage: String): GameDevelopersAppUtil.QuadrupleBooleans{
-        return GameDevelopersAppUtil.QuadrupleBooleans(
-            (GameDevelopersAppUtil.nicknameValidation(newNickname) || newNickname.isEmpty()),
-            (GameDevelopersAppUtil.passwordValidation(newPassword)) || newPassword.isEmpty(),
-            newBirthdate.isNotEmpty(),
-            newImage != "")
-    }
+//    private fun saveUserInputsValidation(newNickname: String ,newPassword: String, newBirthdate: String, oldBirthdate: String, newImage: String): GameDevelopersAppUtil.QuadrupleBooleans{
+//        return GameDevelopersAppUtil.QuadrupleBooleans(
+//            (GameDevelopersAppUtil.nicknameValidation(newNickname) || newNickname.isEmpty()),
+//            (GameDevelopersAppUtil.passwordValidation(newPassword)) || newPassword.isEmpty(),
+//            newBirthdate.isNotEmpty(),
+//            newImage != "")
+//    }
 
     //TODO - Make this function generic in util
     private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {

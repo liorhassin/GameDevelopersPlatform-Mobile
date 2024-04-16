@@ -269,6 +269,7 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun updateUserDetails(){
+        //TODO - Check if inputs turn red on the correct moments, if not change validations like in edit game.
         val updateDetailsMap = hashMapOf<String,String>()
         var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
         var detailsUpdateStatus: Deferred<Boolean>? = null

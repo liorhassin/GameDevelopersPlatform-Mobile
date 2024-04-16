@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -67,7 +68,7 @@ class GamePageFragment : Fragment() {
     private lateinit var editCancelButton: Button
 
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
-    private lateinit var selectedImageUri: Uri
+    private var selectedImageUri: Uri? = null
 
 
     companion object{
@@ -147,15 +148,15 @@ class GamePageFragment : Fragment() {
 
     private fun setButtonsOnClickEvent(){
         previewDeveloperProfileButton.setOnClickListener {
-
+            //TODO - Move to developer profile page.
+            loadDeveloperPage()
         }
         previewEditButton.setOnClickListener {
-            updateGamePageEditView()
-            previewLayout.visibility = View.GONE
-            editLayout.visibility = View.VISIBLE
+            switchToEditLayout()
         }
         previewDeleteButton.setOnClickListener {
-
+            //TODO - delete game from database and move user to myGames.
+            deleteGame()
         }
 
         editPickADateButton.setOnClickListener {
@@ -167,12 +168,10 @@ class GamePageFragment : Fragment() {
             GameDevelopersAppUtil.openGallery(galleryLauncher)
         }
         editSaveButton.setOnClickListener {
-            //TODO - Call save method that is split into organized functions.
-            //TODO - Only after re-factoring save profile functions.
+            updateGameDetails()
         }
         editCancelButton.setOnClickListener {
-            editLayout.visibility = View.GONE
-            previewLayout.visibility = View.VISIBLE
+            switchToPreviewLayout()
         }
     }
 
@@ -191,7 +190,42 @@ class GamePageFragment : Fragment() {
         editReleaseDateView.text = releaseDate
     }
 
-    //TODO - consider moving function to generic util object (Used in a few places).
+    private fun updateGameDetails(){
+        //PARAMETERS:
+        val newGameName: String = editNameInput.text.toString()
+        val newGamePrice: String = editPriceInput.text.toString()
+        val newGameReleaseDate: String = editReleaseDateView.text.toString()
+
+        var newImage = ""
+        if(selectedImageUri!=null)
+            newImage = GameDevelopersAppUtil.getImageNameFromUri(
+                this.requireActivity().contentResolver, selectedImageUri!!)
+    }
+
+    private fun deleteGame(){
+
+    }
+
+    private fun loadDeveloperPage(){
+
+    }
+
+    private fun validateGameInputs(newGameName: String, newGamePrice: String): Boolean{
+        if(newGameName!=name && !GameDevelopersAppUtil.gameNameValidation(newGameName)){
+            GameDevelopersAppUtil.popToast(this@GamePageFragment.requireContext()
+                , "Name doesn't meet the requirements", Toast.LENGTH_SHORT)
+            GameDevelopersAppUtil.setTextAndHintTextColor(editNameInput, Color.RED)
+            return false
+        }
+        if(newGamePrice!=price && !GameDevelopersAppUtil.gamePriceValidation(newGamePrice)){
+            GameDevelopersAppUtil.popToast(this@GamePageFragment.requireContext()
+                , "Price doesn't meet the requirements", Toast.LENGTH_SHORT)
+            GameDevelopersAppUtil.setTextAndHintTextColor(editPriceInput, Color.RED)
+            return false
+        }
+        return true
+    }
+
     private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -201,7 +235,6 @@ class GamePageFragment : Fragment() {
         }
     }
 
-    //TODO - consider moving function to generic util object
     private fun handleSelectedImage(data: Intent?) {
         data?.data?.let { uri ->
             selectedImageUri = uri
@@ -225,5 +258,16 @@ class GamePageFragment : Fragment() {
             }
             previewDeveloperNameView.text = developerName
         }
+    }
+
+    private fun switchToEditLayout(){
+        updateGamePageEditView()
+        previewLayout.visibility = View.GONE
+        editLayout.visibility = View.VISIBLE
+    }
+
+    private fun switchToPreviewLayout(){
+        editLayout.visibility = View.GONE
+        previewLayout.visibility = View.VISIBLE
     }
 }

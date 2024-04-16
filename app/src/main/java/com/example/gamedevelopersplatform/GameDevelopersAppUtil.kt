@@ -48,6 +48,7 @@ object GameDevelopersAppUtil {
         datePickerDialog.show()
     }
 
+    //TODO - Change how this function works to support hint changing back to another color or default.
     fun <T> setTextAndHintTextColor(view: T,color:Int) where T : TextView{
         if(view.text != null) view.setTextColor(color)
         if(view.hint != null) view.setHintTextColor(color)
@@ -178,6 +179,10 @@ object GameDevelopersAppUtil {
         //Requirements: Length between 2-30.
         val nameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_' ]{2,30}\$")
         return nameRegex.matches(name)
+    }
+
+    fun popToast(context: Context, message: String, duration: Int){
+        Toast.makeText(context, message, duration).show()
     }
 
 }

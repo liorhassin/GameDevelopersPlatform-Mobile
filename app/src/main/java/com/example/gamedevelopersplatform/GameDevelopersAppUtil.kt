@@ -12,12 +12,15 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.tasks.asDeferred
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -45,6 +48,7 @@ object GameDevelopersAppUtil {
         datePickerDialog.show()
     }
 
+    //TODO - Change how this function works to support hint changing back to another color or default.
     fun <T> setTextAndHintTextColor(view: T,color:Int) where T : TextView{
         if(view.text != null) view.setTextColor(color)
         if(view.hint != null) view.setHintTextColor(color)
@@ -85,6 +89,18 @@ object GameDevelopersAppUtil {
                 onSuccess(imageName)
         }.addOnFailureListener { exception ->
             onFailure(exception)
+        }
+    }
+
+    //Attempt:{ Rename if works before deleting comment
+    suspend fun uploadImageAndGetNameTest(storageRef: StorageReference, path: String, imageUri: Uri): Pair<Boolean, String> {
+        val imageName = UUID.randomUUID().toString()
+        val imageReference = storageRef.child("$path$imageName")
+        return try {
+            val uploadTask = imageReference.putFile(imageUri).await()
+            Pair(uploadTask.metadata != null, imageName)
+        } catch (e: Exception) {
+            Pair(false, imageName)
         }
     }
 
@@ -163,6 +179,10 @@ object GameDevelopersAppUtil {
         //Requirements: Length between 2-30.
         val nameRegex = Regex("^(?=.*[A-Za-z].*[A-Za-z])[A-Za-z0-9_' ]{2,30}\$")
         return nameRegex.matches(name)
+    }
+
+    fun popToast(context: Context, message: String, duration: Int){
+        Toast.makeText(context, message, duration).show()
     }
 
 }

@@ -92,10 +92,10 @@
             android:id="@+id/profilePagePreviewEditProfileButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:text="Edit Profile"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewBirthdateTitle" />
 
@@ -136,6 +136,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewGamesCountText"
             app:layout_constraintVertical_bias="0" />
+
+        <Button
+            android:id="@+id/profilePagePreviewChangePassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Change Password"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/profilePagePreviewEditProfileButton"
+            app:layout_constraintTop_toBottomOf="@+id/profilePagePreviewBirthdateText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -189,28 +202,30 @@
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditChooseImageButton" />
 
         <TextView
-            android:id="@+id/profilePageEditPasswordTitle"
+            android:id="@+id/profilePageEditBirthdateTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:text="Password:"
+            android:layout_marginTop="16dp"
+            android:text="Birth Date:"
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailTitle" />
 
         <TextView
-            android:id="@+id/profilePageEditBirthdateTitle"
+            android:id="@+id/profilePageEditBirthdateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="114dp"
-            android:text="Birth Date:"
+            android:layout_marginStart="112dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:textColor="@color/white"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditPasswordTitle" />
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/profilePageEditBirthdateTitle"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailText" />
 
         <Button
             android:id="@+id/profilePageEditPickADateButton"
@@ -286,58 +301,151 @@
             app:layout_constraintStart_toEndOf="@+id/profilePageEditEmailTitle"
             app:layout_constraintTop_toBottomOf="@+id/profilePageEditChooseImageButton" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/profilePageEditOldPasswordInput"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:hint="Old Password"
-            android:maxWidth="240dp"
-            android:minWidth="120dp"
-            android:password="true"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textColorHint="@color/hint_color"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/profilePageEditPasswordTitle"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditEmailText"
-            tools:ignore="Deprecated" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/profilePageEditNewPasswordInput"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:hint="New Password"
-            android:maxWidth="240dp"
-            android:minWidth="120dp"
-            android:password="true"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textColorHint="@color/hint_color"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditOldPasswordInput"
-            tools:ignore="Deprecated" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/profilePageEditBirthdateText"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profilePageChangePasswordLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/profilePageChangePasswordSaveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="112dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/green_button"
+            android:text="Save"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageChangePasswordConfirmText"
+            app:layout_constraintVertical_bias="0.524" />
+
+        <Button
+            android:id="@+id/profilePageChangePasswordCancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/white"
-            android:textSize="28sp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/red_button"
+            android:text="Cancel"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/profilePageEditBirthdateTitle"
-            app:layout_constraintTop_toBottomOf="@+id/profilePageEditNewPasswordInput" />
+            app:layout_constraintStart_toEndOf="@+id/profilePageChangePasswordSaveButton"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageChangePasswordConfirmPasswordInput" />
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Change Password"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/profilePageChangePasswordOldPasswordText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="52dp"
+            android:text="Old Password:"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <TextView
+            android:id="@+id/profilePageChangePasswordNewPasswordText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="44dp"
+            android:text="New Password:"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageChangePasswordOldPasswordText" />
+
+        <TextView
+            android:id="@+id/profilePageChangePasswordConfirmText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="44dp"
+            android:text="Confirm Password:"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageChangePasswordNewPasswordText" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profilePageChangePasswordOldPasswordInput"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Old Password"
+            android:maxWidth="200dp"
+            android:minWidth="120dp"
+            android:password="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_color"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.652"
+            app:layout_constraintStart_toEndOf="@+id/profilePageChangePasswordOldPasswordText"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            tools:ignore="Deprecated" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profilePageChangePasswordNewPasswordInput"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:hint="New Password"
+            android:maxWidth="200dp"
+            android:minWidth="120dp"
+            android:password="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_color"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.712"
+            app:layout_constraintStart_toEndOf="@+id/profilePageChangePasswordOldPasswordText"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageChangePasswordOldPasswordInput"
+            tools:ignore="Deprecated" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profilePageChangePasswordConfirmPasswordInput"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Confirm Password"
+            android:maxWidth="200dp"
+            android:minWidth="120dp"
+            android:password="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_color"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/profilePageChangePasswordNewPasswordInput"
+            app:layout_constraintTop_toBottomOf="@+id/profilePageChangePasswordNewPasswordInput"
+            tools:ignore="Deprecated" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

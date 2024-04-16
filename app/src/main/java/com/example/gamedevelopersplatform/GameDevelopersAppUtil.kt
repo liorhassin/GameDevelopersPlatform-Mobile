@@ -9,7 +9,6 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -19,7 +18,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -93,7 +91,7 @@ object GameDevelopersAppUtil {
     }
 
     //Attempt:{ Rename if works before deleting comment
-    suspend fun uploadImageAndGetNameTest(storageRef: StorageReference, path: String, imageUri: Uri): Pair<Boolean, String> {
+    suspend fun uploadImageAndGetName(storageRef: StorageReference, path: String, imageUri: Uri): Pair<Boolean, String> {
         val imageName = UUID.randomUUID().toString()
         val imageReference = storageRef.child("$path$imageName")
         return try {

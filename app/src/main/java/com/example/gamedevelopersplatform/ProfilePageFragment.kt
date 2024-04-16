@@ -269,10 +269,11 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun updateUserDetails(){
+        //TODO - Check if inputs turn red on the correct moments, if not change validations like in edit game.
         val updateDetailsMap = hashMapOf<String,String>()
         var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
         var detailsUpdateStatus: Deferred<Boolean>? = null
-        var updateMessage: String = "Successfully Updated : |";
+        var updateMessage: String = "Successfully Updated User's : |";
 
         val oldNickname = userData.nickname
         val newNickname = editNickname.text.toString()
@@ -289,7 +290,7 @@ class ProfilePageFragment : Fragment() {
 
         runBlocking {
             if(imageValidation) {
-                imageUpdateStatus = async { GameDevelopersAppUtil.uploadImageAndGetNameTest(
+                imageUpdateStatus = async { GameDevelopersAppUtil.uploadImageAndGetName(
                     storageRef, GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, selectedImageUri!!)}
 
                 imageUpdateStatus?.await()?.let { result ->

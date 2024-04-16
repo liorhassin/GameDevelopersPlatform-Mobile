@@ -269,7 +269,6 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun updateUserDetails(){
-        //TODO - fix this method
         val updateDetailsMap = hashMapOf<String,String>()
         var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
         var detailsUpdateStatus: Deferred<Boolean>? = null
@@ -289,7 +288,6 @@ class ProfilePageFragment : Fragment() {
             userDetailsValidation(newNickname, oldNickname, newBirthdate, oldBirthdate, newImage)
 
         runBlocking {
-            //Handle image:
             if(imageValidation) {
                 imageUpdateStatus = async { GameDevelopersAppUtil.uploadImageAndGetNameTest(
                     storageRef, GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, selectedImageUri!!)}
@@ -310,7 +308,6 @@ class ProfilePageFragment : Fragment() {
                 }
             }
 
-            //Handle rest of possible updates:
             if(nicknameValidation) {
                 updateDetailsMap["nickname"] = newNickname
                 userData.nickname = newNickname
@@ -318,8 +315,8 @@ class ProfilePageFragment : Fragment() {
             }
 
             if(birthdateValidation) {
-                updateDetailsMap["birthdate"] = newBirthdate
-                userData.nickname = newBirthdate
+                updateDetailsMap["birthDate"] = newBirthdate
+                userData.birthDate = newBirthdate
                 updateMessage += "Birthdate|"
             }
 
@@ -333,8 +330,8 @@ class ProfilePageFragment : Fragment() {
                 updateProfilePagePreviewView()
                 switchToPreviewLayout()
                 if(updateMessage!="Successfully Updated : |")
-                    Toast.makeText(this@ProfilePageFragment.requireContext()
-                        , updateMessage, Toast.LENGTH_LONG).show()
+                    GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext(),
+                        updateMessage, Toast.LENGTH_SHORT);
             }
         }
 
@@ -354,7 +351,7 @@ class ProfilePageFragment : Fragment() {
         newImage: String):Triple<Boolean, Boolean, Boolean>{
 
         return Triple(
-            (newNickname.isNotEmpty() && GameDevelopersAppUtil.nicknameValidation(newNickname) && newNickname!=oldNickname),
+            (newNickname.isNotEmpty() && newNickname!=oldNickname && GameDevelopersAppUtil.nicknameValidation(newNickname)),
             (newBirthdate.isNotEmpty() && newBirthdate!=oldBirthdate),
             (newImage != "")
         )

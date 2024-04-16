@@ -43,15 +43,14 @@ class HomePageFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
     }
 
-    private fun setButtonsOnClickEvent(){
-
-    }
-
     private fun fetchGamesFromDB(onSuccess: () -> Unit){
         firestore.collection("games").get().addOnSuccessListener { documents ->
             documents.documents.iterator().forEach { gameDocument ->
                 val gameData = gameDocument.toObject<GameData>()
-                if(gameData!=null) gamesList.add(gameData)
+                if(gameData!=null) {
+                    gameData.gameId = gameDocument.id
+                    gamesList.add(gameData)
+                }
             }
         }.addOnCompleteListener{
             if(it.isSuccessful) onSuccess()

@@ -6,4 +6,5 @@ data class GameData(
     , var price:String = ""
     , var releaseDate:String = ""
     , var developerId:String = ""
+    , var gameId:String = ""
 )

@@ -99,7 +99,10 @@ class MyGamesPageFragment : Fragment() {
         gamesIdList.forEach { gameId ->
             gamesDocument.document(gameId).get().addOnSuccessListener { gameDocument ->
                 val gameData = gameDocument.toObject<GameData>()
-                if (gameData != null) userGamesList.add(gameData)
+                if (gameData != null) {
+                    gameData.gameId = gameDocument.id
+                    userGamesList.add(gameData)
+                }
             }.addOnFailureListener { exception ->
                 onFailure(exception)
             }.addOnCompleteListener {

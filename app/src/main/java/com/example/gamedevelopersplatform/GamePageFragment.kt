@@ -156,6 +156,7 @@ class GamePageFragment : Fragment() {
             loadDeveloperPage()
         }
         previewEditButton.setOnClickListener {
+            updateGamePageEditView()
             switchToEditLayout()
         }
         previewDeleteButton.setOnClickListener {
@@ -192,6 +193,7 @@ class GamePageFragment : Fragment() {
         editNameInput.setText(name)
         editPriceInput.setText(price)
         editReleaseDateView.text = releaseDate
+        editImageView.setImageResource(R.drawable.place_holder_image)
     }
 
     private fun updateGameDetails(){
@@ -255,6 +257,7 @@ class GamePageFragment : Fragment() {
             val isDetailsUpdateSuccessful = gameDetailsUpdateStatus?.await() ?: true
 
             if(isDetailsUpdateSuccessful){
+                updateGamePagePreviewView()
                 switchToPreviewLayout()
             }
         }

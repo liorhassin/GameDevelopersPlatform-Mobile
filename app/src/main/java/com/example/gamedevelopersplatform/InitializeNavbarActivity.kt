@@ -26,7 +26,7 @@ class InitializeNavbarActivity : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.home -> replaceFragment(HomePageFragment())
-                R.id.profile -> replaceFragment(ProfilePageFragment())
+                R.id.profile -> replaceFragment(ProfilePageFragment.newInstance(firebaseAuth.currentUser?.uid.toString()))
                 R.id.addProject -> replaceFragment(AddGamePageFragment())
                 R.id.myProjects -> replaceFragment(MyGamesPageFragment.newInstance(firebaseAuth.currentUser?.uid.toString()))
                 R.id.logout -> {

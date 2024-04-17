@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -151,8 +152,7 @@ class GamePageFragment : Fragment() {
 
     private fun setButtonsOnClickEvent(){
         previewDeveloperProfileButton.setOnClickListener {
-            //TODO - Move to developer profile page.
-            loadDeveloperPage()
+            loadDeveloperProfilePage()
         }
         previewEditButton.setOnClickListener {
             updateGamePageEditView()
@@ -193,6 +193,11 @@ class GamePageFragment : Fragment() {
         editPriceInput.setText(price)
         editReleaseDateView.text = releaseDate
         editImageView.setImageResource(R.drawable.place_holder_image)
+    }
+
+    private fun loadDeveloperProfilePage(){
+        GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity()
+            , R.id.gamePageLayout, ProfilePageFragment.newInstance(developerId))
     }
 
     private fun updateGameDetails(){
@@ -271,10 +276,6 @@ class GamePageFragment : Fragment() {
     }
 
     private fun deleteGame(){
-
-    }
-
-    private fun loadDeveloperPage(){
 
     }
 

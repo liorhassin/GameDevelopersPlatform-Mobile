@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -67,6 +68,12 @@ class ProfilePageFragment : Fragment() {
     private lateinit var changePasswordOldPassword: TextInputEditText
     private lateinit var changePasswordNewPassword: TextInputEditText
     private lateinit var changePasswordConfirmPassword: TextInputEditText
+
+    companion object{
+        fun newInstance(developerId: String) = ProfilePageFragment().apply {
+            arguments = bundleOf("DEVELOPER_ID" to developerId)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

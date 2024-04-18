@@ -2,7 +2,6 @@ package com.example.gamedevelopersplatform
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ActionMode
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +12,8 @@ import com.google.firebase.auth.FirebaseAuth
 //TODO - Refactor
 class InitializeNavbarActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInitializeNavbarBinding
-    private  lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseAuth: FirebaseAuth
+    private var selectedItem: Int = R.id.home
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +25,12 @@ class InitializeNavbarActivity : AppCompatActivity() {
         replaceFragment(HomePageFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener {item->
+            selectedItem = item.itemId
             when(item.itemId){
                 R.id.home -> replaceFragment(HomePageFragment())
                 R.id.profile -> replaceFragment(ProfilePageFragment.newInstance(firebaseAuth.currentUser?.uid.toString()))
-                R.id.addProject -> replaceFragment(AddGamePageFragment())
-                R.id.myProjects -> replaceFragment(MyGamesPageFragment.newInstance(firebaseAuth.currentUser?.uid.toString()))
+                R.id.addGame -> replaceFragment(AddGamePageFragment())
+                R.id.myGames -> replaceFragment(MyGamesPageFragment.newInstance(firebaseAuth.currentUser?.uid.toString()))
                 R.id.logout -> {
                     if(firebaseAuth.currentUser != null){
                         val builder = AlertDialog.Builder(this)

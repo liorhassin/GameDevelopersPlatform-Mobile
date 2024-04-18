@@ -1,6 +1,7 @@
 package com.example.gamedevelopersplatform
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -16,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -41,6 +43,8 @@ class ProfilePageFragment : Fragment() {
     private lateinit var userData: UserData
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
+
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var previewLayout: ConstraintLayout
     private lateinit var editLayout: ConstraintLayout

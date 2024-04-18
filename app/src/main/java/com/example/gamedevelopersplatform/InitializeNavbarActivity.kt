@@ -2,6 +2,7 @@ package com.example.gamedevelopersplatform
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ActionMode
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,8 +24,8 @@ class InitializeNavbarActivity : AppCompatActivity() {
         setContentView(binding.root)
         replaceFragment(HomePageFragment())
 
-        binding.bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId){
+        binding.bottomNavigationView.setOnItemSelectedListener {item->
+            when(item.itemId){
                 R.id.home -> replaceFragment(HomePageFragment())
                 R.id.profile -> replaceFragment(ProfilePageFragment.newInstance(firebaseAuth.currentUser?.uid.toString()))
                 R.id.addProject -> replaceFragment(AddGamePageFragment())

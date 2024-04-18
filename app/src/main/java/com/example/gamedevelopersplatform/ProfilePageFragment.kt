@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -87,7 +86,7 @@ class ProfilePageFragment : Fragment() {
         initializeParameters(view)
         addTextWatchers()
         setButtonsOnClickEvent()
-        toggleConnectedUserButtons()
+        changeProfileOwnerView()
         //TODO - change button name to my games by default or developer games
         //TODO - change button functionality to load developer games or my games
         fetchUserData { updateProfilePagePreviewView() }
@@ -141,7 +140,7 @@ class ProfilePageFragment : Fragment() {
     private fun setButtonsOnClickEvent(){
         myGamesButton.setOnClickListener{
             GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
-                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(connectedUserId))
+                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(requestedDeveloperId))
         }
 
         changePasswordButton.setOnClickListener {
@@ -413,24 +412,15 @@ class ProfilePageFragment : Fragment() {
         changePasswordConfirmPassword.setText("")
     }
 
-    private fun toggleConnectedUserButtons(){
+    private fun changeProfileOwnerView(){
         if(connectedUserId == requestedDeveloperId) {
             editProfileDetailsButton.visibility = View.VISIBLE
             changePasswordButton.visibility = View.VISIBLE
+            myGamesButton.text = "My Games"
         }else{
             editProfileDetailsButton.visibility = View.GONE
             changePasswordButton.visibility = View.GONE
-        }
-    }
-
-    private fun changeProfileOwnerFunctionality(){
-        //TODO - Complete the owner, developer switch.
-        if(connectedUserId == requestedDeveloperId){
-            myGamesButton.setOnClickListener {
-
-            }
-        }else{
-
+            myGamesButton.text = "Developer Games"
         }
     }
 }

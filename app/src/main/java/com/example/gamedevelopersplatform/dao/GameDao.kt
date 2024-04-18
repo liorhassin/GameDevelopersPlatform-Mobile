@@ -2,6 +2,7 @@ package com.example.gamedevelopersplatform.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
 import androidx.room.Query
 import com.example.gamedevelopersplatform.entity.Game
 
@@ -18,6 +19,9 @@ interface GameDao {
 
     @Query("SELECT * FROM game WHERE name LIKE :name")
     fun findByName(name: String): Game
+
+    @Insert
+    fun insertAll(vararg games: Game)
 
     @Delete
     fun delete(game: Game)

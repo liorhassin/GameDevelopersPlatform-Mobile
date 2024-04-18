@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gamedevelopersplatform.data.GameData
 import com.example.gamedevelopersplatform.adapters.GamesAdapter
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.entity.Game
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.tasks.await
@@ -184,6 +185,31 @@ object GameDevelopersAppUtil {
 
     fun popToast(context: Context, message: String, duration: Int){
         Toast.makeText(context, message, duration).show()
+    }
+
+    fun convertGamesDataToGamesList(gamesData: List<GameData>): List<Game>{
+        val gamesList: ArrayList<Game> = ArrayList<Game>();
+        gamesData.forEach { game -> gamesList.add(convertGameDataToGameEntity(game)) }
+        return gamesList
+    }
+
+    fun convertGameDataToGameEntity(gameData: GameData): Game {
+        return Game(
+            name = gameData.name,
+            developerId = gameData.developerId,
+            price = gameData.price,
+            gid = gameData.gameId,
+            releaseDate = gameData.releaseDate,
+            image = gameData.image
+        )
+    }
+
+    fun saveGamesToRoom(games: List<Game>){
+        games.forEach { game -> saveGameToRoom(game) }
+    }
+
+    fun saveGameToRoom(game: Game){
+
     }
 
 }

@@ -11,5 +11,5 @@ data class User(
     @ColumnInfo(name = "profileImage") val profileImage: String,
     @ColumnInfo(name = "email") val email: String,
     @ColumnInfo(name = "birthDate") val birthDate: String,
-    @ColumnInfo(name = "userGames") val userGames: List<Game>
+    //@TypeConverters(Converters::class) @ColumnInfo(name = "userGames") val userGames: ArrayList<Game> = ArrayList()
 )

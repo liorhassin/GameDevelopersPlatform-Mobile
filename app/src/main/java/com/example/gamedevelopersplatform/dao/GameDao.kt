@@ -11,10 +11,10 @@ import com.example.gamedevelopersplatform.entity.Game
 @Dao
 interface GameDao {
     @Query("SELECT * FROM game")
-    fun getAll(): List<Game>
+    fun getAll(): ArrayList<Game>
 
     @Query("SELECT * FROM game WHERE gid IN (:gameIds)")
-    fun findAllByIds(gameIds: List<String>): List<Game>
+    fun findAllByIds(gameIds: ArrayList<String>): ArrayList<Game>
 
     @Query("SELECT * FROM game WHERE gid LIKE :gameId")
     fun findById(gameId: String): Game
@@ -26,7 +26,7 @@ interface GameDao {
     fun insert(game: Game)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(games: List<Game>)
+    fun insertAll(games: ArrayList<Game>)
 
     @Delete
     fun delete(game: Game)

@@ -12,7 +12,9 @@ import androidx.room.RoomDatabase
 import com.example.gamedevelopersplatform.data.GameData
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.dao.GameDao
 import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.entity.Game
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -22,7 +24,8 @@ class HomePageFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
 
-    private lateinit var roomDB: RoomDatabase
+    private lateinit var roomDB: AppDatabase
+    private lateinit var gameDao: GameDao
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var gamesList: ArrayList<GameData>
@@ -40,6 +43,7 @@ class HomePageFragment : Fragment() {
                 requireActivity(),
                 R.id.homePageLayout
             )
+            GameDevelopersAppUtil.saveGamesToRoom(GameDevelopersAppUtil.convertGamesDataToGamesList(gamesList))
         }
 
         return view
@@ -50,6 +54,7 @@ class HomePageFragment : Fragment() {
         storageRef = FirebaseStorage.getInstance().reference
 
         roomDB = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "GameDevelopersPlatform-Room").build()
+        gameDao = roomDB.gameDao()
 
         gamesList = arrayListOf()
 

@@ -1,6 +1,7 @@
 package com.example.gamedevelopersplatform
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -15,6 +16,8 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -35,9 +38,13 @@ class ProfilePageFragment : Fragment() {
     private lateinit var storageRef: StorageReference
 
     private lateinit var connectedUserId: String
+    private lateinit var requestedDeveloperId: String
+
     private lateinit var userData: UserData
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
+
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var previewLayout: ConstraintLayout
     private lateinit var editLayout: ConstraintLayout
@@ -68,6 +75,14 @@ class ProfilePageFragment : Fragment() {
     private lateinit var changePasswordNewPassword: TextInputEditText
     private lateinit var changePasswordConfirmPassword: TextInputEditText
 
+    companion object{
+        fun newInstance(developerId: String) = ProfilePageFragment().apply {
+            arguments = bundleOf(
+                "DEVELOPER_ID" to developerId
+            )
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile_page, container, false)
@@ -75,6 +90,9 @@ class ProfilePageFragment : Fragment() {
         initializeParameters(view)
         addTextWatchers()
         setButtonsOnClickEvent()
+        changeProfileOwnerView()
+        //TODO - change button name to my games by default or developer games
+        //TODO - change button functionality to load developer games or my games
         fetchUserData { updateProfilePagePreviewView() }
 
         return view
@@ -86,6 +104,7 @@ class ProfilePageFragment : Fragment() {
         storageRef = FirebaseStorage.getInstance().reference
 
         connectedUserId = firebaseAuth.currentUser?.uid.toString()
+        requestedDeveloperId = arguments?.getString("DEVELOPER_ID", "").toString()
 
         previewLayout = view.findViewById(R.id.profilePagePreviewLayout)
         editLayout = view.findViewById(R.id.profilePageEditLayout)
@@ -125,7 +144,7 @@ class ProfilePageFragment : Fragment() {
     private fun setButtonsOnClickEvent(){
         myGamesButton.setOnClickListener{
             GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
-                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(connectedUserId))
+                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(requestedDeveloperId))
         }
 
         changePasswordButton.setOnClickListener {
@@ -187,7 +206,7 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun fetchUserData(onSuccess: () -> Unit){
-        firestore.collection("users").document(connectedUserId).get()
+        firestore.collection("users").document(requestedDeveloperId).get()
             .addOnSuccessListener { userDocument ->
                 val userDataObject = userDocument.toObject<UserData>()
                 if(userDataObject != null) userData = userDataObject
@@ -269,7 +288,6 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun updateUserDetails(){
-        //TODO - Check if inputs turn red on the correct moments, if not change validations like in edit game.
         val updateDetailsMap = hashMapOf<String,String>()
         var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
         var detailsUpdateStatus: Deferred<Boolean>? = null
@@ -398,4 +416,15 @@ class ProfilePageFragment : Fragment() {
         changePasswordConfirmPassword.setText("")
     }
 
+    private fun changeProfileOwnerView(){
+        if(connectedUserId == requestedDeveloperId) {
+            editProfileDetailsButton.visibility = View.VISIBLE
+            changePasswordButton.visibility = View.VISIBLE
+            myGamesButton.text = "My Games"
+        }else{
+            editProfileDetailsButton.visibility = View.GONE
+            changePasswordButton.visibility = View.GONE
+            myGamesButton.text = "Developer Games"
+        }
+    }
 }

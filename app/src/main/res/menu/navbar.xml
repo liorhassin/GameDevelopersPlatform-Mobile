@@ -7,12 +7,12 @@
         android:icon="@drawable/baseline_home_24"
         />
     <item
-        android:id="@+id/addProject"
+        android:id="@+id/addGame"
         android:icon="@drawable/add_game_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <item
-        android:id="@+id/myProjects"
+        android:id="@+id/myGames"
         android:icon="@drawable/folder_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

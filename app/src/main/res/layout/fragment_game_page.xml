@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray"
     android:id="@+id/gamePageLayout"
-    tools:context=".GamePageFragment">
+    tools:context=".fragments.GamePageFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gamePagePreviewLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_gray"
-        tools:context=".GamePageFragment">
+        tools:context=".fragments.GamePageFragment">
 
         <TextView
             android:id="@+id/gamePagePreviewGameTitle"
@@ -169,7 +169,7 @@
         android:layout_height="match_parent"
         android:background="@color/background_gray"
         android:visibility="gone"
-        tools:context=".GamePageFragment">
+        tools:context=".fragments.GamePageFragment">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/gamePageEditNameInput"

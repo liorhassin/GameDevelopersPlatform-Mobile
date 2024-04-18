@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.data
 
 data class GameData(
     var image:String = ""

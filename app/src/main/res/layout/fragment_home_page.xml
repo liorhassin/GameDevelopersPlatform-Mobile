@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray"
     android:id="@+id/homePageLayout"
-    tools:context=".HomePageFragment">
+    tools:context=".fragments.HomePageFragment">
 
     <TextView
         android:id="@+id/homePageGamesTitle"

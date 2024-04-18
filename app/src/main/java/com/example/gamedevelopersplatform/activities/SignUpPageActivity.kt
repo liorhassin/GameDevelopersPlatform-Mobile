@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.activities
 
 import android.app.Activity
 import android.content.Intent
@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.databinding.ActivitySignUpPageBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -46,25 +47,28 @@ class SignUpPageActivity : AppCompatActivity() {
 
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
-            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpPageChooseImageButton, Color.WHITE)
+            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(
+                binding.signUpPageChooseImageButton,
+                Color.WHITE
+            )
         }
     }
 
     private fun addTextWatchers() {
-        GameDevelopersAppUtil.handleTextChange(binding.signUpNicknameInput){
+        GameDevelopersAppUtil.handleTextChange(binding.signUpNicknameInput) {
             GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpNicknameInput, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(binding.signUpPasswordInput){
+        GameDevelopersAppUtil.handleTextChange(binding.signUpPasswordInput) {
             GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpPasswordInput, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(binding.signUpEmailInput){
+        GameDevelopersAppUtil.handleTextChange(binding.signUpEmailInput) {
             GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpEmailInput, Color.WHITE)
         }
     }
 
     private fun setButtonsOnClickEvent() {
         binding.signUpPickADateButton.setOnClickListener {
-            GameDevelopersAppUtil.showDatePicker(this, Calendar.getInstance()){formattedDate ->
+            GameDevelopersAppUtil.showDatePicker(this, Calendar.getInstance()) { formattedDate ->
                 binding.signUpBirthdateText.text = formattedDate
             }
         }
@@ -96,13 +100,16 @@ class SignUpPageActivity : AppCompatActivity() {
 
     private fun markMissingInputsColor(validNickname: Boolean, validPassword: Boolean, validEmail: Boolean, validPicture: Boolean){
         if(!validNickname)
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpNicknameInput,Color.RED)
+            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpNicknameInput, Color.RED)
         if(!validPassword)
             GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpPasswordInput, Color.RED)
         if(!validEmail)
             GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpEmailInput, Color.RED)
         if(!validPicture)
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpPageChooseImageButton, Color.RED)
+            GameDevelopersAppUtil.setTextAndHintTextColor(
+                binding.signUpPageChooseImageButton,
+                Color.RED
+            )
     }
 
     private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
@@ -116,7 +123,7 @@ class SignUpPageActivity : AppCompatActivity() {
 
     private fun saveImageAndUserData(nickname: String, email: String, birthDate: String){
         GameDevelopersAppUtil.uploadImageAndGetName(storageRef, USERS_PROFILE_IMAGES_PATH,
-            selectedImageUri!!,{ imageUrl ->
+            selectedImageUri!!, { imageUrl ->
                 val userData = hashMapOf(
                     "nickname" to nickname,
                     "email" to email,
@@ -125,11 +132,11 @@ class SignUpPageActivity : AppCompatActivity() {
                     "userGames" to emptyList<String>()
                 )
                 val currentUser = firebaseAuth.currentUser
-                if(currentUser!=null){
+                if (currentUser != null) {
                     val userId = currentUser.uid
                     saveUserData(userData, userId)
                 }
-            },{
+            }, {
 
             })
     }
@@ -142,7 +149,7 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun userValidation(nickname:String, password:String, email:String, pictureUri:Uri?)
-    : GameDevelopersAppUtil.QuadrupleBooleans{
+    : GameDevelopersAppUtil.QuadrupleBooleans {
         return GameDevelopersAppUtil.QuadrupleBooleans(
             GameDevelopersAppUtil.nicknameValidation(nickname),
             GameDevelopersAppUtil.passwordValidation(password),

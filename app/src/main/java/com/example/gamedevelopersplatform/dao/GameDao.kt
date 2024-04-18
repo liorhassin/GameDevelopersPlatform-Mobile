@@ -14,7 +14,7 @@ interface GameDao {
     fun findAllByIds(gameIds: List<String>): List<Game>
 
     @Query("SELECT * FROM game WHERE gid LIKE :gameId")
-    fun findById(gameId: String)
+    fun findById(gameId: String): Game
 
     @Query("SELECT * FROM game WHERE name LIKE :name")
     fun findByName(name: String): Game

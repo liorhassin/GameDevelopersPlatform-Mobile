@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.util
 
 import android.app.DatePickerDialog
 import android.content.ContentResolver
@@ -16,6 +16,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.adapters.GamesAdapter
+import com.example.gamedevelopersplatform.R
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.tasks.await

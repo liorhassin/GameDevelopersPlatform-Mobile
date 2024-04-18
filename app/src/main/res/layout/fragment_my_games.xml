@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray"
     android:id="@+id/myGamesPageLayout"
-    tools:context=".MyGamesPageFragment">
+    tools:context=".fragments.MyGamesPageFragment">
 
     <TextView
         android:id="@+id/myGamesPageTitle"

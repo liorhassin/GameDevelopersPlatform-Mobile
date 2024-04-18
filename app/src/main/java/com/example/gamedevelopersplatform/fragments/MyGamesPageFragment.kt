@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +10,9 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -47,7 +50,13 @@ class MyGamesPageFragment : Fragment() {
 
         fetchUserGamesIdFromDB(userPageId, { gamesId ->
             fetchUserGamesFromDB(gamesId, {
-                GameDevelopersAppUtil.populateRecyclerView(recyclerView, userGamesList, storageRef, requireActivity(), R.id.myGamesPageLayout)
+                GameDevelopersAppUtil.populateRecyclerView(
+                    recyclerView,
+                    userGamesList,
+                    storageRef,
+                    requireActivity(),
+                    R.id.myGamesPageLayout
+                )
             },{ exception ->
                 Log.e("fetchUserGamesFromDB", "Failed to fetch user games: $exception")
             })

@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.activities
 
 import android.content.Intent
 import android.os.Bundle

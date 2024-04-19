@@ -10,27 +10,27 @@ import com.example.gamedevelopersplatform.entity.User
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM user")
-    fun getAll(): ArrayList<User>
+//    @Query("SELECT * FROM user")
+//    fun getAll(): ArrayList<User>
+//
+//    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
+//    fun findAllByIds(userIds: ArrayList<String>): ArrayList<User>
+//
+//    @Query("SELECT * FROM user WHERE uid LIKE :userId")
+//    fun findById(userId: String): User
+//
+//    @Query("SELECT * FROM user WHERE nickname LIKE :nickname")
+//    fun findByName(nickname: String): User
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    fun insert(user: User)
 
-    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
-    fun findAllByIds(userIds: ArrayList<String>): ArrayList<User>
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    fun insertAll(users: ArrayList<User>)
 
-    @Query("SELECT * FROM user WHERE uid LIKE :userId")
-    fun findById(userId: String): User
-
-    @Query("SELECT * FROM user WHERE nickname LIKE :nickname")
-    fun findByName(nickname: String): User
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: User)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(users: ArrayList<User>)
-
-    @Delete
-    fun delete(user: User)
-
-    @Update
-    fun update(user: User)
+//    @Delete
+//    fun delete(user: User)
+//
+//    @Update
+//    fun update(user: User)
 }

@@ -187,29 +187,29 @@ object GameDevelopersAppUtil {
         Toast.makeText(context, message, duration).show()
     }
 
-    fun convertGamesDataToGamesList(gamesData: List<GameData>): List<Game>{
-        val gamesList: ArrayList<Game> = ArrayList<Game>();
-        gamesData.forEach { game -> gamesList.add(convertGameDataToGameEntity(game)) }
-        return gamesList
-    }
-
-    fun convertGameDataToGameEntity(gameData: GameData): Game {
-        return Game(
-            name = gameData.name,
-            developerId = gameData.developerId,
-            price = gameData.price,
-            gid = gameData.gameId,
-            releaseDate = gameData.releaseDate,
-            image = gameData.image
-        )
-    }
-
-    fun saveGamesToRoom(games: List<Game>){
-        games.forEach { game -> saveGameToRoom(game) }
-    }
-
-    fun saveGameToRoom(game: Game){
-
-    }
+//    fun convertGamesDataToGamesList(gamesData: List<GameData>): List<Game>{
+//        val gamesList: ArrayList<Game> = ArrayList<Game>();
+//        gamesData.forEach { game -> gamesList.add(convertGameDataToGameEntity(game)) }
+//        return gamesList
+//    }
+//
+//    fun convertGameDataToGameEntity(gameData: GameData): Game {
+//        return Game(
+//            name = gameData.name,
+//            developerId = gameData.developerId,
+//            price = gameData.price,
+//            gid = gameData.gameId,
+//            releaseDate = gameData.releaseDate,
+//            image = gameData.image
+//        )
+//    }
+//
+//    fun saveGamesToRoom(games: List<Game>){
+//        games.forEach { game -> saveGameToRoom(game) }
+//    }
+//
+//    fun saveGameToRoom(game: Game){
+//
+//    }
 
 }

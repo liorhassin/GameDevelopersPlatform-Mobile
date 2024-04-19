@@ -93,8 +93,6 @@ class ProfilePageFragment : Fragment() {
         addTextWatchers()
         setButtonsOnClickEvent()
         changeProfileOwnerView()
-        //TODO - change button name to my games by default or developer games
-        //TODO - change button functionality to load developer games or my games
         fetchUserData { updateProfilePagePreviewView() }
 
         return view

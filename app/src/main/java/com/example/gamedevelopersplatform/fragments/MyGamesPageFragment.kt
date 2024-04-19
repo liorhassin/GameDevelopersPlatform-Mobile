@@ -27,6 +27,7 @@ class MyGamesPageFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var titleText: TextView
+    private lateinit var developerName: String
 
     private lateinit var connectedUserId: String
     private lateinit var userGamesList: ArrayList<GameData>
@@ -57,6 +58,7 @@ class MyGamesPageFragment : Fragment() {
                     requireActivity(),
                     R.id.myGamesPageLayout
                 )
+                if(connectedUserId != USER_ID_DATA_TO_FETCH) titleText.text = "$developerName Games"
             },{ exception ->
                 Log.e("fetchUserGamesFromDB", "Failed to fetch user games: $exception")
             })
@@ -75,16 +77,13 @@ class MyGamesPageFragment : Fragment() {
         connectedUserId = firebaseAuth.currentUser?.uid.toString()
         userGamesList = arrayListOf()
         userPageId = arguments?.getString(USER_ID_DATA_TO_FETCH).toString()
+        developerName = "Developer Games"
 
         recyclerView = view.findViewById(R.id.myGamesPageRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
 
-        //TODO - Check if works after implementing Game Page.
         titleText = view.findViewById(R.id.myGamesPageTitle)
-        if(connectedUserId == USER_ID_DATA_TO_FETCH) titleText.text = "My Games"
-        else "Other User"
-
     }
 
     private fun fetchUserGamesIdFromDB(userId: String, onSuccess:(List<String>) -> Unit,
@@ -93,6 +92,7 @@ class MyGamesPageFragment : Fragment() {
         firestoreUserDocument.get().addOnSuccessListener { document ->
             if(document.exists()){
                 val userGamesId = document.get("userGames") as? List<String>
+                developerName = document.get("nickname").toString()
                 if(userGamesId!=null) {
                     onSuccess(userGamesId)
                 }

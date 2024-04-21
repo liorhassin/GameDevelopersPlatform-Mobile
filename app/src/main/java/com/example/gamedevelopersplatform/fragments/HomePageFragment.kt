@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.dao.GameDao
 import com.example.gamedevelopersplatform.database.AppDatabase
-import com.example.gamedevelopersplatform.entity.Game
+//import com.example.gamedevelopersplatform.database.AppDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -24,11 +23,8 @@ class HomePageFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
 
-    private lateinit var roomDB: AppDatabase
-    private lateinit var gameDao: GameDao
-
     private lateinit var recyclerView: RecyclerView
-    private lateinit var gamesList: ArrayList<GameData>
+    private lateinit var gamesList: ArrayList<Game>
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,7 +39,9 @@ class HomePageFragment : Fragment() {
                 requireActivity(),
                 R.id.homePageLayout
             )
-            //GameDevelopersAppUtil.saveGamesToRoom(GameDevelopersAppUtil.convertGamesDataToGamesList(gamesList))
+            GameDevelopersAppUtil.saveGamesToRoom(
+                GameDevelopersAppUtil.convertGamesDataToGamesList(gamesList)
+                , requireContext())
         }
 
         return view
@@ -52,9 +50,6 @@ class HomePageFragment : Fragment() {
     private fun initializeParameters(view: View){
         firestore = FirebaseFirestore.getInstance()
         storageRef = FirebaseStorage.getInstance().reference
-
-        roomDB = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "GameDevelopersPlatform-Room").build()
-        gameDao = roomDB.gameDao()
 
         gamesList = arrayListOf()
 
@@ -66,7 +61,7 @@ class HomePageFragment : Fragment() {
     private fun fetchGamesFromDB(onSuccess: () -> Unit){
         firestore.collection("games").get().addOnSuccessListener { documents ->
             documents.documents.iterator().forEach { gameDocument ->
-                val gameData = gameDocument.toObject<GameData>()
+                val gameData = gameDocument.toObject<Game>()
                 if(gameData!=null) {
                     gameData.gameId = gameDocument.id
                     gamesList.add(gameData)

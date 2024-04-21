@@ -8,13 +8,13 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamedevelopersplatform.R
-import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.fragments.GamePageFragment
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.storage.StorageReference
 
-class GamesAdapter(private val gamesList: ArrayList<GameData>, private val storageRef: StorageReference, private val fragmentActivity: FragmentActivity, private val currentLayoutId: Int) :
+class GamesAdapter(private val gamesList: ArrayList<Game>, private val storageRef: StorageReference, private val fragmentActivity: FragmentActivity, private val currentLayoutId: Int) :
     RecyclerView.Adapter<GamesAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(

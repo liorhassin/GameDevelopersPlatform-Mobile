@@ -18,7 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
-import com.example.gamedevelopersplatform.data.UserData
+import com.example.gamedevelopersplatform.entity.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
@@ -42,7 +42,7 @@ class ProfilePageFragment : Fragment() {
     private lateinit var connectedUserId: String
     private lateinit var requestedDeveloperId: String
 
-    private lateinit var userData: UserData
+    private lateinit var userData: User
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
 
@@ -219,7 +219,7 @@ class ProfilePageFragment : Fragment() {
     private fun fetchUserData(onSuccess: () -> Unit){
         firestore.collection("users").document(requestedDeveloperId).get()
             .addOnSuccessListener { userDocument ->
-                val userDataObject = userDocument.toObject<UserData>()
+                val userDataObject = userDocument.toObject<User>()
                 if(userDataObject != null) userData = userDataObject
         }.addOnCompleteListener{
             if(it.isSuccessful) onSuccess()

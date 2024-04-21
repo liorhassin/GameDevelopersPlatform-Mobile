@@ -16,12 +16,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.adapters.GamesAdapter
 import com.example.gamedevelopersplatform.R
-import com.example.gamedevelopersplatform.entity.Game
+import com.example.gamedevelopersplatform.dao.GameDao
+import com.example.gamedevelopersplatform.database.AppDatabase
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -142,7 +147,7 @@ object GameDevelopersAppUtil {
         fragmentTransaction.commit()
     }
 
-    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>,
+    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<Game>,
                              storageRef: StorageReference, fragmentActivity: FragmentActivity, currentLayoutId: Int){
         recyclerView.adapter = GamesAdapter(gamesList, storageRef, fragmentActivity, currentLayoutId)
     }
@@ -187,29 +192,33 @@ object GameDevelopersAppUtil {
         Toast.makeText(context, message, duration).show()
     }
 
-//    fun convertGamesDataToGamesList(gamesData: List<GameData>): List<Game>{
-//        val gamesList: ArrayList<Game> = ArrayList<Game>();
-//        gamesData.forEach { game -> gamesList.add(convertGameDataToGameEntity(game)) }
-//        return gamesList
-//    }
-//
-//    fun convertGameDataToGameEntity(gameData: GameData): Game {
-//        return Game(
-//            name = gameData.name,
-//            developerId = gameData.developerId,
-//            price = gameData.price,
-//            gid = gameData.gameId,
-//            releaseDate = gameData.releaseDate,
-//            image = gameData.image
-//        )
-//    }
-//
-//    fun saveGamesToRoom(games: List<Game>){
-//        games.forEach { game -> saveGameToRoom(game) }
-//    }
-//
-//    fun saveGameToRoom(game: Game){
-//
-//    }
+    fun convertGamesDataToGamesList(gamesData: List<Game>): List<Game>{
+        val gamesList: ArrayList<Game> = ArrayList<Game>();
+        gamesData.forEach { game -> gamesList.add(convertGameDataToGameEntity(game)) }
+        return gamesList
+    }
+
+    private fun convertGameDataToGameEntity(gameData: Game): Game {
+        return Game(
+            name = gameData.name,
+            developerId = gameData.developerId,
+            price = gameData.price,
+            gameId = gameData.gameId,
+            releaseDate = gameData.releaseDate,
+            image = gameData.image
+        )
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun saveGamesToRoom(games: List<Game>, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            games.forEach { game ->
+                gameDao.insert(game)
+            }
+        }
+    }
 
 }

@@ -3,13 +3,15 @@ package com.example.gamedevelopersplatform.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.gamedevelopersplatform.type_converters.Converters
 
-@Entity
+@Entity(tableName = "users")
 data class User(
-    @PrimaryKey val uid: String,
-    @ColumnInfo(name = "nickname") val nickname: String,
-    @ColumnInfo(name = "profileImage") val profileImage: String,
-    @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "birthDate") val birthDate: String,
-    //@TypeConverters(Converters::class) @ColumnInfo(name = "userGames") val userGames: ArrayList<Game> = ArrayList()
+    @PrimaryKey var userId: String = ""
+    , @ColumnInfo(name = "birthDate") var birthDate: String = ""
+    , @ColumnInfo(name = "email") var email: String = ""
+    , @ColumnInfo(name = "nickname") var nickname: String = ""
+    , @ColumnInfo(name = "profileImage") var profileImage: String = ""
+    , @ColumnInfo(name = "userGames") @TypeConverters(Converters::class) var userGames: ArrayList<String> = arrayListOf()
 )

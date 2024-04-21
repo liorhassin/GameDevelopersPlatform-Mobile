@@ -16,7 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
-import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
 import com.google.android.material.imageview.ShapeableImageView
@@ -76,7 +76,7 @@ class GamePageFragment : Fragment() {
 
 
     companion object{
-        fun newInstance(gameData: GameData) = GamePageFragment().apply {
+        fun newInstance(gameData: Game) = GamePageFragment().apply {
             arguments = bundleOf(
                 "IMAGE" to gameData.image,
                 "NAME" to gameData.name,

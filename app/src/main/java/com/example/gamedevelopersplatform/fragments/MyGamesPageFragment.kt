@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gamedevelopersplatform.data.GameData
+import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
 import com.google.firebase.auth.FirebaseAuth
@@ -30,7 +30,7 @@ class MyGamesPageFragment : Fragment() {
     private lateinit var developerName: String
 
     private lateinit var connectedUserId: String
-    private lateinit var userGamesList: ArrayList<GameData>
+    private lateinit var userGamesList: ArrayList<Game>
     private lateinit var userPageId: String
 
     companion object{
@@ -107,7 +107,7 @@ class MyGamesPageFragment : Fragment() {
         val gamesDocument = firestore.collection("games")
         gamesIdList.forEach { gameId ->
             gamesDocument.document(gameId).get().addOnSuccessListener { gameDocument ->
-                val gameData = gameDocument.toObject<GameData>()
+                val gameData = gameDocument.toObject<Game>()
                 if (gameData != null) {
                     gameData.gameId = gameDocument.id
                     userGamesList.add(gameData)

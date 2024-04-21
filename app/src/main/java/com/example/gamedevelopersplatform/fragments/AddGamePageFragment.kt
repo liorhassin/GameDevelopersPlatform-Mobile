@@ -209,15 +209,9 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun generateGameEntityAndSaveLocally(gameData: HashMap<String, String>){
-        val game = Game(
-            name = gameData["name"],
-            developerId = gameData["developerId"],
-            price = gameData["price"],
-            gameId = gameData["gameId"]!!,
-            releaseDate = gameData["releaseDate"],
-            image = gameData["image"]
-        )
-        GameDevelopersAppUtil.saveGameToRoom(game, requireContext())
+        GameDevelopersAppUtil.saveGameToRoom(
+            GameDevelopersAppUtil.gameDataToEntity(gameData)
+            , requireContext())
     }
 
     private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{

@@ -214,4 +214,25 @@ object GameDevelopersAppUtil {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    fun updateGameDataInRoom(game: Game, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            gameDao.update(game)
+        }
+    }
+
+    fun gameDataToEntity(gameData: HashMap<String, String>): Game{
+        return Game(
+            name = gameData["name"],
+            developerId = gameData["developerId"],
+            price = gameData["price"],
+            gameId = gameData["gameId"]!!,
+            releaseDate = gameData["releaseDate"],
+            image = gameData["image"]
+        )
+    }
+
 }

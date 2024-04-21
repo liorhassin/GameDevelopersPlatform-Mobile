@@ -112,14 +112,14 @@ object GameDevelopersAppUtil {
     }
 
     private fun retrieveImageUrl(storageRef: StorageReference,
-                                 imageName: String, imagePath: String, onSuccess: (Uri) -> Unit){
+                                 imageName: String?, imagePath: String, onSuccess: (Uri) -> Unit){
         val imageReference = storageRef.child(imagePath + imageName)
         imageReference.downloadUrl.addOnSuccessListener { url ->
             onSuccess(url)
         }
     }
 
-    fun loadImageFromDB(storageRef: StorageReference, imageName: String, imagePath: String, imageView: ImageView){
+    fun loadImageFromDB(storageRef: StorageReference, imageName: String?, imagePath: String, imageView: ImageView){
         retrieveImageUrl(storageRef, imageName, imagePath){ imageUrl ->
             Picasso.get().load(imageUrl).placeholder(R.drawable.place_holder_image)
                 .into(imageView)

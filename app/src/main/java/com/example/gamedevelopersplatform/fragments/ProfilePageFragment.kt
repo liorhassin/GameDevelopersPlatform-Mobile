@@ -234,7 +234,7 @@ class ProfilePageFragment : Fragment() {
         )
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate
-        previewGamesCount.text = userData.userGames.size.toString()
+        previewGamesCount.text = userData.userGames?.size.toString()
     }
 
     private fun updateProfilePageEditView(){
@@ -405,8 +405,8 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun userDetailsValidation(
-        newNickname: String, oldNickname: String,
-        newBirthdate: String, oldBirthdate: String,
+        newNickname: String, oldNickname: String?,
+        newBirthdate: String, oldBirthdate: String?,
         newImage: String):Triple<Boolean, Boolean, Boolean>{
 
         return Triple(

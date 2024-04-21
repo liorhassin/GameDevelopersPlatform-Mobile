@@ -11,7 +11,7 @@ import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.entity.User
 import com.example.gamedevelopersplatform.type_converters.Converters
 
-@Database(entities = [Game::class, User::class], version = 1, exportSchema = false)
+@Database(entities = [Game::class, User::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun gameDao(): GameDao
@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app_database").build()
+                    "app_database").fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance
             }

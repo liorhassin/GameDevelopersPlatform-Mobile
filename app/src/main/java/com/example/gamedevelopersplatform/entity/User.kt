@@ -8,10 +8,13 @@ import com.example.gamedevelopersplatform.type_converters.Converters
 
 @Entity(tableName = "users")
 data class User(
-    @PrimaryKey var userId: String = ""
-    , @ColumnInfo(name = "birthDate") var birthDate: String = ""
-    , @ColumnInfo(name = "email") var email: String = ""
-    , @ColumnInfo(name = "nickname") var nickname: String = ""
-    , @ColumnInfo(name = "profileImage") var profileImage: String = ""
-    , @ColumnInfo(name = "userGames") @TypeConverters(Converters::class) var userGames: ArrayList<String> = arrayListOf()
-)
+    @PrimaryKey var userId: String
+    , @ColumnInfo(name = "birthDate") var birthDate: String?
+    , @ColumnInfo(name = "email") var email: String?
+    , @ColumnInfo(name = "nickname") var nickname: String?
+    , @ColumnInfo(name = "profileImage") var profileImage: String?
+    , @ColumnInfo(name = "userGames") @TypeConverters(Converters::class) var userGames: ArrayList<String>?
+){
+    // No-argument constructor
+    constructor() : this("", null, null, null, null, null)
+}

@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.entity.Game
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -199,10 +200,24 @@ class AddGamePageFragment : Fragment() {
         firestore.collection("games").add(gameData)
             .addOnSuccessListener { documentReference ->
                 val gameId = documentReference.id
+                gameData["gameId"] = gameId
+                generateGameEntityAndSaveLocally(gameData)
                 onSuccess(gameId)
             }.addOnFailureListener { exception ->
                 onFailure(exception)
             }
+    }
+
+    private fun generateGameEntityAndSaveLocally(gameData: HashMap<String, String>){
+        val game = Game(
+            name = gameData["name"],
+            developerId = gameData["developerId"],
+            price = gameData["price"],
+            gameId = gameData["gameId"]!!,
+            releaseDate = gameData["releaseDate"],
+            image = gameData["image"]
+        )
+        GameDevelopersAppUtil.saveGameToRoom(game, requireContext())
     }
 
     private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{

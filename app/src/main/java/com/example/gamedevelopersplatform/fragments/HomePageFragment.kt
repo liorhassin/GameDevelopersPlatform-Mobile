@@ -39,9 +39,7 @@ class HomePageFragment : Fragment() {
                 requireActivity(),
                 R.id.homePageLayout
             )
-            GameDevelopersAppUtil.saveGamesToRoom(
-                GameDevelopersAppUtil.convertGamesDataToGamesList(gamesList)
-                , requireContext())
+            GameDevelopersAppUtil.saveGamesToRoom(gamesList, requireContext())
         }
 
         return view

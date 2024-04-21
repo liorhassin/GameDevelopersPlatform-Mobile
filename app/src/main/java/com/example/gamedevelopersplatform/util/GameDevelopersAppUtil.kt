@@ -192,23 +192,6 @@ object GameDevelopersAppUtil {
         Toast.makeText(context, message, duration).show()
     }
 
-    fun convertGamesDataToGamesList(gamesData: List<Game>): List<Game>{
-        val gamesList: ArrayList<Game> = ArrayList<Game>();
-        gamesData.forEach { game -> gamesList.add(convertGameDataToGameEntity(game)) }
-        return gamesList
-    }
-
-    private fun convertGameDataToGameEntity(gameData: Game): Game {
-        return Game(
-            name = gameData.name,
-            developerId = gameData.developerId,
-            price = gameData.price,
-            gameId = gameData.gameId,
-            releaseDate = gameData.releaseDate,
-            image = gameData.image
-        )
-    }
-
     @OptIn(DelicateCoroutinesApi::class)
     fun saveGamesToRoom(games: List<Game>, context: Context){
         val roomDB: AppDatabase = AppDatabase.getInstance(context)
@@ -218,6 +201,16 @@ object GameDevelopersAppUtil {
             games.forEach { game ->
                 gameDao.insert(game)
             }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun saveGameToRoom(game: Game, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            gameDao.insert(game)
         }
     }
 

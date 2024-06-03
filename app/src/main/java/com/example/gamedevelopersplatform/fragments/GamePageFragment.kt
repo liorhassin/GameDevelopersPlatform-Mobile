@@ -19,6 +19,7 @@ import androidx.core.os.bundleOf
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.database.AppDatabase
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -73,6 +74,8 @@ class GamePageFragment : Fragment() {
 
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
+
+    private lateinit var roomDatabase: AppDatabase
 
 
     companion object{
@@ -141,6 +144,8 @@ class GamePageFragment : Fragment() {
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
         }
+
+        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun addTextWatchers(){

@@ -63,7 +63,7 @@ class HomePageFragment : Fragment() {
     }
 
     private fun fetchGamesFromDB(onSuccess: () -> Unit){
-        firestore.collection("gamesss").get()
+        firestore.collection("games").get()
             .addOnSuccessListener { documents ->
                 documents.documents.iterator().forEach { gameDocument ->
                     val gameData = gameDocument.toObject<Game>()
@@ -75,9 +75,7 @@ class HomePageFragment : Fragment() {
             }
             .addOnFailureListener {
                 CoroutineScope(Dispatchers.IO).launch {
-                    Log.d("debug", "before loading games + $gamesList")
                     gamesList = ArrayList(roomDatabase.gameDao().getAll())
-                    Log.d("debug", "after loading games + $gamesList")
                     withContext(Dispatchers.Main) {
                         onSuccess()
                     }

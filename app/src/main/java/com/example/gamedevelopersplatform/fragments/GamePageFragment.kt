@@ -213,12 +213,13 @@ class GamePageFragment : Fragment() {
         )
     }
 
+    //TODO - Make sure all details are filled Or In Update Query only update none empty fields.
     private fun updateGameDetails(){
         val newGameName: String = editNameInput.text.toString()
         val newGamePrice: String = editPriceInput.text.toString()
         val newGameReleaseDate: String = editReleaseDateView.text.toString()
 
-        var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
+        var imageUpdateStatus: Deferred<Pair<Boolean, String>>?
         var gameDetailsUpdateStatus: Deferred<Boolean>? = null
         val gameDetailsMap = hashMapOf<String, String>()
         var updateMessage: String = "Successfully Updated Game's : |";
@@ -283,11 +284,11 @@ class GamePageFragment : Fragment() {
             //If gameDetails is not empty update both local and firebase database.
             if(gameDetailsMap.isNotEmpty()) {
                 gameDetailsMap["gameId"] = gameId
-                val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
-                GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
                 gameDetailsUpdateStatus = async {
                     updateGameDetails(gameDetailsMap)
                 }
+                val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
+                GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
             }
 
             val isDetailsUpdateSuccessful = gameDetailsUpdateStatus?.await() ?: true

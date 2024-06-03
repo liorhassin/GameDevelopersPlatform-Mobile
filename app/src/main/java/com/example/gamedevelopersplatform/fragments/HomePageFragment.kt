@@ -1,23 +1,25 @@
 package com.example.gamedevelopersplatform.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
-import com.example.gamedevelopersplatform.dao.GameDao
 import com.example.gamedevelopersplatform.database.AppDatabase
-//import com.example.gamedevelopersplatform.database.AppDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomePageFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
@@ -25,6 +27,8 @@ class HomePageFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var gamesList: ArrayList<Game>
+
+    private lateinit var roomDatabase: AppDatabase
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -54,20 +58,36 @@ class HomePageFragment : Fragment() {
         recyclerView = view.findViewById(R.id.homePageRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
+
+        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun fetchGamesFromDB(onSuccess: () -> Unit){
-        firestore.collection("games").get().addOnSuccessListener { documents ->
-            documents.documents.iterator().forEach { gameDocument ->
-                val gameData = gameDocument.toObject<Game>()
-                if(gameData!=null) {
-                    gameData.gameId = gameDocument.id
-                    gamesList.add(gameData)
+        firestore.collection("gamesss").get()
+            .addOnSuccessListener { documents ->
+                documents.documents.iterator().forEach { gameDocument ->
+                    val gameData = gameDocument.toObject<Game>()
+                    if (gameData != null) {
+                        gameData.gameId = gameDocument.id
+                        gamesList.add(gameData)
+                    }
                 }
             }
-        }.addOnCompleteListener{
-            if(it.isSuccessful) onSuccess()
-        }
+            .addOnFailureListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    Log.d("debug", "before loading games + $gamesList")
+                    gamesList = ArrayList(roomDatabase.gameDao().getAll())
+                    Log.d("debug", "after loading games + $gamesList")
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+            }
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    onSuccess()
+                }
+            }
     }
 
 }

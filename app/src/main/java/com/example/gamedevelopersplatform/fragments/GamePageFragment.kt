@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -310,8 +311,19 @@ class GamePageFragment : Fragment() {
     }
 
     private fun deleteGame(){
-        firestore.collection("games").document(gameId).delete()
-        GameDevelopersAppUtil.deleteGameDataInRoom(gameId, this.requireContext())
+        val firestore = FirebaseFirestore.getInstance()
+
+        firestore.collection("games").document(gameId)
+            .delete()
+            .addOnSuccessListener {
+                // Handle successful deletion
+                Log.d("DeleteGame", "Game successfully deleted from Firestore.")
+                GameDevelopersAppUtil.deleteGameDataInRoom(gameId, this.requireContext())
+            }
+            .addOnFailureListener { e ->
+                // Handle any errors
+                Log.w("DeleteGame", "Error deleting game from Firestore", e)
+            }
     }
 
     private fun nameRequireChangeValidation(newGameName: String): Boolean{

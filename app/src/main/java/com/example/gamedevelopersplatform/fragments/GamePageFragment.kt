@@ -280,20 +280,20 @@ class GamePageFragment : Fragment() {
                 releaseDate = newGameReleaseDate
             }
 
-            //TODO - Check if change to save local update works too. Add update timer for liveData change.
-            //If gameDetails is not empty update both local and firebase database.
             if(gameDetailsMap.isNotEmpty()) {
                 gameDetailsMap["gameId"] = gameId
                 gameDetailsUpdateStatus = async {
                     updateGameDetails(gameDetailsMap)
                 }
-                val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
-                GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
             }
 
             val isDetailsUpdateSuccessful = gameDetailsUpdateStatus?.await() ?: true
 
             if(isDetailsUpdateSuccessful){
+                //DB was updated successfully, Update local storage.
+                val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
+                GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
+
                 updateGamePagePreviewView()
                 switchToPreviewLayout()
             }

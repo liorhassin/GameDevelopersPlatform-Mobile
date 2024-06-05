@@ -224,6 +224,16 @@ object GameDevelopersAppUtil {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    fun deleteGameDataInRoom(gameId: String, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            gameDao.deleteById(gameId)
+        }
+    }
+
     fun gameDataToEntity(gameData: HashMap<String, String>): Game{
         return Game(
             name = gameData["name"],

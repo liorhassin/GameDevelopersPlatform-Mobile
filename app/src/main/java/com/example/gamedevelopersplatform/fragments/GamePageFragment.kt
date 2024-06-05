@@ -166,8 +166,9 @@ class GamePageFragment : Fragment() {
             switchToEditLayout()
         }
         previewDeleteButton.setOnClickListener {
-            //TODO - delete game from database and move user to myGames.
             deleteGame()
+            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
+                R.id.gamePageLayout, MyGamesPageFragment.newInstance(connectedUserId))
         }
 
         editPickADateButton.setOnClickListener {
@@ -213,7 +214,6 @@ class GamePageFragment : Fragment() {
         )
     }
 
-    //TODO - Make sure all details are filled Or In Update Query only update none empty fields.
     private fun updateGameDetails(){
         val newGameName: String = editNameInput.text.toString()
         val newGamePrice: String = editPriceInput.text.toString()
@@ -290,26 +290,28 @@ class GamePageFragment : Fragment() {
             val isDetailsUpdateSuccessful = gameDetailsUpdateStatus?.await() ?: true
 
             if(isDetailsUpdateSuccessful){
-                //DB was updated successfully, Update local storage.
-                val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
-                GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
-
                 updateGamePagePreviewView()
                 switchToPreviewLayout()
             }
         }
     }
 
-    private suspend fun updateGameDetails(updateDetailsMap: HashMap<String, String>): Boolean {
+    private suspend fun updateGameDetails(gameDetailsMap: HashMap<String, String>): Boolean {
         return try {
+
             firestore.collection("games").document(gameId)
-                .update(updateDetailsMap as Map<String, Any>).await()
+                .update(gameDetailsMap as Map<String, Any>).await()
+
+            val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
+            GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
+
             true
         } catch (e: Exception) { false }
     }
 
     private fun deleteGame(){
-
+        firestore.collection("games").document(gameId).delete()
+        GameDevelopersAppUtil.deleteGameDataInRoom(gameId, this.requireContext())
     }
 
     private fun nameRequireChangeValidation(newGameName: String): Boolean{

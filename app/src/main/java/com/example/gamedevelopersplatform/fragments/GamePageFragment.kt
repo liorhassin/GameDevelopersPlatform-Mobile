@@ -316,13 +316,7 @@ class GamePageFragment : Fragment() {
         firestore.collection("games").document(gameId)
             .delete()
             .addOnSuccessListener {
-                // Handle successful deletion
-                Log.d("DeleteGame", "Game successfully deleted from Firestore.")
                 GameDevelopersAppUtil.deleteGameDataInRoom(gameId, this.requireContext())
-            }
-            .addOnFailureListener { e ->
-                // Handle any errors
-                Log.w("DeleteGame", "Error deleting game from Firestore", e)
             }
     }
 

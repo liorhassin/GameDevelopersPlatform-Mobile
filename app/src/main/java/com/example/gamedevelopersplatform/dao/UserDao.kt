@@ -6,8 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
-import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.entity.User
 
 @Dao
@@ -16,13 +14,13 @@ interface UserDao {
     fun getAll(): List<User>
 
     @Query("SELECT * FROM users WHERE userId IN (:userIds)")
-    fun findAllByIds(userIds: List<String>): List<User>
+    fun getAllByIds(userIds: List<String>): List<User>
 
     @Query("SELECT * FROM users WHERE userId LIKE :userId")
-    fun findById(userId: String): User
+    fun getById(userId: String): User
 
     @Query("SELECT * FROM users WHERE nickname LIKE :nickname")
-    fun findByName(nickname: String): User
+    fun getByName(nickname: String): User
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(user: User)

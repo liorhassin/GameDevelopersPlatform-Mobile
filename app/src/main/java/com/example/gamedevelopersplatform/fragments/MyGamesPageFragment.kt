@@ -13,11 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.database.AppDatabase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MyGamesPageFragment : Fragment() {
 
@@ -32,6 +37,8 @@ class MyGamesPageFragment : Fragment() {
     private lateinit var connectedUserId: String
     private lateinit var userGamesList: ArrayList<Game>
     private lateinit var userPageId: String
+
+    private lateinit var roomDatabase: AppDatabase
 
     companion object{
         private const val USER_ID_DATA_TO_FETCH = "userIdDataToFetch"
@@ -59,6 +66,7 @@ class MyGamesPageFragment : Fragment() {
                     R.id.myGamesPageLayout
                 )
                 if(connectedUserId != USER_ID_DATA_TO_FETCH) titleText.text = "$developerName Games"
+                GameDevelopersAppUtil.saveGamesToRoom(userGamesList, requireContext())
             },{ exception ->
                 Log.e("fetchUserGamesFromDB", "Failed to fetch user games: $exception")
             })
@@ -84,6 +92,8 @@ class MyGamesPageFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
 
         titleText = view.findViewById(R.id.myGamesPageTitle)
+
+        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun fetchUserGamesIdFromDB(userId: String, onSuccess:(List<String>) -> Unit,
@@ -112,8 +122,13 @@ class MyGamesPageFragment : Fragment() {
                     gameData.gameId = gameDocument.id
                     userGamesList.add(gameData)
                 }
-            }.addOnFailureListener { exception ->
-                onFailure(exception)
+            }.addOnFailureListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    userGamesList = ArrayList(roomDatabase.gameDao().getAllByDeveloperId(userPageId))
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
             }.addOnCompleteListener {
                 if (it.isSuccessful) onSuccess()
             }

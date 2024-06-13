@@ -18,6 +18,9 @@ interface GameDao {
     @Query("SELECT * FROM games WHERE gameId LIKE :gameId")
     fun getById(gameId: String): Game?
 
+    @Query("SELECT * FROM games WHERE developerId LIKE :developerId")
+    fun getAllByDeveloperId(developerId: String): List<Game>
+
     @Query("SELECT * FROM games WHERE name LIKE :name")
     fun getByName(name: String): Game?
 

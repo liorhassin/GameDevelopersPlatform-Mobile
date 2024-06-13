@@ -76,8 +76,6 @@ class GamePageFragment : Fragment() {
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
 
-    private lateinit var roomDatabase: AppDatabase
-
 
     companion object{
         fun newInstance(gameData: Game) = GamePageFragment().apply {
@@ -145,8 +143,6 @@ class GamePageFragment : Fragment() {
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
         }
-
-        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun addTextWatchers(){

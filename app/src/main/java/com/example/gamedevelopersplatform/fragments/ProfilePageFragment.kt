@@ -16,12 +16,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
-import androidx.room.RoomDatabase
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.database.AppDatabase
 import com.example.gamedevelopersplatform.entity.User
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -81,7 +79,7 @@ class ProfilePageFragment : Fragment() {
     private lateinit var changePasswordNewPassword: TextInputEditText
     private lateinit var changePasswordConfirmPassword: TextInputEditText
 
-    private lateinit var roomDatabase: RoomDatabase
+    private lateinit var roomDatabase: AppDatabase
 
     companion object{
         fun newInstance(developerId: String) = ProfilePageFragment().apply {
@@ -101,7 +99,7 @@ class ProfilePageFragment : Fragment() {
         changeProfileOwnerView()
         fetchUserData {
             updateProfilePagePreviewView()
-            //TODO - Add save to Room(private function, Maybe util function if game page need to use it too).
+            GameDevelopersAppUtil.saveUserToRoom(userData, this.requireContext())
         }
 
         return view
@@ -206,7 +204,6 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun addTextWatchers(){
-        //TODO - Fix Hint Color changing to white also, Find a way to change Hint color back to "hint_color".
         GameDevelopersAppUtil.handleTextChange(editNickname) {
             GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.WHITE)
         }
@@ -233,14 +230,17 @@ class ProfilePageFragment : Fragment() {
                 val userDataObject = userDocument.toObject<User>()
                 if(userDataObject != null) userData = userDataObject
         }.addOnFailureListener {
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    //userData = roomDatabase
-//                    withContext(Dispatchers.Main) {
-//                        onSuccess()
-//                    }
-//                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    userData = roomDatabase.userDao().getById(requestedDeveloperId)
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
         }.addOnCompleteListener{
-            if(it.isSuccessful) onSuccess()
+            if(it.isSuccessful) {
+                userData.userId = requestedDeveloperId
+                onSuccess()
+            }
         }
     }
 
@@ -404,7 +404,8 @@ class ProfilePageFragment : Fragment() {
             if(isDetailsUpdateSuccessful && isImageUpdateSuccessful){
                 updateProfilePagePreviewView()
                 switchToPreviewLayout()
-                if(updateMessage!="Successfully Updated : |")
+                if(updateMessage!="Successfully Updated User's : |")
+                    GameDevelopersAppUtil.updateUserDataInRoom(userData, this@ProfilePageFragment.requireContext())
                     GameDevelopersAppUtil.popToast(
                         this@ProfilePageFragment.requireContext(),
                         updateMessage, Toast.LENGTH_SHORT

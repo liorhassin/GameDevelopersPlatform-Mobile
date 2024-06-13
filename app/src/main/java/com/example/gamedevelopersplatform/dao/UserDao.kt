@@ -28,8 +28,8 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(users: List<User>)
 
-    @Delete
-    fun delete(user: User)
+    @Query("DELETE FROM users WHERE userId = :userId")
+    fun deleteById(userId: String)
 
     //Update section:
     @Query("UPDATE users SET nickname = :nickname WHERE userId = :userId")

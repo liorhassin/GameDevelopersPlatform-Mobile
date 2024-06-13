@@ -20,7 +20,9 @@ import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.adapters.GamesAdapter
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.dao.GameDao
+import com.example.gamedevelopersplatform.dao.UserDao
 import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.entity.User
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -242,6 +244,47 @@ object GameDevelopersAppUtil {
             gameId = gameData["gameId"]!!,
             releaseDate = gameData["releaseDate"],
             image = gameData["image"]
+        )
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun saveUserToRoom(user: User, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val userDao: UserDao = roomDB.userDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            userDao.insert(user)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun updateUserDataInRoom(user: User, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val userDao: UserDao = roomDB.userDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            userDao.update(user)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun deleteUserDataInRoom(userId: String, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val userDao: UserDao = roomDB.userDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            userDao.deleteById(userId)
+        }
+    }
+
+    fun userDataToEntity(userData: HashMap<String, String>): User {
+        return User(
+            userId = userData["userId"]!!,
+            birthDate = userData["birthDate"],
+            email = userData["email"],
+            nickname = userData["nickname"],
+            profileImage = userData["profileImage"],
+            userGames = null
         )
     }
 

@@ -16,8 +16,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.room.RoomDatabase
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.database.AppDatabase
 import com.example.gamedevelopersplatform.entity.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
@@ -28,10 +30,14 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class ProfilePageFragment : Fragment() {
@@ -45,8 +51,6 @@ class ProfilePageFragment : Fragment() {
     private lateinit var userData: User
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
-
-    private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var previewLayout: ConstraintLayout
     private lateinit var editLayout: ConstraintLayout
@@ -77,6 +81,8 @@ class ProfilePageFragment : Fragment() {
     private lateinit var changePasswordNewPassword: TextInputEditText
     private lateinit var changePasswordConfirmPassword: TextInputEditText
 
+    private lateinit var roomDatabase: RoomDatabase
+
     companion object{
         fun newInstance(developerId: String) = ProfilePageFragment().apply {
             arguments = bundleOf(
@@ -93,7 +99,10 @@ class ProfilePageFragment : Fragment() {
         addTextWatchers()
         setButtonsOnClickEvent()
         changeProfileOwnerView()
-        fetchUserData { updateProfilePagePreviewView() }
+        fetchUserData {
+            updateProfilePagePreviewView()
+            //TODO - Add save to Room(private function, Maybe util function if game page need to use it too).
+        }
 
         return view
     }
@@ -142,6 +151,8 @@ class ProfilePageFragment : Fragment() {
         changePasswordOldPassword = view.findViewById(R.id.profilePageChangePasswordOldPasswordInput)
         changePasswordNewPassword = view.findViewById(R.id.profilePageChangePasswordNewPasswordInput)
         changePasswordConfirmPassword = view.findViewById(R.id.profilePageChangePasswordConfirmPasswordInput)
+
+        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun setButtonsOnClickEvent(){
@@ -221,6 +232,13 @@ class ProfilePageFragment : Fragment() {
             .addOnSuccessListener { userDocument ->
                 val userDataObject = userDocument.toObject<User>()
                 if(userDataObject != null) userData = userDataObject
+        }.addOnFailureListener {
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    //userData = roomDatabase
+//                    withContext(Dispatchers.Main) {
+//                        onSuccess()
+//                    }
+//                }
         }.addOnCompleteListener{
             if(it.isSuccessful) onSuccess()
         }

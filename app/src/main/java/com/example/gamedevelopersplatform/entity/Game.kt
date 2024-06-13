@@ -1,6 +1,6 @@
 package com.example.gamedevelopersplatform.entity
 
-import giandroidx.room.ColumnInfo
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

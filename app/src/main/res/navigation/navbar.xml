@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homePageFragment"
-        android:name="com.example.gamedevelopersplatform.HomePageFragment"
+        android:name="com.example.gamedevelopersplatform.fragments.HomePageFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home_page" />
 </navigation>

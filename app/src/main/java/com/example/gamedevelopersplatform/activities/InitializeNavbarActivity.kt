@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,7 +6,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.databinding.ActivityInitializeNavbarBinding
+import com.example.gamedevelopersplatform.fragments.AddGamePageFragment
+import com.example.gamedevelopersplatform.fragments.HomePageFragment
+import com.example.gamedevelopersplatform.fragments.MyGamesPageFragment
+import com.example.gamedevelopersplatform.fragments.ProfilePageFragment
 import com.google.firebase.auth.FirebaseAuth
 
 //TODO - Refactor

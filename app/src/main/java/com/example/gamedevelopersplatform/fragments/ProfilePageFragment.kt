@@ -1,7 +1,6 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.fragments
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -17,7 +16,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.entity.User
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -26,10 +28,14 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class ProfilePageFragment : Fragment() {
@@ -40,11 +46,9 @@ class ProfilePageFragment : Fragment() {
     private lateinit var connectedUserId: String
     private lateinit var requestedDeveloperId: String
 
-    private lateinit var userData: UserData
+    private lateinit var userData: User
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
-
-    private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var previewLayout: ConstraintLayout
     private lateinit var editLayout: ConstraintLayout
@@ -75,6 +79,8 @@ class ProfilePageFragment : Fragment() {
     private lateinit var changePasswordNewPassword: TextInputEditText
     private lateinit var changePasswordConfirmPassword: TextInputEditText
 
+    private lateinit var roomDatabase: AppDatabase
+
     companion object{
         fun newInstance(developerId: String) = ProfilePageFragment().apply {
             arguments = bundleOf(
@@ -91,9 +97,10 @@ class ProfilePageFragment : Fragment() {
         addTextWatchers()
         setButtonsOnClickEvent()
         changeProfileOwnerView()
-        //TODO - change button name to my games by default or developer games
-        //TODO - change button functionality to load developer games or my games
-        fetchUserData { updateProfilePagePreviewView() }
+        fetchUserData {
+            updateProfilePagePreviewView()
+            GameDevelopersAppUtil.saveUserToRoom(userData, this.requireContext())
+        }
 
         return view
     }
@@ -112,7 +119,10 @@ class ProfilePageFragment : Fragment() {
 
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
-            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
+            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(
+                chooseImageButton,
+                Color.WHITE
+            )
         }
 
         myGamesButton = view.findViewById<Button>(R.id.profilePagePreviewMyGamesButton)
@@ -139,12 +149,16 @@ class ProfilePageFragment : Fragment() {
         changePasswordOldPassword = view.findViewById(R.id.profilePageChangePasswordOldPasswordInput)
         changePasswordNewPassword = view.findViewById(R.id.profilePageChangePasswordNewPasswordInput)
         changePasswordConfirmPassword = view.findViewById(R.id.profilePageChangePasswordConfirmPasswordInput)
+
+        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun setButtonsOnClickEvent(){
         myGamesButton.setOnClickListener{
-            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
-                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(requestedDeveloperId))
+            GameDevelopersAppUtil.changeFragmentFromFragment(
+                requireActivity(),
+                R.id.profilePagePreviewLayout, MyGamesPageFragment.newInstance(requestedDeveloperId)
+            )
         }
 
         changePasswordButton.setOnClickListener {
@@ -170,7 +184,10 @@ class ProfilePageFragment : Fragment() {
         }
 
         showDatePickerButton.setOnClickListener {
-            GameDevelopersAppUtil.showDatePicker(requireContext(), Calendar.getInstance()) { formattedDate ->
+            GameDevelopersAppUtil.showDatePicker(
+                requireContext(),
+                Calendar.getInstance()
+            ) { formattedDate ->
                 previewBirthdate.text = formattedDate
                 editBirthdate.text = formattedDate
             }
@@ -187,7 +204,6 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun addTextWatchers(){
-        //TODO - Fix Hint Color changing to white also, Find a way to change Hint color back to "hint_color".
         GameDevelopersAppUtil.handleTextChange(editNickname) {
             GameDevelopersAppUtil.setTextAndHintTextColor(editNickname, Color.WHITE)
         }
@@ -198,7 +214,10 @@ class ProfilePageFragment : Fragment() {
             GameDevelopersAppUtil.setTextAndHintTextColor(changePasswordNewPassword, Color.WHITE)
         }
         GameDevelopersAppUtil.handleTextChange(changePasswordConfirmPassword) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(changePasswordConfirmPassword, Color.WHITE)
+            GameDevelopersAppUtil.setTextAndHintTextColor(
+                changePasswordConfirmPassword,
+                Color.WHITE
+            )
         }
         GameDevelopersAppUtil.handleTextChange(chooseImageButton) {
             GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
@@ -208,20 +227,32 @@ class ProfilePageFragment : Fragment() {
     private fun fetchUserData(onSuccess: () -> Unit){
         firestore.collection("users").document(requestedDeveloperId).get()
             .addOnSuccessListener { userDocument ->
-                val userDataObject = userDocument.toObject<UserData>()
+                val userDataObject = userDocument.toObject<User>()
                 if(userDataObject != null) userData = userDataObject
+        }.addOnFailureListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    userData = roomDatabase.userDao().getById(requestedDeveloperId)
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
         }.addOnCompleteListener{
-            if(it.isSuccessful) onSuccess()
+            if(it.isSuccessful) {
+                userData.userId = requestedDeveloperId
+                onSuccess()
+            }
         }
     }
 
     private fun updateProfilePagePreviewView(){
         previewNickname.text = userData.nickname
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, userData.profileImage,
-            GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, previewImage)
+        GameDevelopersAppUtil.loadImageFromDB(
+            storageRef, userData.profileImage,
+            GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, previewImage
+        )
         previewEmail.text = userData.email
         previewBirthdate.text = userData.birthDate
-        previewGamesCount.text = userData.userGames.size.toString()
+        previewGamesCount.text = userData.userGames?.size.toString()
     }
 
     private fun updateProfilePageEditView(){
@@ -246,19 +277,25 @@ class ProfilePageFragment : Fragment() {
                 firebaseAuth.currentUser?.updatePassword(newPassword)?.addOnSuccessListener {
                     clearChangePasswordInputs()
                     switchToPreviewLayout()
-                    GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                        , "Successfully updated user password"
-                        , Toast.LENGTH_SHORT)
+                    GameDevelopersAppUtil.popToast(
+                        this@ProfilePageFragment.requireContext(),
+                        "Successfully updated user password",
+                        Toast.LENGTH_SHORT
+                    )
                 }?.addOnFailureListener { exception ->
-                    GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                        , "Failed to update password, exception: ${exception.message}"
-                        , Toast.LENGTH_SHORT)
+                    GameDevelopersAppUtil.popToast(
+                        this@ProfilePageFragment.requireContext(),
+                        "Failed to update password, exception: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    )
                 }
             }.addOnFailureListener {exception ->
 
-                GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                    , "Failed to re-authenticate, exception: ${exception.message}"
-                    , Toast.LENGTH_SHORT)
+                GameDevelopersAppUtil.popToast(
+                    this@ProfilePageFragment.requireContext(),
+                    "Failed to re-authenticate, exception: ${exception.message}",
+                    Toast.LENGTH_SHORT
+                )
             }
         }
     }
@@ -266,22 +303,31 @@ class ProfilePageFragment : Fragment() {
     private fun validatePasswordInputs(oldPassword:String, newPassword:String, confirmPassword:String): Boolean{
         if(oldPassword.isEmpty()) {
             GameDevelopersAppUtil.setTextAndHintTextColor(changePasswordOldPassword, Color.RED)
-            GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                , "Please enter your old password", Toast.LENGTH_SHORT)
+            GameDevelopersAppUtil.popToast(
+                this@ProfilePageFragment.requireContext(),
+                "Please enter your old password",
+                Toast.LENGTH_SHORT
+            )
             return false
         }
 
         if(newPassword.isEmpty() || !GameDevelopersAppUtil.passwordValidation(newPassword)){
             GameDevelopersAppUtil.setTextAndHintTextColor(changePasswordNewPassword, Color.RED)
-            GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                , "New Password doesn't meet the password requirements", Toast.LENGTH_SHORT)
+            GameDevelopersAppUtil.popToast(
+                this@ProfilePageFragment.requireContext(),
+                "New Password doesn't meet the password requirements",
+                Toast.LENGTH_SHORT
+            )
             return false
         }
 
         if(confirmPassword.isEmpty() || confirmPassword!=newPassword){
             GameDevelopersAppUtil.setTextAndHintTextColor(changePasswordConfirmPassword, Color.RED)
-            GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                , "Confirm Password is empty, Or is not equal to New Password", Toast.LENGTH_SHORT)
+            GameDevelopersAppUtil.popToast(
+                this@ProfilePageFragment.requireContext(),
+                "Confirm Password is empty, Or is not equal to New Password",
+                Toast.LENGTH_SHORT
+            )
             return false
         }
         return true
@@ -301,27 +347,37 @@ class ProfilePageFragment : Fragment() {
         var newImage = ""
         if(selectedImageUri!=null)
             newImage = GameDevelopersAppUtil.getImageNameFromUri(
-                this.requireActivity().contentResolver, selectedImageUri!!)
+                this.requireActivity().contentResolver, selectedImageUri!!
+            )
 
         val (nicknameValidation, birthdateValidation, imageValidation) =
             userDetailsValidation(newNickname, oldNickname, newBirthdate, oldBirthdate, newImage)
 
         runBlocking {
             if(imageValidation) {
-                imageUpdateStatus = async { GameDevelopersAppUtil.uploadImageAndGetName(
-                    storageRef, GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH, selectedImageUri!!)}
+                imageUpdateStatus = async {
+                    GameDevelopersAppUtil.uploadImageAndGetName(
+                        storageRef,
+                        GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH,
+                        selectedImageUri!!
+                    )
+                }
 
                 imageUpdateStatus?.await()?.let { result ->
                     if(result.first){
-                        storageRef.child(GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH
+                        storageRef.child(
+                            GameDevelopersAppUtil.USERS_PROFILE_IMAGES_PATH
                                 + userData.profileImage).delete()
                         updateDetailsMap["profileImage"] = result.second
                         userData.profileImage = result.second
                         updateMessage += "Image|"
                     }else{
                         GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.RED)
-                        GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext()
-                            , "Failed uploading image", Toast.LENGTH_SHORT)
+                        GameDevelopersAppUtil.popToast(
+                            this@ProfilePageFragment.requireContext(),
+                            "Failed uploading image",
+                            Toast.LENGTH_SHORT
+                        )
                         return@runBlocking
                     }
                 }
@@ -348,9 +404,12 @@ class ProfilePageFragment : Fragment() {
             if(isDetailsUpdateSuccessful && isImageUpdateSuccessful){
                 updateProfilePagePreviewView()
                 switchToPreviewLayout()
-                if(updateMessage!="Successfully Updated : |")
-                    GameDevelopersAppUtil.popToast(this@ProfilePageFragment.requireContext(),
-                        updateMessage, Toast.LENGTH_SHORT);
+                if(updateMessage!="Successfully Updated User's : |")
+                    GameDevelopersAppUtil.updateUserDataInRoom(userData, this@ProfilePageFragment.requireContext())
+                    GameDevelopersAppUtil.popToast(
+                        this@ProfilePageFragment.requireContext(),
+                        updateMessage, Toast.LENGTH_SHORT
+                    );
             }
         }
 
@@ -365,12 +424,14 @@ class ProfilePageFragment : Fragment() {
     }
 
     private fun userDetailsValidation(
-        newNickname: String, oldNickname: String,
-        newBirthdate: String, oldBirthdate: String,
+        newNickname: String, oldNickname: String?,
+        newBirthdate: String, oldBirthdate: String?,
         newImage: String):Triple<Boolean, Boolean, Boolean>{
 
         return Triple(
-            (newNickname.isNotEmpty() && newNickname!=oldNickname && GameDevelopersAppUtil.nicknameValidation(newNickname)),
+            (newNickname.isNotEmpty() && newNickname!=oldNickname && GameDevelopersAppUtil.nicknameValidation(
+                newNickname
+            )),
             (newBirthdate.isNotEmpty() && newBirthdate!=oldBirthdate),
             (newImage != "")
         )

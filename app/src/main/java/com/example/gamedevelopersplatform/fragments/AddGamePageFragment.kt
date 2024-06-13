@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.fragments
 
 import android.app.Activity
 import android.content.Intent
@@ -15,6 +15,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.entity.Game
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -65,7 +68,10 @@ class AddGamePageFragment : Fragment() {
 
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
-            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.WHITE)
+            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(
+                chooseImageButton,
+                Color.WHITE
+            )
         }
     }
 
@@ -87,7 +93,10 @@ class AddGamePageFragment : Fragment() {
         }
 
         showDatePickerButton.setOnClickListener {
-            GameDevelopersAppUtil.showDatePicker(requireContext(), Calendar.getInstance()){formattedDate ->
+            GameDevelopersAppUtil.showDatePicker(
+                requireContext(),
+                Calendar.getInstance()
+            ) { formattedDate ->
                 releaseDateTextView.text = formattedDate
             }
         }
@@ -108,8 +117,10 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
-        GameDevelopersAppUtil.uploadImageAndGetName(storageRef, GameDevelopersAppUtil.GAMES_IMAGES_PATH,
-            selectedImageUri!!, { imageUrl ->
+        GameDevelopersAppUtil.uploadImageAndGetName(storageRef,
+            GameDevelopersAppUtil.GAMES_IMAGES_PATH,
+            selectedImageUri!!,
+            { imageUrl ->
                 val gameData = hashMapOf(
                     "image" to imageUrl,
                     "name" to name,
@@ -120,9 +131,16 @@ class AddGamePageFragment : Fragment() {
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
                         saveGameId(gameId, uid, {
-                            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(), R.id.addGamePageLayout, MyGamesPageFragment.newInstance(uid))
-                        },{exception ->
-                            Log.e("SavingGameId", "Failed to save gameId to userGames array: $exception")
+                            GameDevelopersAppUtil.changeFragmentFromFragment(
+                                requireActivity(),
+                                R.id.addGamePageLayout,
+                                MyGamesPageFragment.newInstance(uid)
+                            )
+                        }, { exception ->
+                            Log.e(
+                                "SavingGameId",
+                                "Failed to save gameId to userGames array: $exception"
+                            )
                         })
                     }
                 ) { exception ->
@@ -152,7 +170,7 @@ class AddGamePageFragment : Fragment() {
 
     private fun markMissingInputsColor(validPrice: Boolean, validName: Boolean, validPicture: Boolean){
         if(!validPrice)
-            GameDevelopersAppUtil.setTextAndHintTextColor(priceTextInput,Color.RED)
+            GameDevelopersAppUtil.setTextAndHintTextColor(priceTextInput, Color.RED)
         if(!validName)
             GameDevelopersAppUtil.setTextAndHintTextColor(gameNameTextInput, Color.RED)
         if(!validPicture)
@@ -182,14 +200,23 @@ class AddGamePageFragment : Fragment() {
         firestore.collection("games").add(gameData)
             .addOnSuccessListener { documentReference ->
                 val gameId = documentReference.id
+                gameData["gameId"] = gameId
+                generateGameEntityAndSaveLocally(gameData)
                 onSuccess(gameId)
             }.addOnFailureListener { exception ->
                 onFailure(exception)
             }
     }
 
+    private fun generateGameEntityAndSaveLocally(gameData: HashMap<String, String>){
+        GameDevelopersAppUtil.saveGameToRoom(
+            GameDevelopersAppUtil.gameDataToEntity(gameData)
+            , requireContext())
+    }
+
     private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{
-        return Triple(GameDevelopersAppUtil.gamePriceValidation(price),
+        return Triple(
+            GameDevelopersAppUtil.gamePriceValidation(price),
             GameDevelopersAppUtil.gameNameValidation(name),
             pictureUri!=null)
     }

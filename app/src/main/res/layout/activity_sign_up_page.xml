@@ -6,7 +6,7 @@
     android:background="@color/background_gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignUpPageActivity">
+    tools:context=".activities.SignUpPageActivity">
 
     <Button
         android:id="@+id/signUpButton"

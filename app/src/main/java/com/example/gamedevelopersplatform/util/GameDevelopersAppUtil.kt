@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform
+package com.example.gamedevelopersplatform.util
 
 import android.app.DatePickerDialog
 import android.content.ContentResolver
@@ -16,8 +16,19 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamedevelopersplatform.entity.Game
+import com.example.gamedevelopersplatform.adapters.GamesAdapter
+import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.dao.GameDao
+import com.example.gamedevelopersplatform.dao.UserDao
+import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.entity.User
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -103,14 +114,14 @@ object GameDevelopersAppUtil {
     }
 
     private fun retrieveImageUrl(storageRef: StorageReference,
-                                 imageName: String, imagePath: String, onSuccess: (Uri) -> Unit){
+                                 imageName: String?, imagePath: String, onSuccess: (Uri) -> Unit){
         val imageReference = storageRef.child(imagePath + imageName)
         imageReference.downloadUrl.addOnSuccessListener { url ->
             onSuccess(url)
         }
     }
 
-    fun loadImageFromDB(storageRef: StorageReference, imageName: String, imagePath: String, imageView: ImageView){
+    fun loadImageFromDB(storageRef: StorageReference, imageName: String?, imagePath: String, imageView: ImageView){
         retrieveImageUrl(storageRef, imageName, imagePath){ imageUrl ->
             Picasso.get().load(imageUrl).placeholder(R.drawable.place_holder_image)
                 .into(imageView)
@@ -138,7 +149,7 @@ object GameDevelopersAppUtil {
         fragmentTransaction.commit()
     }
 
-    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<GameData>,
+    fun populateRecyclerView(recyclerView: RecyclerView, gamesList: ArrayList<Game>,
                              storageRef: StorageReference, fragmentActivity: FragmentActivity, currentLayoutId: Int){
         recyclerView.adapter = GamesAdapter(gamesList, storageRef, fragmentActivity, currentLayoutId)
     }
@@ -181,6 +192,100 @@ object GameDevelopersAppUtil {
 
     fun popToast(context: Context, message: String, duration: Int){
         Toast.makeText(context, message, duration).show()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun saveGamesToRoom(games: List<Game>, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            games.forEach { game ->
+                gameDao.insert(game)
+            }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun saveGameToRoom(game: Game, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            gameDao.insert(game)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun updateGameDataInRoom(game: Game, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            gameDao.update(game)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun deleteGameDataInRoom(gameId: String, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            gameDao.deleteById(gameId)
+        }
+    }
+
+    fun gameDataToEntity(gameData: HashMap<String, String>): Game{
+        return Game(
+            name = gameData["name"],
+            developerId = gameData["developerId"],
+            price = gameData["price"],
+            gameId = gameData["gameId"]!!,
+            releaseDate = gameData["releaseDate"],
+            image = gameData["image"]
+        )
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun saveUserToRoom(user: User, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val userDao: UserDao = roomDB.userDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            userDao.insert(user)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun updateUserDataInRoom(user: User, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val userDao: UserDao = roomDB.userDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            userDao.update(user)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun deleteUserDataInRoom(userId: String, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val userDao: UserDao = roomDB.userDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            userDao.deleteById(userId)
+        }
+    }
+
+    fun userDataToEntity(userData: HashMap<String, String>): User {
+        return User(
+            userId = userData["userId"]!!,
+            birthDate = userData["birthDate"],
+            email = userData["email"],
+            nickname = userData["nickname"],
+            profileImage = userData["profileImage"],
+            userGames = null
+        )
     }
 
 }

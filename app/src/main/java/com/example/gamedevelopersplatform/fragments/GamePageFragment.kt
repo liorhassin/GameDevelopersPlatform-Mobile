@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings.Global
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -427,18 +428,10 @@ class GamePageFragment : Fragment() {
                 val jsonObject = JSONObject(apiResult)
 
                 val conversionRates = jsonObject.getJSONObject("conversion_rates")
-
-                //TODO - Add save currencies to firebase DB.
-                //TODO - Add save currencies to room DB.
                 //TODO - Add fetch currency rate from firebase and if failed from room cache.(should be added to spinner not here).
 
                 currenciesJsonToHashmap(conversionRates)
                 saveCurrenciesToFirebase()
-
-//                withContext(Dispatchers.Main){
-//                    val text = (price.toFloat() * conversionRate).toString()
-//                    previewExchangeView.text = text
-//                }
 
             }catch (e: Exception){
                 Log.e("error", "$e")
@@ -507,9 +500,17 @@ class GamePageFragment : Fragment() {
         }
     }
 
-    private fun getCurrencyRateFromRoom(currencyKey: String): Float{
-        //TODO - After saving currency to local storage room, pull requested rate and return.
-        return 2f
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun getCurrencyRate(currencyKey: String, onSuccess: (rate: String) -> Unit){
+        firestore.collection("currencies").document(currencyKey).get()
+            .addOnSuccessListener { document ->
+                val rate = document.get("currencyRate").toString()
+                onSuccess(rate)
+            }.addOnFailureListener {
+                GlobalScope.launch(Dispatchers.IO) {
+                    onSuccess(roomDatabase.currencyDao().getRateByName(currencyKey))
+                }
+            }
     }
 
     private fun spinnerSetup(){
@@ -529,9 +530,11 @@ class GamePageFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                getCurrencyRateFromRoom(parent?.getItemAtPosition(position).toString())
+                getCurrencyRate(parent?.getItemAtPosition(position).toString()) { rate ->
+                    val text = (price.toFloat() * rate.toFloat()).toString()
+                    previewExchangeView.text = text
+                }
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }

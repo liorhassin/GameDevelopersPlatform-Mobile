@@ -10,7 +10,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -28,15 +31,23 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.URL
 import java.util.Calendar
 
 class GamePageFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
+
+    private val baseCurrency: String = "USD"
 
     private lateinit var connectedUserId: String
     private lateinit var image: String
@@ -48,9 +59,11 @@ class GamePageFragment : Fragment() {
     private var developerName: String = "Unknown"
     private var isOwner = false
 
-    //Preview
+    //Preview Mode
     private lateinit var previewLayout: ConstraintLayout
 
+    private lateinit var previewSpinnerView: Spinner
+    private lateinit var previewExchangeView: TextView
     private lateinit var previewNameView: TextView
     private lateinit var previewPriceView: TextView
     private lateinit var previewReleaseDateView: TextView
@@ -61,7 +74,7 @@ class GamePageFragment : Fragment() {
     private lateinit var previewDeleteButton: Button
 
 
-    //Edit
+    //Edit Mode
     private lateinit var editLayout: ConstraintLayout
 
     private lateinit var editNameInput: TextInputEditText
@@ -97,6 +110,8 @@ class GamePageFragment : Fragment() {
         toggleOwnerButtons()
         addTextWatchers()
         setButtonsOnClickEvent()
+        getCurrencyRates()
+        spinnerSetup()
         updateGamePagePreviewView()
 
         return view
@@ -119,6 +134,8 @@ class GamePageFragment : Fragment() {
         //Preview:
         previewLayout = view.findViewById(R.id.gamePagePreviewLayout)
 
+        previewSpinnerView = view.findViewById(R.id.gamePagePreviewSpinner)
+        previewExchangeView = view.findViewById(R.id.gamePagePreviewCurrencyExchangeText)
         previewNameView = view.findViewById(R.id.gamePagePreviewGameTitle)
         previewPriceView = view.findViewById(R.id.gamePagePreviewPriceText)
         previewReleaseDateView = view.findViewById(R.id.gamePagePreviewReleaseDateText)
@@ -380,6 +397,57 @@ class GamePageFragment : Fragment() {
             }
             previewDeveloperNameView.text = developerName
         }
+    }
+
+    private fun getCurrencyRates(){
+        val apiRequestKey: String = "https://v6.exchangerate-api.com/v6/aea9dcadf0c12acfc7213f75/latest/$baseCurrency"
+        GlobalScope.launch(Dispatchers.IO) {
+            try{
+                val apiResult = URL(apiRequestKey).readText()
+                val jsonObject = JSONObject(apiResult)
+
+                val conversionRate = jsonObject.getJSONObject("conversion_rates").getString("ILS").toFloat()
+
+                Log.d("api_test", "Value received for ILS request: $conversionRate")
+                Log.d("api_test", "Api Results: $apiResult")
+
+                withContext(Dispatchers.Main){
+                    val text = (price.toFloat() * conversionRate).toString()
+                    previewExchangeView.text = text
+                }
+
+            }catch (e: Exception){
+                Log.e("error", "$e")
+            }
+        }
+
+    }
+
+    private fun spinnerSetup(){
+        ArrayAdapter.createFromResource(
+            this.requireContext(),
+            R.array.currencies,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            previewSpinnerView.adapter = adapter
+        }
+
+        previewSpinnerView.onItemSelectedListener = (object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                getCurrencyRates()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     private fun switchToEditLayout(){

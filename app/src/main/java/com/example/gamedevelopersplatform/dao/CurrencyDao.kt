@@ -17,6 +17,6 @@ interface CurrencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(currency: Currency)
 
-    @Query("UPDATE currencies SET currencyRate = :currencyRate WHERE currencyName = :currencyName")
-    fun update(currencyName: String, currencyRate: String)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(currencies: List<Currency>)
 }

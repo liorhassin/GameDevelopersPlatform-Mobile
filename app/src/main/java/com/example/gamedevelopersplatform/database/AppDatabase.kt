@@ -13,7 +13,7 @@ import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.entity.User
 import com.example.gamedevelopersplatform.type_converters.Converters
 
-@Database(entities = [Game::class, User::class, Currency::class], version = 4, exportSchema = false)
+@Database(entities = [Game::class, User::class, Currency::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun gameDao(): GameDao

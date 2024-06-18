@@ -1,6 +1,7 @@
 package com.example.gamedevelopersplatform.fragments
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -23,24 +24,28 @@ import androidx.core.os.bundleOf
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.dao.CurrencyDao
 import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.entity.Currency
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.URL
 import java.util.Calendar
+import java.util.HashSet
 
 class GamePageFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
@@ -48,6 +53,9 @@ class GamePageFragment : Fragment() {
     private lateinit var storageRef: StorageReference
 
     private val baseCurrency: String = "USD"
+    private lateinit var currencies: ArrayList<Currency>
+    private lateinit var currenciesHashmap: HashMap<String,String>
+    private lateinit var supportedCurrencies: HashSet<String>
 
     private lateinit var connectedUserId: String
     private lateinit var image: String
@@ -89,6 +97,7 @@ class GamePageFragment : Fragment() {
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private var selectedImageUri: Uri? = null
 
+    private lateinit var roomDatabase: AppDatabase
 
     companion object{
         fun newInstance(gameData: Game) = GamePageFragment().apply {
@@ -122,6 +131,13 @@ class GamePageFragment : Fragment() {
         firestore = FirebaseFirestore.getInstance()
         storageRef = FirebaseStorage.getInstance().reference
 
+        currencies = arrayListOf()
+        currenciesHashmap = HashMap()
+        supportedCurrencies = HashSet()
+        supportedCurrencies.add("ILS")
+        supportedCurrencies.add("EUR")
+        supportedCurrencies.add("GBP")
+
         connectedUserId = firebaseAuth.currentUser?.uid.toString()
         image = arguments?.getString("IMAGE", "").toString()
         name = arguments?.getString("NAME", "").toString()
@@ -135,7 +151,7 @@ class GamePageFragment : Fragment() {
         previewLayout = view.findViewById(R.id.gamePagePreviewLayout)
 
         previewSpinnerView = view.findViewById(R.id.gamePagePreviewSpinner)
-        previewExchangeView = view.findViewById(R.id.gamePagePreviewCurrencyExchangeText)
+        previewExchangeView = view.findViewById(R.id.gamePagePreviewExchangeText)
         previewNameView = view.findViewById(R.id.gamePagePreviewGameTitle)
         previewPriceView = view.findViewById(R.id.gamePagePreviewPriceText)
         previewReleaseDateView = view.findViewById(R.id.gamePagePreviewReleaseDateText)
@@ -160,6 +176,8 @@ class GamePageFragment : Fragment() {
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
         }
+
+        roomDatabase = AppDatabase.getInstance(this.requireContext())
     }
 
     private fun addTextWatchers(){
@@ -399,28 +417,99 @@ class GamePageFragment : Fragment() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun getCurrencyRates(){
-        val apiRequestKey: String = "https://v6.exchangerate-api.com/v6/aea9dcadf0c12acfc7213f75/latest/$baseCurrency"
+        //TODO - add if request fails pull from firebase, if firebase fails pull from room.
+        val apiRequestKey = "https://v6.exchangerate-api.com/v6/aea9dcadf0c12acfc7213f75/latest/$baseCurrency"
         GlobalScope.launch(Dispatchers.IO) {
             try{
                 val apiResult = URL(apiRequestKey).readText()
                 val jsonObject = JSONObject(apiResult)
 
-                val conversionRate = jsonObject.getJSONObject("conversion_rates").getString("ILS").toFloat()
+                val conversionRates = jsonObject.getJSONObject("conversion_rates")
 
-                Log.d("api_test", "Value received for ILS request: $conversionRate")
-                Log.d("api_test", "Api Results: $apiResult")
+                //TODO - Add save currencies to firebase DB.
+                //TODO - Add save currencies to room DB.
+                //TODO - Add fetch currency rate from firebase and if failed from room cache.(should be added to spinner not here).
 
-                withContext(Dispatchers.Main){
-                    val text = (price.toFloat() * conversionRate).toString()
-                    previewExchangeView.text = text
-                }
+                currenciesJsonToHashmap(conversionRates)
+                saveCurrenciesToFirebase()
+
+//                withContext(Dispatchers.Main){
+//                    val text = (price.toFloat() * conversionRate).toString()
+//                    previewExchangeView.text = text
+//                }
 
             }catch (e: Exception){
                 Log.e("error", "$e")
             }
         }
+    }
 
+    private fun currenciesJsonToHashmap(currenciesJson: JSONObject){
+        currenciesJson.keys().forEach { key ->
+            if(key in supportedCurrencies) {
+                val rate = currenciesJson.getString(key)
+                currenciesHashmap[key] = rate
+            }
+        }
+    }
+
+    private fun saveCurrenciesToFirebase(){
+        currenciesHashmap.forEach { (key, value) ->
+            val currencyMap: HashMap<String, String> = HashMap()
+            currencyMap["currencyName"] = key
+            currencyMap["currencyRate"] = value
+            saveCurrencyToFirebase(currencyMap)
+        }
+    }
+
+    private fun saveCurrencyToFirebase(currencyData: HashMap<String, String>){
+        val currencyName = currencyData["currencyName"]
+        if (currencyName != null) {
+            firestore.collection("currencies").document(currencyName).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        firestore.collection("currencies").document(currencyName)
+                            .set(currencyData, SetOptions.merge())
+                            .addOnSuccessListener {
+                                currencyData["currencyId"] = document.id
+                                generateCurrencyEntityAndSaveLocally(currencyData)
+                            }
+                    } else {
+                        firestore.collection("currencies").document(currencyName).set(currencyData)
+                            .addOnSuccessListener {
+                                currencyData["currencyId"] = currencyName
+                                generateCurrencyEntityAndSaveLocally(currencyData)
+                            }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("saveCurrencyToFirebase", "Error getting document", exception)
+                }
+        }
+    }
+
+    private fun generateCurrencyEntityAndSaveLocally(currencyData: HashMap<String, String>){
+        val currency = Currency(currencyData["currencyId"]!!,
+            currencyData["currencyName"],
+            currencyData["currencyRate"])
+        saveCurrencyToRoomDB(currency, this@GamePageFragment.requireContext())
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun saveCurrencyToRoomDB(currency: Currency, context: Context){
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val currencyDao: CurrencyDao = roomDB.currencyDao()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            currencyDao.insert(currency)
+        }
+    }
+
+    private fun getCurrencyRateFromRoom(currencyKey: String): Float{
+        //TODO - After saving currency to local storage room, pull requested rate and return.
+        return 2f
     }
 
     private fun spinnerSetup(){
@@ -440,7 +529,7 @@ class GamePageFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                getCurrencyRates()
+                getCurrencyRateFromRoom(parent?.getItemAtPosition(position).toString())
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

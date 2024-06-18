@@ -81,8 +81,9 @@
             android:text="Currency Exchange:"
             android:textColor="@color/white"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewPriceTitle"
-            tools:layout_editor_absoluteX="100dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewPriceTitle" />
 
         <TextView
             android:id="@+id/gamePagePreviewReleaseDateTitle"
@@ -140,19 +141,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="120dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/gamePagePreviewCurrencyExchangeText"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewCurrencyExchangeText">
 
             <TextView
                 android:id="@+id/gamePagePreviewExchangeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="125"
+                android:text="Choose Currency"
                 android:textColor="@color/white"
                 android:textSize="26sp" />
 

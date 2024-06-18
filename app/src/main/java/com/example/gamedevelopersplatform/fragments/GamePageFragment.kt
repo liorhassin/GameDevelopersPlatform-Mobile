@@ -420,16 +420,12 @@ class GamePageFragment : Fragment() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun getCurrencyRates(){
-        //TODO - add if request fails pull from firebase, if firebase fails pull from room.
         val apiRequestKey = "https://v6.exchangerate-api.com/v6/aea9dcadf0c12acfc7213f75/latest/$baseCurrency"
         GlobalScope.launch(Dispatchers.IO) {
             try{
                 val apiResult = URL(apiRequestKey).readText()
                 val jsonObject = JSONObject(apiResult)
-
                 val conversionRates = jsonObject.getJSONObject("conversion_rates")
-                //TODO - Add fetch currency rate from firebase and if failed from room cache.(should be added to spinner not here).
-
                 currenciesJsonToHashmap(conversionRates)
                 saveCurrenciesToFirebase()
 

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings.Global
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -44,6 +43,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import org.json.JSONObject
+import java.math.RoundingMode
 import java.net.URL
 import java.util.Calendar
 import java.util.HashSet
@@ -120,7 +120,7 @@ class GamePageFragment : Fragment() {
         toggleOwnerButtons()
         addTextWatchers()
         setButtonsOnClickEvent()
-        getCurrencyRates()
+        getCurrenciesRates()
         spinnerSetup()
         updateGamePagePreviewView()
 
@@ -419,14 +419,14 @@ class GamePageFragment : Fragment() {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun getCurrencyRates(){
+    private fun getCurrenciesRates(){
         val apiRequestKey = "https://v6.exchangerate-api.com/v6/aea9dcadf0c12acfc7213f75/latest/$baseCurrency"
         GlobalScope.launch(Dispatchers.IO) {
             try{
                 val apiResult = URL(apiRequestKey).readText()
                 val jsonObject = JSONObject(apiResult)
                 val conversionRates = jsonObject.getJSONObject("conversion_rates")
-                currenciesJsonToHashmap(conversionRates)
+                currenciesJsonToFilteredHashmap(conversionRates)
                 saveCurrenciesToFirebase()
 
             }catch (e: Exception){
@@ -435,7 +435,7 @@ class GamePageFragment : Fragment() {
         }
     }
 
-    private fun currenciesJsonToHashmap(currenciesJson: JSONObject){
+    private fun currenciesJsonToFilteredHashmap(currenciesJson: JSONObject){
         currenciesJson.keys().forEach { key ->
             if(key in supportedCurrencies) {
                 val rate = currenciesJson.getString(key)
@@ -527,7 +527,7 @@ class GamePageFragment : Fragment() {
                 id: Long
             ) {
                 getCurrencyRate(parent?.getItemAtPosition(position).toString()) { rate ->
-                    val text = (price.toFloat() * rate.toFloat()).toString()
+                    val text = (price.toFloat() * rate.toFloat()).toBigDecimal().setScale(2, RoundingMode.UP).toString()
                     previewExchangeView.text = text
                 }
             }

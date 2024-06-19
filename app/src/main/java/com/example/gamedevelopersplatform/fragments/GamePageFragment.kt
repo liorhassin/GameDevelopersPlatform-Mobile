@@ -24,6 +24,7 @@ import androidx.core.os.bundleOf
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
 import com.example.gamedevelopersplatform.R
+import com.example.gamedevelopersplatform.adapters.CustomSpinnerAdapter
 import com.example.gamedevelopersplatform.dao.CurrencyDao
 import com.example.gamedevelopersplatform.database.AppDatabase
 import com.example.gamedevelopersplatform.entity.Currency
@@ -331,7 +332,6 @@ class GamePageFragment : Fragment() {
 
     private suspend fun updateGameDetails(gameDetailsMap: HashMap<String, String>): Boolean {
         return try {
-
             firestore.collection("games").document(gameId)
                 .update(gameDetailsMap as Map<String, Any>).await()
 
@@ -344,7 +344,6 @@ class GamePageFragment : Fragment() {
 
     private fun deleteGame(){
         val firestore = FirebaseFirestore.getInstance()
-
         firestore.collection("games").document(gameId)
             .delete()
             .addOnSuccessListener {
@@ -428,7 +427,6 @@ class GamePageFragment : Fragment() {
                 val conversionRates = jsonObject.getJSONObject("conversion_rates")
                 currenciesJsonToFilteredHashmap(conversionRates)
                 saveCurrenciesToFirebase()
-
             }catch (e: Exception){
                 Log.e("error", "$e")
             }
@@ -509,33 +507,22 @@ class GamePageFragment : Fragment() {
             }
     }
 
-    private fun spinnerSetup(){
-        ArrayAdapter.createFromResource(
-            this.requireContext(),
-            R.array.currencies,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            previewSpinnerView.adapter = adapter
-        }
+    private fun spinnerSetup() {
+        val items = resources.getStringArray(R.array.currencies)
+        val adapter = CustomSpinnerAdapter(this.requireContext(), R.layout.spinner_list_item, items)
+        adapter.setDropDownViewResource(R.layout.spinner_list_item)
+        previewSpinnerView.adapter = adapter
 
-        previewSpinnerView.onItemSelectedListener = (object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
+        previewSpinnerView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 getCurrencyRate(parent?.getItemAtPosition(position).toString()) { rate ->
                     val text = (price.toFloat() * rate.toFloat()).toBigDecimal().setScale(2, RoundingMode.UP).toString()
                     previewExchangeView.text = text
                 }
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
 
-        })
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun switchToEditLayout(){

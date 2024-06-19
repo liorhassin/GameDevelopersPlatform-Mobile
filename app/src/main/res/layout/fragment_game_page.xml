@@ -74,18 +74,6 @@
             app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewGameImage" />
 
         <TextView
-            android:id="@+id/gamePagePreviewCurrencyExchangeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Currency Exchange:"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewPriceTitle" />
-
-        <TextView
             android:id="@+id/gamePagePreviewReleaseDateTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -145,20 +133,21 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewCurrencyExchangeText">
+            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewPriceText">
 
             <TextView
                 android:id="@+id/gamePagePreviewExchangeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Choose Currency"
+                android:text="Exchange:"
                 android:textColor="@color/white"
-                android:textSize="26sp" />
+                android:textSize="24sp" />
 
-            <Spinner
+            <com.example.gamedevelopersplatform.customviews.RightAlignedSpinner
                 android:id="@+id/gamePagePreviewSpinner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                style="@style/CustomSpinner"/>
 
         </LinearLayout>
 

@@ -2,6 +2,6 @@
 <resources>
     <style name="CustomSpinner" parent="Widget.AppCompat.Spinner">
         <item name="android:backgroundTint">@color/white</item>
-        <item name="android:popupBackground">@color/background_gray</item>
+        <item name="android:popupBackground">@color/spinner_background</item>
     </style>
 </resources>

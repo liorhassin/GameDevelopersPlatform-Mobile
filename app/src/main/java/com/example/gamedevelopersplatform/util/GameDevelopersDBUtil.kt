@@ -52,6 +52,15 @@ object GameDevelopersDBUtil {
         }
     }
 
+    fun getGamesByDeveloperId(developerId: String, context: Context) {
+        val roomDB: AppDatabase = AppDatabase.getInstance(context)
+        val gameDao: GameDao = roomDB.gameDao()
+
+        (context as? LifecycleOwner)?.lifecycleScope?.launch(Dispatchers.IO) {
+            gameDao.getAllByDeveloperId(developerId)
+        }
+    }
+
     fun gameDataToEntity(gameData: HashMap<String, String>): Game {
         return Game(
             name = gameData["name"],

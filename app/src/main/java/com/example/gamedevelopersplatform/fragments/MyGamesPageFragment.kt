@@ -124,12 +124,7 @@ class MyGamesPageFragment : Fragment() {
                     userGamesList.add(gameData)
                 }
             }.addOnFailureListener {
-                CoroutineScope(Dispatchers.IO).launch {
-                    userGamesList = ArrayList(roomDatabase.gameDao().getAllByDeveloperId(userPageId))
-                    withContext(Dispatchers.Main) {
-                        onSuccess()
-                    }
-                }
+                GameDevelopersDBUtil.getGamesByDeveloperId(userPageId, this@MyGamesPageFragment.requireContext())
             }.addOnCompleteListener {
                 if (it.isSuccessful) onSuccess()
             }

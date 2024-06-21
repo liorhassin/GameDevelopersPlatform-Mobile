@@ -20,13 +20,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.adapters.CustomSpinnerAdapter
 import com.example.gamedevelopersplatform.dao.CurrencyDao
+import com.example.gamedevelopersplatform.dao.UserDao
 import com.example.gamedevelopersplatform.database.AppDatabase
 import com.example.gamedevelopersplatform.entity.Currency
+import com.example.gamedevelopersplatform.entity.User
 import com.example.gamedevelopersplatform.util.GameDevelopersDBUtil
 import com.example.gamedevelopersplatform.util.GameDevelopersImageUtil
 import com.google.android.material.imageview.ShapeableImageView
@@ -348,7 +352,26 @@ class GamePageFragment : Fragment() {
         firestore.collection("games").document(gameId)
             .delete()
             .addOnSuccessListener {
-                GameDevelopersDBUtil.deleteGameDataInRoom(gameId, this.requireContext())
+                val userRef = firestore.collection("users").document(developerId)
+                firestore.runTransaction { transaction ->
+                    val userSnapshot = transaction.get(userRef)
+                    val games = userSnapshot.get("userGames") as? MutableList<String> ?: mutableListOf()
+                    if(games.contains(gameId)) {
+                        games.remove(gameId)
+                        transaction.update(userRef, "userGames", games)
+                    }
+                }.addOnSuccessListener {
+                    GameDevelopersDBUtil.deleteGameDataInRoom(gameId, this.requireContext())
+
+                    val roomDB: AppDatabase = AppDatabase.getInstance(this@GamePageFragment.requireContext())
+                    val userDao: UserDao = roomDB.userDao()
+
+                    (context as? LifecycleOwner)?.lifecycleScope?.launch(Dispatchers.IO) {
+                        val user: User = userDao.getById(developerId)
+                        user.userGames?.remove(gameId)
+                        userDao.update(user)
+                    }
+                }
             }
     }
 

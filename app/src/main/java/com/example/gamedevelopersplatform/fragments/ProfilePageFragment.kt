@@ -1,5 +1,6 @@
 package com.example.gamedevelopersplatform.fragments
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
@@ -335,6 +336,7 @@ class ProfilePageFragment : Fragment() {
         return true
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun updateUserDetails(){
         val updateDetailsMap = hashMapOf<String,String>()
         var imageUpdateStatus: Deferred<Pair<Boolean, String>>? = null
@@ -428,13 +430,13 @@ class ProfilePageFragment : Fragment() {
     private fun userDetailsValidation(
         newNickname: String, oldNickname: String?,
         newBirthdate: String, oldBirthdate: String?,
-        newImage: String):Triple<Boolean, Boolean, Boolean>{
+        newImage: String):Triple<Boolean, Boolean, Boolean> {
 
         return Triple(
-            (newNickname.isNotEmpty() && newNickname!=oldNickname && GameDevelopersGeneralUtil.nicknameValidation(
+            (newNickname.isNotEmpty() && newNickname != oldNickname && GameDevelopersGeneralUtil.nicknameValidation(
                 newNickname
             )),
-            (newBirthdate.isNotEmpty() && newBirthdate!=oldBirthdate),
+            (newBirthdate.isNotEmpty() && newBirthdate != oldBirthdate),
             (newImage != "")
         )
     }

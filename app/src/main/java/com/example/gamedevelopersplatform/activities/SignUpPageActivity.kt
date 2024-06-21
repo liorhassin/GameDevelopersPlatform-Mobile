@@ -10,8 +10,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.example.gamedevelopersplatform.databinding.ActivitySignUpPageBinding
+import com.example.gamedevelopersplatform.util.GameDevelopersImageUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -47,7 +48,7 @@ class SignUpPageActivity : AppCompatActivity() {
 
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
-            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(
+            if(data != null) GameDevelopersGeneralUtil.setTextAndHintTextColor(
                 binding.signUpPageChooseImageButton,
                 Color.WHITE
             )
@@ -55,26 +56,26 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun addTextWatchers() {
-        GameDevelopersAppUtil.handleTextChange(binding.signUpNicknameInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpNicknameInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(binding.signUpNicknameInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(binding.signUpNicknameInput, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(binding.signUpPasswordInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpPasswordInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(binding.signUpPasswordInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(binding.signUpPasswordInput, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(binding.signUpEmailInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpEmailInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(binding.signUpEmailInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(binding.signUpEmailInput, Color.WHITE)
         }
     }
 
     private fun setButtonsOnClickEvent() {
         binding.signUpPickADateButton.setOnClickListener {
-            GameDevelopersAppUtil.showDatePicker(this, Calendar.getInstance()) { formattedDate ->
+            GameDevelopersGeneralUtil.showDatePicker(this, Calendar.getInstance()) { formattedDate ->
                 binding.signUpBirthdateText.text = formattedDate
             }
         }
 
         binding.signUpPageChooseImageButton.setOnClickListener {
-            GameDevelopersAppUtil.openGallery(galleryLauncher)
+            GameDevelopersImageUtil.openGallery(galleryLauncher)
         }
 
         binding.signUpButton.setOnClickListener {
@@ -100,13 +101,13 @@ class SignUpPageActivity : AppCompatActivity() {
 
     private fun markMissingInputsColor(validNickname: Boolean, validPassword: Boolean, validEmail: Boolean, validPicture: Boolean){
         if(!validNickname)
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpNicknameInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(binding.signUpNicknameInput, Color.RED)
         if(!validPassword)
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpPasswordInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(binding.signUpPasswordInput, Color.RED)
         if(!validEmail)
-            GameDevelopersAppUtil.setTextAndHintTextColor(binding.signUpEmailInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(binding.signUpEmailInput, Color.RED)
         if(!validPicture)
-            GameDevelopersAppUtil.setTextAndHintTextColor(
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(
                 binding.signUpPageChooseImageButton,
                 Color.RED
             )
@@ -122,7 +123,7 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun saveImageAndUserData(nickname: String, email: String, birthDate: String){
-        GameDevelopersAppUtil.uploadImageAndGetName(storageRef, USERS_PROFILE_IMAGES_PATH,
+        GameDevelopersImageUtil.uploadImageAndGetName(storageRef, USERS_PROFILE_IMAGES_PATH,
             selectedImageUri!!, { imageUrl ->
                 val userData = hashMapOf(
                     "nickname" to nickname,
@@ -149,11 +150,11 @@ class SignUpPageActivity : AppCompatActivity() {
     }
 
     private fun userValidation(nickname:String, password:String, email:String, pictureUri:Uri?)
-    : GameDevelopersAppUtil.QuadrupleBooleans {
-        return GameDevelopersAppUtil.QuadrupleBooleans(
-            GameDevelopersAppUtil.nicknameValidation(nickname),
-            GameDevelopersAppUtil.passwordValidation(password),
-            GameDevelopersAppUtil.emailValidation(email),
+    : GameDevelopersGeneralUtil.QuadrupleBooleans {
+        return GameDevelopersGeneralUtil.QuadrupleBooleans(
+            GameDevelopersGeneralUtil.nicknameValidation(nickname),
+            GameDevelopersGeneralUtil.passwordValidation(password),
+            GameDevelopersGeneralUtil.emailValidation(email),
             pictureUri != null
         )
     }

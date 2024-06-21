@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform.customviews
+package com.example.gamedevelopersplatform.custom_views
 
 import android.annotation.SuppressLint
 import android.content.Context

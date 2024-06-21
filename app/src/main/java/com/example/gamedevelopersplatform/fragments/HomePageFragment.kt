@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamedevelopersplatform.entity.Game
-import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.util.GameDevelopersDBUtil
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -35,14 +36,14 @@ class HomePageFragment : Fragment() {
 
         initializeParameters(view)
         fetchGamesFromDB {
-            GameDevelopersAppUtil.populateRecyclerView(
+            GameDevelopersGeneralUtil.populateRecyclerView(
                 recyclerView,
                 gamesList,
                 storageRef,
                 requireActivity(),
                 R.id.homePageLayout
             )
-            GameDevelopersAppUtil.saveGamesToRoom(gamesList, requireContext())
+            GameDevelopersDBUtil.saveGamesToRoom(gamesList, requireContext())
         }
 
         return view

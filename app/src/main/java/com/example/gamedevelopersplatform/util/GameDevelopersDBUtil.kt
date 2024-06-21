@@ -8,9 +8,7 @@ import com.example.gamedevelopersplatform.dao.UserDao
 import com.example.gamedevelopersplatform.database.AppDatabase
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.entity.User
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 object GameDevelopersDBUtil {

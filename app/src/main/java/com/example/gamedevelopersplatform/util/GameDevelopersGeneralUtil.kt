@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-//TODO - Split Util into ImageUtil, GeneralUtil, Maybe more..
 object GameDevelopersGeneralUtil {
     data class QuadrupleBooleans(val first: Boolean, val second: Boolean,
                                  val third: Boolean, val fourth: Boolean)

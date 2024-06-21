@@ -186,6 +186,4 @@ class SignUpPageActivity : AppCompatActivity() {
             }
         }
     }
-
-    //TODO - Add room (local cache)
 }

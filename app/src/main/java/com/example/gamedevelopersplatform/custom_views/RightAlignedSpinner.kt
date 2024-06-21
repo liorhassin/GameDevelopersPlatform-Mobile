@@ -1,4 +1,4 @@
-package com.example.gamedevelopersplatform.customviews
+package com.example.gamedevelopersplatform.custom_views
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,8 +10,9 @@ import androidx.appcompat.widget.AppCompatSpinner
 
 class RightAlignedSpinner(context: Context, attrs: AttributeSet?) : AppCompatSpinner(context, attrs) {
 
-    @SuppressLint("DiscouragedPrivateApi")
+    @SuppressLint("DiscouragedPrivateApi", "ClickableViewAccessibility")
     override fun performClick(): Boolean {
+
         val screenSize = Point()
         val display = (context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager).defaultDisplay
         display.getSize(screenSize)
@@ -19,19 +20,19 @@ class RightAlignedSpinner(context: Context, attrs: AttributeSet?) : AppCompatSpi
         val spinnerPosition = IntArray(2)
         getLocationOnScreen(spinnerPosition)
 
-        // Calculate the xOffset to align the dropdown to the right
-        val xOffset = screenSize.x - spinnerPosition[0] + width
+        val xOffset = screenSize.x - spinnerPosition[0] - width
 
-        // Adjust the popup window offset before showing it
         try {
             val popupField = Spinner::class.java.getDeclaredField("mPopup")
             popupField.isAccessible = true
             val popupWindow = popupField.get(this) as ListPopupWindow
+
             popupWindow.horizontalOffset = xOffset
+            popupWindow.show()
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        return super.performClick()
+        return true
     }
 }

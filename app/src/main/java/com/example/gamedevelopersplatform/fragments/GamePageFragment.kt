@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
@@ -21,13 +20,19 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.gamedevelopersplatform.entity.Game
-import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.adapters.CustomSpinnerAdapter
 import com.example.gamedevelopersplatform.dao.CurrencyDao
+import com.example.gamedevelopersplatform.dao.UserDao
 import com.example.gamedevelopersplatform.database.AppDatabase
 import com.example.gamedevelopersplatform.entity.Currency
+import com.example.gamedevelopersplatform.entity.User
+import com.example.gamedevelopersplatform.util.GameDevelopersDBUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersImageUtil
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -183,11 +188,11 @@ class GamePageFragment : Fragment() {
     }
 
     private fun addTextWatchers(){
-        GameDevelopersAppUtil.handleTextChange(editNameInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(editNameInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(editNameInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(editNameInput, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(editPriceInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(editPriceInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(editPriceInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(editPriceInput, Color.WHITE)
         }
     }
 
@@ -201,12 +206,12 @@ class GamePageFragment : Fragment() {
         }
         previewDeleteButton.setOnClickListener {
             deleteGame()
-            GameDevelopersAppUtil.changeFragmentFromFragment(requireActivity(),
+            GameDevelopersGeneralUtil.changeFragmentFromFragment(requireActivity(),
                 R.id.gamePageLayout, MyGamesPageFragment.newInstance(connectedUserId))
         }
 
         editPickADateButton.setOnClickListener {
-            GameDevelopersAppUtil.showDatePicker(
+            GameDevelopersGeneralUtil.showDatePicker(
                 this.requireContext(),
                 Calendar.getInstance()
             ) { formattedDate ->
@@ -214,7 +219,7 @@ class GamePageFragment : Fragment() {
             }
         }
         editChooseImageButton.setOnClickListener {
-            GameDevelopersAppUtil.openGallery(galleryLauncher)
+            GameDevelopersImageUtil.openGallery(galleryLauncher)
         }
         editSaveButton.setOnClickListener {
             updateGameDetails()
@@ -228,9 +233,9 @@ class GamePageFragment : Fragment() {
         previewNameView.text = name
         previewPriceView.text = "$ " + price
         previewReleaseDateView.text = releaseDate
-        GameDevelopersAppUtil.loadImageFromDB(
+        GameDevelopersImageUtil.loadImageFromDB(
             storageRef, image,
-            GameDevelopersAppUtil.GAMES_IMAGES_PATH, previewImageView
+            GameDevelopersGeneralUtil.GAMES_IMAGES_PATH, previewImageView
         )
         retrieveAndLoadDeveloperNickname()
     }
@@ -243,7 +248,7 @@ class GamePageFragment : Fragment() {
     }
 
     private fun loadDeveloperProfilePage(){
-        GameDevelopersAppUtil.changeFragmentFromFragment(
+        GameDevelopersGeneralUtil.changeFragmentFromFragment(
             requireActivity(), R.id.gamePageLayout, ProfilePageFragment.newInstance(developerId)
         )
     }
@@ -264,32 +269,32 @@ class GamePageFragment : Fragment() {
 
         var newImage = ""
         if(selectedImageUri!=null)
-            newImage = GameDevelopersAppUtil.getImageNameFromUri(
+            newImage = GameDevelopersImageUtil.getImageNameFromUri(
                 this.requireActivity().contentResolver, selectedImageUri!!
             )
 
         runBlocking {
             if(newImage != ""){
                 imageUpdateStatus = async {
-                    GameDevelopersAppUtil.uploadImageAndGetName(
-                        storageRef, GameDevelopersAppUtil.GAMES_IMAGES_PATH, selectedImageUri!!
+                    GameDevelopersImageUtil.uploadImageAndGetName(
+                        storageRef, GameDevelopersGeneralUtil.GAMES_IMAGES_PATH, selectedImageUri!!
                     )
                 }
 
                 imageUpdateStatus?.await()?.let { result ->
                     if(result.first){
                         storageRef.child(
-                            GameDevelopersAppUtil.GAMES_IMAGES_PATH
+                            GameDevelopersGeneralUtil.GAMES_IMAGES_PATH
                                 + image).delete()
                         gameDetailsMap["image"] = result.second
                         image = result.second
                         updateMessage += "Image|"
                     }else{
-                        GameDevelopersAppUtil.setTextAndHintTextColor(
+                        GameDevelopersGeneralUtil.setTextAndHintTextColor(
                             editChooseImageButton,
                             Color.RED
                         )
-                        GameDevelopersAppUtil.popToast(
+                        GameDevelopersGeneralUtil.popToast(
                             this@GamePageFragment.requireContext(),
                             "Failed uploading image",
                             Toast.LENGTH_SHORT
@@ -335,8 +340,8 @@ class GamePageFragment : Fragment() {
             firestore.collection("games").document(gameId)
                 .update(gameDetailsMap as Map<String, Any>).await()
 
-            val game: Game = GameDevelopersAppUtil.gameDataToEntity(gameDetailsMap)
-            GameDevelopersAppUtil.updateGameDataInRoom(game, requireContext())
+            val game: Game = GameDevelopersDBUtil.gameDataToEntity(gameDetailsMap)
+            GameDevelopersDBUtil.updateGameDataInRoom(game, requireContext())
 
             true
         } catch (e: Exception) { false }
@@ -347,19 +352,38 @@ class GamePageFragment : Fragment() {
         firestore.collection("games").document(gameId)
             .delete()
             .addOnSuccessListener {
-                GameDevelopersAppUtil.deleteGameDataInRoom(gameId, this.requireContext())
+                val userRef = firestore.collection("users").document(developerId)
+                firestore.runTransaction { transaction ->
+                    val userSnapshot = transaction.get(userRef)
+                    val games = userSnapshot.get("userGames") as? MutableList<String> ?: mutableListOf()
+                    if(games.contains(gameId)) {
+                        games.remove(gameId)
+                        transaction.update(userRef, "userGames", games)
+                    }
+                }.addOnSuccessListener {
+                    GameDevelopersDBUtil.deleteGameDataInRoom(gameId, this.requireContext())
+
+                    val roomDB: AppDatabase = AppDatabase.getInstance(this@GamePageFragment.requireContext())
+                    val userDao: UserDao = roomDB.userDao()
+
+                    (context as? LifecycleOwner)?.lifecycleScope?.launch(Dispatchers.IO) {
+                        val user: User = userDao.getById(developerId)
+                        user.userGames?.remove(gameId)
+                        userDao.update(user)
+                    }
+                }
             }
     }
 
     private fun nameRequireChangeValidation(newGameName: String): Boolean{
         if(newGameName.isEmpty() || newGameName == name) return false
-        if(!GameDevelopersAppUtil.gameNameValidation(newGameName)){
-            GameDevelopersAppUtil.popToast(
+        if(!GameDevelopersGeneralUtil.gameNameValidation(newGameName)){
+            GameDevelopersGeneralUtil.popToast(
                 this@GamePageFragment.requireContext(),
                 "Name doesn't meet the requirements",
                 Toast.LENGTH_SHORT
             )
-            GameDevelopersAppUtil.setTextAndHintTextColor(editNameInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(editNameInput, Color.RED)
             return false
         }
         return true
@@ -367,13 +391,13 @@ class GamePageFragment : Fragment() {
 
     private fun priceRequireChangeValidation(newGamePrice: String): Boolean{
         if(newGamePrice.isEmpty() || newGamePrice == price) return false
-        if(!GameDevelopersAppUtil.gamePriceValidation(newGamePrice)){
-            GameDevelopersAppUtil.popToast(
+        if(!GameDevelopersGeneralUtil.gamePriceValidation(newGamePrice)){
+            GameDevelopersGeneralUtil.popToast(
                 this@GamePageFragment.requireContext(),
                 "Price doesn't meet the requirements",
                 Toast.LENGTH_SHORT
             )
-            GameDevelopersAppUtil.setTextAndHintTextColor(editPriceInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(editPriceInput, Color.RED)
             return false
         }
         return true

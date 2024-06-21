@@ -15,9 +15,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.example.gamedevelopersplatform.R
-import com.example.gamedevelopersplatform.entity.Game
+import com.example.gamedevelopersplatform.util.GameDevelopersDBUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersImageUtil
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -68,7 +69,7 @@ class AddGamePageFragment : Fragment() {
 
         galleryLauncher = generateGalleryLauncher {
                 data -> handleSelectedImage(data)
-            if(data != null) GameDevelopersAppUtil.setTextAndHintTextColor(
+            if(data != null) GameDevelopersGeneralUtil.setTextAndHintTextColor(
                 chooseImageButton,
                 Color.WHITE
             )
@@ -76,24 +77,24 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun addTextWatchers(){
-        GameDevelopersAppUtil.handleTextChange(releaseDateTextView) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(releaseDateTextView, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(releaseDateTextView) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(releaseDateTextView, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(priceTextInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(priceTextInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(priceTextInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(priceTextInput, Color.WHITE)
         }
-        GameDevelopersAppUtil.handleTextChange(gameNameTextInput) {
-            GameDevelopersAppUtil.setTextAndHintTextColor(gameNameTextInput, Color.WHITE)
+        GameDevelopersGeneralUtil.handleTextChange(gameNameTextInput) {
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(gameNameTextInput, Color.WHITE)
         }
     }
 
     private fun setButtonsOnClickEvent(){
         chooseImageButton.setOnClickListener {
-            GameDevelopersAppUtil.openGallery(galleryLauncher)
+            GameDevelopersImageUtil.openGallery(galleryLauncher)
         }
 
         showDatePickerButton.setOnClickListener {
-            GameDevelopersAppUtil.showDatePicker(
+            GameDevelopersGeneralUtil.showDatePicker(
                 requireContext(),
                 Calendar.getInstance()
             ) { formattedDate ->
@@ -117,8 +118,8 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun saveImageAndGameData(name:String, price:String, releaseDate:String, uid:String){
-        GameDevelopersAppUtil.uploadImageAndGetName(storageRef,
-            GameDevelopersAppUtil.GAMES_IMAGES_PATH,
+        GameDevelopersImageUtil.uploadImageAndGetName(storageRef,
+            GameDevelopersGeneralUtil.GAMES_IMAGES_PATH,
             selectedImageUri!!,
             { imageUrl ->
                 val gameData = hashMapOf(
@@ -131,7 +132,7 @@ class AddGamePageFragment : Fragment() {
                 saveGameDataAndGetGameId(gameData,
                     { gameId ->
                         saveGameId(gameId, uid, {
-                            GameDevelopersAppUtil.changeFragmentFromFragment(
+                            GameDevelopersGeneralUtil.changeFragmentFromFragment(
                                 requireActivity(),
                                 R.id.addGamePageLayout,
                                 MyGamesPageFragment.newInstance(uid)
@@ -170,14 +171,13 @@ class AddGamePageFragment : Fragment() {
 
     private fun markMissingInputsColor(validPrice: Boolean, validName: Boolean, validPicture: Boolean){
         if(!validPrice)
-            GameDevelopersAppUtil.setTextAndHintTextColor(priceTextInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(priceTextInput, Color.RED)
         if(!validName)
-            GameDevelopersAppUtil.setTextAndHintTextColor(gameNameTextInput, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(gameNameTextInput, Color.RED)
         if(!validPicture)
-            GameDevelopersAppUtil.setTextAndHintTextColor(chooseImageButton, Color.RED)
+            GameDevelopersGeneralUtil.setTextAndHintTextColor(chooseImageButton, Color.RED)
     }
 
-    //TODO - consider making this method generic for util object
     private fun generateGalleryLauncher(callback: (Intent?)->Unit): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -187,7 +187,6 @@ class AddGamePageFragment : Fragment() {
         }
     }
 
-    //TODO - consider making this method generic for util object.
     private fun handleSelectedImage(data: Intent?) {
         data?.data?.let { uri ->
             selectedImageUri = uri
@@ -209,15 +208,15 @@ class AddGamePageFragment : Fragment() {
     }
 
     private fun generateGameEntityAndSaveLocally(gameData: HashMap<String, String>){
-        GameDevelopersAppUtil.saveGameToRoom(
-            GameDevelopersAppUtil.gameDataToEntity(gameData)
+        GameDevelopersDBUtil.saveGameToRoom(
+            GameDevelopersDBUtil.gameDataToEntity(gameData)
             , requireContext())
     }
 
     private fun gameValidation(price:String, name:String, pictureUri: Uri?): Triple<Boolean,Boolean,Boolean>{
         return Triple(
-            GameDevelopersAppUtil.gamePriceValidation(price),
-            GameDevelopersAppUtil.gameNameValidation(name),
+            GameDevelopersGeneralUtil.gamePriceValidation(price),
+            GameDevelopersGeneralUtil.gameNameValidation(name),
             pictureUri!=null)
     }
 }

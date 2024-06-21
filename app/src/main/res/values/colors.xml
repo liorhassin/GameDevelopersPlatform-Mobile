@@ -8,4 +8,5 @@
     <color name="red_button">#521915</color>
     <color name="blue_button">#0b1336</color>
     <color name="underline">#D8D6D6</color>
+    <color name="spinner_background">#303030</color>
 </resources>

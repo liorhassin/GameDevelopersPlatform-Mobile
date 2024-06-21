@@ -83,7 +83,7 @@
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ll_firstConversion" />
+            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewConversionLayout" />
 
         <TextView
             android:id="@+id/gamePagePreviewReleaseDateText"
@@ -95,7 +95,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toEndOf="@+id/gamePagePreviewReleaseDateTitle"
-            app:layout_constraintTop_toBottomOf="@+id/ll_firstConversion" />
+            app:layout_constraintTop_toBottomOf="@+id/gamePagePreviewConversionLayout" />
 
         <TextView
             android:id="@+id/gamePagePreviewDeveloperTitle"
@@ -125,7 +125,7 @@
             tools:ignore="MissingConstraints" />
 
         <LinearLayout
-            android:id="@+id/ll_firstConversion"
+            android:id="@+id/gamePagePreviewConversionLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -143,7 +143,7 @@
                 android:textColor="@color/white"
                 android:textSize="24sp" />
 
-            <com.example.gamedevelopersplatform.customviews.RightAlignedSpinner
+            <com.example.gamedevelopersplatform.custom_views.RightAlignedSpinner
                 android:id="@+id/gamePagePreviewSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

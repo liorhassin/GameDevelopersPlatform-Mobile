@@ -12,9 +12,9 @@ import com.example.gamedevelopersplatform.fragments.AddGamePageFragment
 import com.example.gamedevelopersplatform.fragments.HomePageFragment
 import com.example.gamedevelopersplatform.fragments.MyGamesPageFragment
 import com.example.gamedevelopersplatform.fragments.ProfilePageFragment
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.google.firebase.auth.FirebaseAuth
 
-//TODO - Refactor
 class InitializeNavbarActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInitializeNavbarBinding
     private lateinit var firebaseAuth: FirebaseAuth

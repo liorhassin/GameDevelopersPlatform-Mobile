@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.entity.Game
 import com.example.gamedevelopersplatform.fragments.GamePageFragment
-import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersDBUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersImageUtil
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.storage.StorageReference
 
@@ -30,13 +32,13 @@ class GamesAdapter(private val gamesList: ArrayList<Game>, private val storageRe
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = gamesList[position]
 
-        GameDevelopersAppUtil.loadImageFromDB(storageRef, currentItem.image,
-            GameDevelopersAppUtil.GAMES_IMAGES_PATH, holder.image)
+        GameDevelopersImageUtil.loadImageFromDB(storageRef, currentItem.image,
+            GameDevelopersGeneralUtil.GAMES_IMAGES_PATH, holder.image)
 
         holder.name.text = currentItem.name
 
         holder.gamePageButton.setOnClickListener {
-            GameDevelopersAppUtil.changeFragmentFromFragment(fragmentActivity, currentLayoutId,
+            GameDevelopersGeneralUtil.changeFragmentFromFragment(fragmentActivity, currentLayoutId,
                 GamePageFragment.newInstance(currentItem))
         }
     }

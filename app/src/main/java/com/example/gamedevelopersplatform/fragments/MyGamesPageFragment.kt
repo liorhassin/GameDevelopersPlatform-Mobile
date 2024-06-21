@@ -11,9 +11,10 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamedevelopersplatform.entity.Game
-import com.example.gamedevelopersplatform.util.GameDevelopersAppUtil
+import com.example.gamedevelopersplatform.util.GameDevelopersGeneralUtil
 import com.example.gamedevelopersplatform.R
 import com.example.gamedevelopersplatform.database.AppDatabase
+import com.example.gamedevelopersplatform.util.GameDevelopersDBUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -58,7 +59,7 @@ class MyGamesPageFragment : Fragment() {
 
         fetchUserGamesIdFromDB(userPageId, { gamesId ->
             fetchUserGamesFromDB(gamesId, {
-                GameDevelopersAppUtil.populateRecyclerView(
+                GameDevelopersGeneralUtil.populateRecyclerView(
                     recyclerView,
                     userGamesList,
                     storageRef,
@@ -66,7 +67,7 @@ class MyGamesPageFragment : Fragment() {
                     R.id.myGamesPageLayout
                 )
                 if(connectedUserId != USER_ID_DATA_TO_FETCH) titleText.text = "$developerName Games"
-                GameDevelopersAppUtil.saveGamesToRoom(userGamesList, requireContext())
+                GameDevelopersDBUtil.saveGamesToRoom(userGamesList, requireContext())
             },{ exception ->
                 Log.e("fetchUserGamesFromDB", "Failed to fetch user games: $exception")
             })
@@ -123,12 +124,7 @@ class MyGamesPageFragment : Fragment() {
                     userGamesList.add(gameData)
                 }
             }.addOnFailureListener {
-                CoroutineScope(Dispatchers.IO).launch {
-                    userGamesList = ArrayList(roomDatabase.gameDao().getAllByDeveloperId(userPageId))
-                    withContext(Dispatchers.Main) {
-                        onSuccess()
-                    }
-                }
+                GameDevelopersDBUtil.getGamesByDeveloperId(userPageId, this@MyGamesPageFragment.requireContext())
             }.addOnCompleteListener {
                 if (it.isSuccessful) onSuccess()
             }
